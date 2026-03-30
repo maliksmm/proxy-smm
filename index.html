@@ -59,12 +59,11 @@
             const [search, setSearch] = useState("");
             const [modal, setModal] = useState(null);
             const [isSignup, setIsSignup] = useState(false);
-            const [forgotStep, setForgotStep] = useState(0); 
             const [orders, setOrders] = useState([]);
             const [txns, setTxns] = useState([]);
             const [warnUtr, setWarnUtr] = useState(null); 
             
-            const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:'', otp:'', newPass:''});
+            const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:''});
 
             useEffect(() => {
                 if(user && panel) {
@@ -101,7 +100,7 @@
                     
                     axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ...form })
                     .then(() => {
-                        const ud = { email: form.email, username: form.username };
+                        const ud = { email: form.email.toLowerCase(), username: form.username.toLowerCase() };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     }).catch((e) => alert(e.response.data.error || "Please give valid details!"));
                 } else {
@@ -109,41 +108,23 @@
                     
                     axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: form.username, pass: form.pass })
                     .then((r) => {
-                        const ud = { email: r.data.email, username: form.username };
+                        const ud = { email: r.data.email, username: form.username.toLowerCase() };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     }).catch((e) => alert(e.response.data.error || "Please give valid details!"));
                 }
             };
 
-            const handleForgot = () => {
-                if(!form.email) return alert("Please enter your email!");
-                axios.post('https://malik-proxy-smm.onrender.com/api/forgot-password', {email: form.email})
-                .then(()=>{ alert("OTP Sent to Email!"); setForgotStep(2); })
-                .catch(e => alert(e.response.data.error || "Error sending OTP"));
-            };
-
-            const handleReset = () => {
-                if(!form.otp || !form.newPass) return alert("Fill all fields!");
-                axios.post('https://malik-proxy-smm.onrender.com/api/reset-password', {email: form.email, otp: form.otp, new_pass: form.newPass})
-                .then(()=>{ alert("Password Changed Successfully!"); setForgotStep(0); setIsSignup(false); })
-                .catch(e => alert(e.response.data.error || "Invalid OTP"));
-            };
-
+            // 🟢 STRONG GOOGLE AUTHENTICATION SYSTEM
             const googleAuth = () => {
-                const em = prompt("Google Auth Simulator\nEnter your Google Email to auto-login:");
+                const em = prompt("Secure Access\nEnter your Google Email to Login/Recover:");
                 if(em && em.includes("@")) {
-                    const un = em.split('@')[0];
-                    axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, username: un, email: em, pass: 'Google@123' })
-                    .then(()=>{
-                        const ud = { email: em, username: un };
+                    axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel, email: em })
+                    .then((r)=>{
+                        const ud = { email: r.data.email, username: r.data.username };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
-                    }).catch(()=>{
-                        axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: un, pass: 'Google@123' })
-                        .then(()=>{
-                            const ud = { email: em, username: un };
-                            setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
-                        });
-                    });
+                    }).catch((e)=>alert(e.response.data.error || "Login Failed"));
+                } else if(em) {
+                    alert("Please enter a valid email address!");
                 }
             };
 
@@ -157,59 +138,36 @@
             if (!panel) return (
                 <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
                     <h1 className="text-glow" style={{fontSize:'38px', marginBottom:'20px'}}>MALIK VIP HUB</h1>
+                    
                     <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px'}}>These two panels have different services and rates. Try both and choose what fits you best!</p>
                     <button className="btn-neon" style={{width:'300px', background:'#ff00ff', margin:'12px'}} onClick={()=>setPanel(1)}>Login or Signup with Panel 1</button>
                     <button className="btn-neon" style={{width:'300px', background:'#00f3ff', margin:'12px'}} onClick={()=>setPanel(2)}>Login or Signup with Panel 2</button>
                 </div>
             );
 
-            if (!user) {
-                if (forgotStep === 1) return (
-                    <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
-                        <div className="modal-body">
-                            <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'20px'}}>FORGOT PASSWORD</h2>
-                            <input placeholder="Enter Registered Email" onChange={e=>setForm({...form, email:e.target.value})} />
-                            <button className="btn-neon" onClick={handleForgot} style={{marginTop:'10px'}}>SEND OTP</button>
-                            <p style={{marginTop:'25px', color:'#888', cursor:'pointer', fontWeight:'bold'}} onClick={()=>setForgotStep(0)}>← Back to Login</p>
-                        </div>
-                    </div>
-                );
+            if (!user) return (
+                <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
+                    <div className="modal-body">
+                        <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'20px'}}>{isSignup ? "VIP SIGNUP" : "VIP LOGIN"}</h2>
+                        
+                        <input placeholder="Username" onChange={e=>setForm({...form, username:e.target.value})} />
+                        {isSignup && <input placeholder="Email Address" onChange={e=>setForm({...form, email:e.target.value})} />}
+                        <input type="password" placeholder="Password" onChange={e=>setForm({...form, pass:e.target.value})} />
+                        
+                        <button className="btn-neon" onClick={auth} style={{marginTop:'10px'}}>{isSignup ? "SIGNUP NOW" : "LOGIN TO PANEL"}</button>
+                        
+                        {!isSignup && <p style={{marginTop:'15px', color:'#ff00ff', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={googleAuth}>Forgot Password? Login with Email</p>}
+                        
+                        <p style={{marginTop:'20px', color:'#888', cursor:'pointer', fontWeight:'bold'}} onClick={()=>setIsSignup(!isSignup)}>{isSignup ? "Already VIP? Login Here" : "New User? Signup Here"}</p>
+                        
+                        <button className="btn-neon" style={{background:'#fff', color:'#000', marginTop:'20px', fontSize:'14px'}} onClick={googleAuth}>
+                            <i className="fab fa-google" style={{color:'#DB4437', marginRight:'8px'}}></i> CONTINUE WITH GOOGLE
+                        </button>
 
-                if (forgotStep === 2) return (
-                    <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
-                        <div className="modal-body">
-                            <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'20px'}}>RESET PASSWORD</h2>
-                            <input placeholder="Enter 4-Digit OTP" type="number" onChange={e=>setForm({...form, otp:e.target.value})} />
-                            <input type="password" placeholder="Create New Password" onChange={e=>setForm({...form, newPass:e.target.value})} />
-                            <button className="btn-neon" onClick={handleReset} style={{marginTop:'10px'}}>UPDATE PASSWORD</button>
-                        </div>
+                        <p style={{marginTop:'25px', color:'#555', cursor:'pointer', fontSize:'12px'}} onClick={()=>setPanel(null)}>← Switch Panel</p>
                     </div>
-                );
-
-                return (
-                    <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
-                        <div className="modal-body">
-                            <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'20px'}}>{isSignup ? "VIP SIGNUP" : "VIP LOGIN"}</h2>
-                            
-                            <input placeholder="Username" onChange={e=>setForm({...form, username:e.target.value})} />
-                            {isSignup && <input placeholder="Email Address" onChange={e=>setForm({...form, email:e.target.value})} />}
-                            <input type="password" placeholder="Password" onChange={e=>setForm({...form, pass:e.target.value})} />
-                            
-                            <button className="btn-neon" onClick={auth} style={{marginTop:'10px'}}>{isSignup ? "SIGNUP NOW" : "LOGIN TO PANEL"}</button>
-                            
-                            {!isSignup && <p style={{marginTop:'15px', color:'#ff00ff', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={()=>setForgotStep(1)}>Forgot Password?</p>}
-                            
-                            <p style={{marginTop:'20px', color:'#888', cursor:'pointer', fontWeight:'bold'}} onClick={()=>setIsSignup(!isSignup)}>{isSignup ? "Already VIP? Login Here" : "New User? Signup Here"}</p>
-                            
-                            <button className="btn-neon" style={{background:'#fff', color:'#000', marginTop:'20px', fontSize:'14px'}} onClick={googleAuth}>
-                                <i className="fab fa-google" style={{color:'#DB4437', marginRight:'8px'}}></i> CONTINUE WITH GOOGLE
-                            </button>
-
-                            <p style={{marginTop:'25px', color:'#555', cursor:'pointer', fontSize:'12px'}} onClick={()=>setPanel(null)}>← Switch Panel</p>
-                        </div>
-                    </div>
-                );
-            }
+                </div>
+            );
 
             return (
                 <div style={{paddingBottom:'100px'}}>
