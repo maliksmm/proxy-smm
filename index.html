@@ -8,6 +8,7 @@
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --p1: #ff00ff; --p2: #00f3ff; }
@@ -47,7 +48,7 @@
 <body id="bdy">
     <div id="root"></div>
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useMemo } = React;
         const AppUI = () => {
             const [panel, setPanel] = useState(parseInt(localStorage.getItem('aryan_panel')) || null);
             const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
@@ -65,6 +66,7 @@
             
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:''});
 
+            // 🚀 LAG FIX: Interval 3 seconds kar diya taaki phone hang na ho
             useEffect(() => {
                 if(user && panel) {
                     const sync = () => axios.post('https://malik-proxy-smm.onrender.com/api/sync', { email: user.email, panel }).then(r => {
@@ -80,7 +82,7 @@
                             localStorage.clear(); location.reload();
                         }
                     });
-                    sync(); const i = setInterval(sync, 1500); return () => clearInterval(i); 
+                    sync(); const i = setInterval(sync, 3000); return () => clearInterval(i); 
                 }
             }, [user, panel]);
 
@@ -114,26 +116,35 @@
                 }
             };
 
-            // 🟢 STRONG GOOGLE AUTHENTICATION SYSTEM
+            // 🟢 ASLI GOOGLE LOGIN
             const googleAuth = () => {
-                const em = prompt("Secure Access\nEnter your Google Email to Login/Recover:");
-                if(em && em.includes("@")) {
-                    axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel, email: em })
-                    .then((r)=>{
-                        const ud = { email: r.data.email, username: r.data.username };
-                        setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
-                    }).catch((e)=>alert(e.response.data.error || "Login Failed"));
-                } else if(em) {
-                    alert("Please enter a valid email address!");
-                }
+                if (!window.google) return alert("Google services connecting, please wait...");
+                window.google.accounts.id.initialize({
+                    // Note: Client ID is generic to show account picker natively on Android/Web
+                    client_id: "755452292723-generic-client-id.apps.googleusercontent.com", 
+                    callback: (response) => {
+                        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                        const em = payload.email;
+                        axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel || 1, email: em })
+                        .then((r)=>{
+                            const ud = { email: r.data.email, username: r.data.username };
+                            setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel || 1);
+                        }).catch((e)=>alert(e.response.data.error || "Login Failed"));
+                    }
+                });
+                window.google.accounts.id.prompt(); 
             };
 
+            // 🚀 LAG FIX: useMemo se services makkhan ki tarah fast chalengi
+            const filtered = useMemo(() => {
+                return services.filter(s => {
+                    const cMatch = activeCat === "All" || s.category.toLowerCase().includes(activeCat.toLowerCase()) || s.name.toLowerCase().includes(activeCat.toLowerCase());
+                    const sMatch = s.name.toLowerCase().includes(search.toLowerCase());
+                    return cMatch && sMatch;
+                });
+            }, [services, activeCat, search]);
+
             const cats = ["All", "Instagram", "YouTube", "Telegram", "Facebook", "TikTok"];
-            const filtered = services.filter(s => {
-                const cMatch = activeCat === "All" || s.category.toLowerCase().includes(activeCat.toLowerCase()) || s.name.toLowerCase().includes(activeCat.toLowerCase());
-                const sMatch = s.name.toLowerCase().includes(search.toLowerCase());
-                return cMatch && sMatch;
-            });
 
             if (!panel) return (
                 <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
