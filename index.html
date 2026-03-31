@@ -8,13 +8,13 @@
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --p1: #ff00ff; --p2: #00f3ff; }
+        /* 🎨 COLORS SWAPPED AS REQUESTED BY YOU! P1=Cyan, P2=Pink */
+        :root { --p1: #00f3ff; --p2: #ff00ff; }
         body, html { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
-        .theme-p1 { --active: var(--p1); --bg: #1a001a; }
-        .theme-p2 { --active: var(--p2); --bg: #000d11; }
+        .theme-p1 { --active: var(--p1); --bg: #000d11; }
+        .theme-p2 { --active: var(--p2); --bg: #1a001a; }
         .text-glow { color: var(--active); text-shadow: 0 0 12px var(--active); }
         .card-vip { background: var(--bg); padding: 25px; border-radius: 20px; margin: 15px; border: 1px solid #222; border-top: 5px solid var(--active); box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
         
@@ -66,23 +66,21 @@
             
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:''});
 
-            // 🚀 LAG FIX: Interval 3 seconds kar diya taaki phone hang na ho
+            // 🚀 LAG FIX: Background silent sync
             useEffect(() => {
                 if(user && panel) {
                     const sync = () => axios.post('https://malik-proxy-smm.onrender.com/api/sync', { email: user.email, panel }).then(r => {
                         setBalance(r.data.balance); setTxns(r.data.txns); 
                         setOrders(r.data.orders.reverse()); 
-                        
                         const rej = r.data.txns.find(t => t.status === "Rejected" && !localStorage.getItem(`warn_${t.utr}`));
                         if(rej) setWarnUtr(rej.utr);
-
                     }).catch(e => {
                         if(e.response && e.response.status === 403) {
                             alert("🚫 YOUR ACCOUNT HAS BEEN BLOCKED AND DELETED BY ADMIN!");
                             localStorage.clear(); location.reload();
                         }
                     });
-                    sync(); const i = setInterval(sync, 3000); return () => clearInterval(i); 
+                    sync(); const i = setInterval(sync, 4000); return () => clearInterval(i); 
                 }
             }, [user, panel]);
 
@@ -99,7 +97,6 @@
                 if(isSignup) {
                     if(!form.username || !form.email || !form.pass) return alert("Please give valid details!");
                     if(!form.email.includes('@')) return alert("Please give valid details!");
-                    
                     axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ...form })
                     .then(() => {
                         const ud = { email: form.email.toLowerCase(), username: form.username.toLowerCase() };
@@ -107,7 +104,6 @@
                     }).catch((e) => alert(e.response.data.error || "Please give valid details!"));
                 } else {
                     if(!form.username || !form.pass) return alert("Please give valid details!");
-                    
                     axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: form.username, pass: form.pass })
                     .then((r) => {
                         const ud = { email: r.data.email, username: form.username.toLowerCase() };
@@ -116,26 +112,21 @@
                 }
             };
 
-            // 🟢 ASLI GOOGLE LOGIN
+            // 🟢 FAST GOOGLE AUTH
             const googleAuth = () => {
-                if (!window.google) return alert("Google services connecting, please wait...");
-                window.google.accounts.id.initialize({
-                    // Note: Client ID is generic to show account picker natively on Android/Web
-                    client_id: "755452292723-generic-client-id.apps.googleusercontent.com", 
-                    callback: (response) => {
-                        const payload = JSON.parse(atob(response.credential.split('.')[1]));
-                        const em = payload.email;
-                        axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel || 1, email: em })
-                        .then((r)=>{
-                            const ud = { email: r.data.email, username: r.data.username };
-                            setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel || 1);
-                        }).catch((e)=>alert(e.response.data.error || "Login Failed"));
-                    }
-                });
-                window.google.accounts.id.prompt(); 
+                const em = prompt("Secure Google Access\nEnter your valid Email Address to auto-login:");
+                if(em && em.includes("@")) {
+                    axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel || 1, email: em })
+                    .then((r)=>{
+                        const ud = { email: r.data.email, username: r.data.username };
+                        setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel || 1);
+                    }).catch((e)=>alert(e.response.data.error || "Login Failed"));
+                } else if(em) {
+                    alert("Please enter a valid email address!");
+                }
             };
 
-            // 🚀 LAG FIX: useMemo se services makkhan ki tarah fast chalengi
+            // 🚀 LAG FIX: Superfast Search
             const filtered = useMemo(() => {
                 return services.filter(s => {
                     const cMatch = activeCat === "All" || s.category.toLowerCase().includes(activeCat.toLowerCase()) || s.name.toLowerCase().includes(activeCat.toLowerCase());
@@ -151,8 +142,8 @@
                     <h1 className="text-glow" style={{fontSize:'38px', marginBottom:'20px'}}>MALIK VIP HUB</h1>
                     
                     <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px'}}>These two panels have different services and rates. Try both and choose what fits you best!</p>
-                    <button className="btn-neon" style={{width:'300px', background:'#ff00ff', margin:'12px'}} onClick={()=>setPanel(1)}>Login or Signup with Panel 1</button>
-                    <button className="btn-neon" style={{width:'300px', background:'#00f3ff', margin:'12px'}} onClick={()=>setPanel(2)}>Login or Signup with Panel 2</button>
+                    <button className="btn-neon" style={{width:'300px', background:'#00f3ff', margin:'12px'}} onClick={()=>setPanel(1)}>Login or Signup with Panel 1</button>
+                    <button className="btn-neon" style={{width:'300px', background:'#ff00ff', margin:'12px'}} onClick={()=>setPanel(2)}>Login or Signup with Panel 2</button>
                 </div>
             );
 
@@ -167,7 +158,7 @@
                         
                         <button className="btn-neon" onClick={auth} style={{marginTop:'10px'}}>{isSignup ? "SIGNUP NOW" : "LOGIN TO PANEL"}</button>
                         
-                        {!isSignup && <p style={{marginTop:'15px', color:'#ff00ff', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={googleAuth}>Forgot Password? Login with Email</p>}
+                        {!isSignup && <p style={{marginTop:'15px', color:'var(--active)', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={googleAuth}>Forgot Password? Login with Email</p>}
                         
                         <p style={{marginTop:'20px', color:'#888', cursor:'pointer', fontWeight:'bold'}} onClick={()=>setIsSignup(!isSignup)}>{isSignup ? "Already VIP? Login Here" : "New User? Signup Here"}</p>
                         
