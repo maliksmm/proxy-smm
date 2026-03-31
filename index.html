@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 🎨 P1 = CYAN, P2 = RED (AS REQUESTED) */
+        /* 🎨 P1 = CYAN, P2 = RED */
         :root { --p1: #00f3ff; --p2: #ff0000; }
         body, html { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         .theme-p1 { --active: var(--p1); --bg: #000d11; }
@@ -64,7 +64,10 @@
             const [txns, setTxns] = useState([]);
             const [warnUtr, setWarnUtr] = useState(null); 
             const [showGoogleModal, setShowGoogleModal] = useState(false);
+            
+            // SECURITY FIX: Asking both Email AND Username for forgot password recovery
             const [googleEmail, setGoogleEmail] = useState("");
+            const [googleUsername, setGoogleUsername] = useState("");
             
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:''});
 
@@ -114,16 +117,15 @@
             };
 
             const customGoogleAuth = () => {
-                if(googleEmail && googleEmail.includes("@")) {
-                    axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel || 1, email: googleEmail })
-                    .then((r)=>{
-                        const ud = { email: r.data.email, username: r.data.username };
-                        setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel || 1);
-                        setShowGoogleModal(false);
-                    }).catch((e)=>alert(e.response.data.error || "Login Failed"));
-                } else {
-                    alert("Please enter a valid Google email address!");
+                if(!googleEmail.includes("@") || !googleUsername) {
+                    return alert("Please enter both Email and Username for security verification!");
                 }
+                axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel || 1, email: googleEmail, username: googleUsername })
+                .then((r)=>{
+                    const ud = { email: r.data.email, username: r.data.username };
+                    setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel || 1);
+                    setShowGoogleModal(false);
+                }).catch((e)=>alert(e.response.data.error || "Login Failed"));
             };
 
             const filtered = useMemo(() => {
@@ -150,10 +152,13 @@
                     <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
                         <div className="modal-body" style={{background:'#fff', color:'#000', border:'none', boxShadow:'0 0 20px rgba(255,255,255,0.2)'}}>
                             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style={{width:'45px', marginBottom:'15px'}} />
-                            <h2 style={{margin:'0 0 10px 0', fontSize:'24px'}}>Sign in</h2>
-                            <p style={{color:'#555', fontSize:'14px', marginBottom:'20px'}}>Use your Google Account</p>
-                            <input placeholder="Email or phone" style={{background:'#fff', color:'#000', border:'1px solid #ccc', width:'90%', padding:'12px'}} onChange={e=>setGoogleEmail(e.target.value)} />
-                            <button className="btn-neon" style={{background:'#0b57d0', color:'#fff', marginTop:'10px', boxShadow:'none', borderRadius:'4px'}} onClick={customGoogleAuth}>Next</button>
+                            <h2 style={{margin:'0 0 10px 0', fontSize:'24px'}}>Account Recovery</h2>
+                            <p style={{color:'#d93025', fontSize:'13px', fontWeight:'bold', marginBottom:'15px'}}>Security Check: Enter details to verify identity</p>
+                            
+                            <input placeholder="Enter Registered Email" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'90%', padding:'12px', marginBottom:'10px'}} onChange={e=>setGoogleEmail(e.target.value)} />
+                            <input placeholder="Enter Username" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'90%', padding:'12px'}} onChange={e=>setGoogleUsername(e.target.value)} />
+                            
+                            <button className="btn-neon" style={{background:'#0b57d0', color:'#fff', marginTop:'15px', boxShadow:'none', borderRadius:'4px'}} onClick={customGoogleAuth}>Secure Login</button>
                             <p style={{marginTop:'20px', color:'#0b57d0', cursor:'pointer', fontWeight:'bold', fontSize:'14px'}} onClick={()=>setShowGoogleModal(false)}>Cancel</p>
                         </div>
                     </div>
@@ -170,12 +175,12 @@
                             
                             <button className="btn-neon" onClick={auth} style={{marginTop:'10px'}}>{isSignup ? "SIGNUP NOW" : "LOGIN TO PANEL"}</button>
                             
-                            {!isSignup && <p style={{marginTop:'15px', color:'var(--active)', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={()=>setShowGoogleModal(true)}>Forgot Password? Login with Google</p>}
+                            {!isSignup && <p style={{marginTop:'15px', color:'var(--active)', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={()=>setShowGoogleModal(true)}>Forgot Password? Secure Login</p>}
                             
                             <p style={{marginTop:'20px', color:'#888', cursor:'pointer', fontWeight:'bold'}} onClick={()=>setIsSignup(!isSignup)}>{isSignup ? "Already VIP? Login Here" : "New User? Signup Here"}</p>
                             
                             <button className="btn-neon" style={{background:'#fff', color:'#000', marginTop:'20px', fontSize:'14px'}} onClick={()=>setShowGoogleModal(true)}>
-                                <i className="fab fa-google" style={{color:'#DB4437', marginRight:'8px'}}></i> CONTINUE WITH GOOGLE
+                                <i className="fab fa-google" style={{color:'#DB4437', marginRight:'8px'}}></i> SECURE LOGIN RECOVERY
                             </button>
 
                             <p style={{marginTop:'25px', color:'#555', cursor:'pointer', fontSize:'12px'}} onClick={()=>setPanel(null)}>← Switch Panel</p>
