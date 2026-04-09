@@ -66,6 +66,9 @@
             const [showGoogleModal, setShowGoogleModal] = useState(false);
             const [userInfo, setUserInfo] = useState({});
             
+            const [mails, setMails] = useState([]);
+            const [mailInput, setMailInput] = useState("");
+            
             // 🛑 CUSTOM ALERT SYSTEM (NO BROWSER ALERTS!)
             const [vipAlert, setVipAlert] = useState(null);
             const showAlert = (msg) => setVipAlert(msg);
@@ -86,6 +89,12 @@
                         setBalance(r.data.balance); setTxns(r.data.txns); 
                         setOrders(r.data.orders.slice().reverse()); 
                         setUserInfo(r.data.user_info || {});
+                        setMails(r.data.all_mails || []);
+                        
+                        if (r.data.unread_mails && r.data.unread_mails.length > 0) {
+                            r.data.unread_mails.forEach(m => showAlert("📬 NEW MAIL FROM ADMIN:\n\n" + m));
+                        }
+                        
                         const rej = r.data.txns.find(t => t.status === "Rejected" && !localStorage.getItem(`warn_${t.utr}`));
                         if(rej) setWarnUtr(rej.utr);
                     }).catch(e => {
@@ -137,7 +146,6 @@
                 }).catch((e)=>showAlert(e.response.data.error || "Login Failed"));
             };
 
-            // 🚀 LOGOUT FIX
             const handleLogout = () => {
                 localStorage.removeItem('user');
                 setUser(null); setTab("Home");
@@ -153,14 +161,13 @@
 
             const cats = ["All", "Instagram", "YouTube", "Telegram", "Facebook", "TikTok"];
 
-            // 🛑 GLOBAL NOTIFICATION RENDER
             const renderNotification = () => {
                 if(!vipAlert) return null;
                 return (
                     <div className="modal" style={{zIndex: 999999}}>
                         <div className="modal-body" style={{border: '2px solid var(--active)', boxShadow: '0 0 20px var(--active)'}}>
                             <h2 className="text-glow" style={{margin:'0 0 15px 0'}}>👑 SYSTEM NOTIFICATION</h2>
-                            <p style={{fontSize:'16px', margin:'10px 0 25px 0'}}>{vipAlert}</p>
+                            <p style={{fontSize:'16px', margin:'10px 0 25px 0', whiteSpace: 'pre-wrap'}}>{vipAlert}</p>
                             <button className="btn-neon" onClick={()=>setVipAlert(null)}>OK, GOT IT</button>
                         </div>
                     </div>
@@ -213,7 +220,6 @@
                     </div>
                 );
             }
-
             return (
                 <div style={{paddingBottom:'100px'}}>
                     {renderNotification()}
@@ -247,6 +253,9 @@
                             <button className="btn-neon" style={{width:'85%', margin:'10px auto', display:'block', background:'transparent', border:'2px solid var(--active)', color:'var(--active)'}} onClick={()=>setModal("history")}>TRANSACTION HISTORY</button>
 
                             <button className="btn-neon" style={{width:'85%', margin:'20px auto', display:'block', background:'transparent', border:'2px solid var(--active)', color:'var(--active)'}} onClick={()=>setModal("guide")}>HOW TO USE?</button>
+
+                            {/* 📬 NEW SUPPORT MAILBOX BUTTON */}
+                            <button className="btn-neon" style={{width:'85%', margin:'20px auto', display:'block', background:'rgba(255,255,255,0.05)', border:'2px solid var(--active)', color:'#fff'}} onClick={()=>setModal("mailbox")}>📬 SUPPORT MAILBOX</button>
 
                             <div className="big-badge">🛡️ SAFE, SECURE & FAST<br/>INSTANT DELIVERY</div>
 
@@ -302,7 +311,6 @@
                                 <p style={{color:'#aaa'}}>{user.email}</p>
                             </div>
                             
-                            {/* 🎁 LIFETIME REFERRAL SYSTEM */}
                             <div className="card-vip" style={{padding:'20px'}}>
                                 <h3 className="text-glow" style={{margin:'0 0 10px 0'}}>🎁 Referral Program</h3>
                                 <p style={{fontSize:'12px', color:'#888', marginBottom:'15px'}}>Your Link: <b>https://maliksmm.github.io/proxy-smm/?ref={user.username}</b></p>
@@ -335,7 +343,36 @@
                         </div>
                     )}
 
-                    {/* 🛠️ BLACK SCREEN BUG FIXED HERE */}
+                    {/* 📬 MAILBOX MODAL IMPLEMENTATION */}
+                    {modal === "mailbox" && (
+                        <div className="modal">
+                            <div className="modal-body">
+                                <h3 className="text-glow">📬 SUPPORT MAILBOX</h3>
+                                <div style={{maxHeight:'40vh', overflowY:'auto', textAlign:'left', marginBottom:'15px', paddingRight:'5px'}}>
+                                    {mails.length === 0 ? <p style={{textAlign:'center', color:'#666'}}>No messages yet. Ask admin for help!</p> : 
+                                        mails.map((m,i)=>(
+                                            <div key={i} style={{background: m.from === 'admin' ? '#0a2a0a' : '#0a0a0a', padding:'10px', margin:'10px 0', borderRadius:'8px', borderLeft:`3px solid ${m.from === 'admin' ? '#00ff00' : 'var(--active)'}`}}>
+                                                <div style={{fontSize:'12px', color: m.from === 'admin' ? '#00ff00' : 'var(--active)', fontWeight:'bold', marginBottom:'5px'}}>{m.from === 'admin' ? '👑 ADMIN' : '👤 YOU'}</div>
+                                                <div style={{fontSize:'14px', color:'#fff'}}>{m.msg}</div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                                <input placeholder="Type your problem here..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
+                                <button className="btn-neon" onClick={()=>{
+                                    if(!mailInput) return showAlert("Please write a message!");
+                                    axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:mailInput})
+                                    .then(()=>{
+                                        showAlert("Message Sent to Admin successfully!"); 
+                                        setMails([...mails, {from: 'user', msg: mailInput}]);
+                                        setMailInput(""); 
+                                    })
+                                }}>SEND MESSAGE</button>
+                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777'}}>Close Window</p>
+                            </div>
+                        </div>
+                    )}
+
                     {typeof modal === 'string' && modal.includes("claim") && (
                         <div className="modal">
                             <div className="modal-body">
@@ -408,7 +445,6 @@
                         </div>
                     )}
 
-                    {/* 🛠️ SERVICE MODAL RENDER FIX */}
                     {typeof modal === 'object' && modal !== null && (
                         <div className="modal">
                             <div className="modal-body">
