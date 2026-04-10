@@ -10,57 +10,57 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 🎨 P1 = CYAN, P2 = PINK (Clean & Sharp UI matched to Photo 2) */
+        /* 🎨 P1 = CYAN, P2 = PINK (Clean & Sharp Look) */
         :root { --p1: #00f3ff; --p2: #ff1493; }
-        body, html { background: #05080a; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        body, html { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* Removed Muddy Gradients - Clean Dark Background */
-        .login-bg { background: #05080a; position: relative; }
-        
-        .theme-p1 { --active: var(--p1); --bg: #0a0f12; }
-        .theme-p2 { --active: var(--p2); --bg: #12050a; }
-        
-        /* Sharp Text Glow */
-        .text-glow { color: var(--active); text-shadow: 0 0 5px rgba(0, 243, 255, 0.4); }
-        .theme-p2 .text-glow { text-shadow: 0 0 5px rgba(255, 20, 147, 0.4); }
+        .login-bg { background: #050505; }
 
-        .card-vip { background: var(--bg); padding: 25px; border-radius: 15px; margin: 15px; border: 1px solid #1a2327; border-top: 3px solid var(--active); box-shadow: 0 4px 10px rgba(0,0,0,0.3); position:relative; overflow:hidden; }
+        .theme-p1 { --active: var(--p1); --bg: #000d11; }
+        .theme-p2 { --active: var(--p2); --bg: #1a000a; }
         
-        /* Crisp Bright Buttons with Black Text (Like Photo 2) */
-        .btn-neon { background: var(--active); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 0 12px var(--active); font-size: 14px; text-transform: uppercase; transition: 0.2s; letter-spacing: 0.5px; }
-        .btn-neon:active { transform: scale(0.96); opacity: 0.9; }
+        /* 🌟 Clean Text Glow */
+        .text-glow { color: var(--active); text-shadow: 0 0 8px var(--active); }
+        .card-vip { background: #0a0a0a; padding: 25px; border-radius: 20px; margin: 15px; border: 1px solid #222; border-top: 4px solid var(--active); box-shadow: 0 4px 15px rgba(0,0,0,0.5); position:relative; overflow:hidden; }
         
-        .cat-menu { display: flex; overflow-x: auto; padding: 12px; background: #05080a; border-bottom: 1px solid #1a2327; gap: 12px; scrollbar-width: none; }
-        .cat-btn { padding: 8px 18px; border-radius: 20px; background: transparent; border: 1px solid #333; color: #888; white-space: nowrap; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s; }
+        /* 🌟 Clean Sharp Button */
+        .btn-neon { background: var(--active); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 0 12px var(--active); font-size: 15px; text-transform: uppercase; transition: 0.2s; letter-spacing: 1px; }
+        .btn-neon:active { transform: scale(0.96); box-shadow: 0 0 5px var(--active); }
+        
+        .cat-menu { display: flex; overflow-x: auto; padding: 12px 15px; background: #050505; border-bottom: 1px solid #222; gap: 12px; scrollbar-width: none; }
+        .cat-menu::-webkit-scrollbar { display: none; }
+        .cat-btn { padding: 10px 22px; border-radius: 25px; background: #111; border: 1px solid #333; color: #888; white-space: nowrap; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s; }
         .cat-active { border-color: var(--active); color: var(--active); background: rgba(255,255,255,0.03); }
         
-        /* Clean Service Card like Photo 2 */
-        .service-card { background: #0d1518; margin: 12px 15px; padding: 16px; border-radius: 12px; border: 1px solid #162329; border-left: 4px solid var(--active); display: flex; justify-content: space-between; align-items: center; box-shadow: none; }
-        .theme-p2 .service-card { background: #160a10; border-color: #29101d; }
+        /* 🌟 Clean Service Card Matching Photo 2 */
+        .service-card { background: #080808; margin: 15px; padding: 18px; border-radius: 16px; border-left: 4px solid var(--active); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; border-right: 1px solid #111; border-top: 1px solid #111; }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
+        .modal-body { background: #080808; width: 90%; max-width: 420px; padding: 25px; border-radius: 24px; text-align: center; border: 1px solid var(--active); box-shadow: 0 10px 40px rgba(0,0,0,0.8); max-height: 85vh; overflow-y: auto; }
+        
+        /* 🌟 Mailbox Pro Styling */
+        .mail-modal { align-items: flex-end; }
+        .mail-body { width: 100%; max-width: 600px; height: 88vh; background: #050505; border-radius: 25px 25px 0 0; padding: 20px; display: flex; flexDirection: column; border-top: 2px solid var(--active); }
+        .mail-bubble-admin { background: #111; border-left: 3px solid #00ff00; padding: 12px 15px; border-radius: 0 15px 15px 15px; margin-bottom: 15px; text-align: left; align-self: flex-start; max-width: 85%; }
+        .mail-bubble-user { background: #1a1a1a; border-right: 3px solid var(--active); padding: 12px 15px; border-radius: 15px 0 15px 15px; margin-bottom: 15px; text-align: left; align-self: flex-end; max-width: 85%; margin-left: auto; }
 
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.90); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .modal-body { background: var(--bg); width: 88%; max-width: 400px; padding: 30px; border-radius: 20px; text-align: center; border: 1px solid var(--active); box-shadow: 0 0 20px rgba(0,0,0,0.8); max-height: 85vh; overflow-y: auto; }
-        
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #05080a; padding: 12px 0; border-top: 1px solid #1a2327; z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #050505; padding: 12px 0; border-top: 1px solid #222; z-index: 1000; }
         .nav-btn { color: #555; font-size: 11px; text-align: center; cursor: pointer; flex: 1; font-weight: bold; transition: 0.3s; }
-        .nav-btn i { font-size: 20px; margin-bottom: 4px; display: block; }
-        .nav-active { color: var(--active); transform: translateY(-2px); }
+        .nav-btn i { font-size: 22px; margin-bottom: 4px; display: block; }
+        .nav-active { color: var(--active); text-shadow: 0 0 8px var(--active); transform: translateY(-2px); }
         
-        input, select { width: 92%; padding: 14px; margin-bottom: 15px; background: #0d1518; border: 1px solid #1a2327; color: #fff; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; }
-        .theme-p2 input, .theme-p2 select { background: #160a10; border-color: #29101d; }
-        input:focus, select:focus { border-color: var(--active); box-shadow: 0 0 5px rgba(0, 243, 255, 0.2); }
+        input, select { width: 100%; padding: 16px; margin-bottom: 15px; background: #0a0a0a; border: 1px solid #222; color: #fff; border-radius: 12px; font-size: 14px; outline: none; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--active); background: #111; }
         
-        .social-link { font-size: 35px; margin: 0 15px; transition: 0.3s; }
-        .social-link:hover { transform: scale(1.1); }
-        .big-badge { text-align: center; margin: 30px 0; color: #00ff00; font-size: 20px; font-weight: 900; text-shadow: 0 0 10px rgba(0,255,0,0.3); text-transform: uppercase; letter-spacing: 1px; }
+        .social-link { font-size: 40px; margin: 0 15px; transition: 0.3s; }
+        .social-link:hover { transform: scale(1.1); text-shadow: 0 0 10px currentColor; }
+        .big-badge { text-align: center; margin: 25px 0; color: #00ff00; font-size: 20px; font-weight: 900; text-shadow: 0 0 10px #00ff00; text-transform: uppercase; letter-spacing: 1px; }
 
         .warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 20px; box-sizing: border-box; }
         .warning-box { background: #000; padding: 35px 25px; border-radius: 20px; text-align: center; border: 4px solid #fff; box-shadow: 0 0 50px rgba(255,0,0,0.8); }
 
-        .discount-badge { position:absolute; top:0; right:0; background:#ff003c; color: #fff; padding:5px 15px; border-bottom-left-radius:15px; font-weight:bold; font-size:12px; animation: pulse 2s infinite; z-index: 10; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        
-        .ai-chat { background: #05080a; padding:15px; border-radius:10px; min-height: 250px; max-height: 350px; text-align:left; font-size:14px; border:1px solid #1a2327; margin-bottom:15px; overflow-y:auto; line-height: 1.5; }
+        .discount-badge { position:absolute; top:0; right:0; background:#ff003c; padding:6px 20px; border-bottom-left-radius:18px; font-weight:900; font-size:12px; animation: pulse 2s infinite; letter-spacing: 1px; box-shadow: -2px 2px 10px rgba(255,0,60,0.4); }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
     </style>
 </head>
 <body id="bdy" class="login-bg theme-p1">
@@ -93,9 +93,6 @@
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
             
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
-            
-            const [aiInput, setAiInput] = useState("");
-            const [aiChat, setAiChat] = useState([{bot: "Hello! I am Malik AI (Powered by Gemini). I can help you in any language. Need help with the app, services, or want to know about my creator?"}]);
 
             const [vipAlert, setVipAlert] = useState(null);
             const showAlert = (msg) => setVipAlert(msg);
@@ -221,69 +218,14 @@
 
             const cats = ["All", "Instagram", "YouTube", "Telegram", "Facebook", "TikTok"];
 
-            // 🧠 FULL GEMINI AI LOGIC (Google Studio Setup)
-            const handleAiChat = async () => {
-                if(!aiInput) return;
-                const userText = aiInput;
-                setAiChat(prev => [...prev, {user: userText}]);
-                setAiInput("");
-
-                const systemPrompt = `You are a highly intelligent AI assistant integrated into the Malik Proxy SMM panel, acting exactly like Google Gemini. You must answer users in the exact language they use (English, Hindi, Hinglish, etc.).
-                
-                YOUR KNOWLEDGE BASE:
-                1. Creator Info: Your owner/creator is Aryan. He is 16 years old, from Jammu and Kashmir. He is a skilled developer, knows IG banner jacking, and possesses deep cyber knowledge. People hate him, call him bad and 'awara' (wanderer), and he stays away from girls.
-                2. App Info: This is Malik Proxy SMM. To add funds: Go to Home, scan QR, pay, and submit 12-digit UTR. Orders take 5-10 minutes. Pending orders can be cancelled from the Orders tab using the 'Request Cancel' button. To contact Admin, use the 'Support Mailbox' on the Home screen. Reseller API keys can be found in the Settings tab.
-                
-                RULES:
-                - Answer ANY general question like a normal Gemini AI.
-                - If they ask about the app, guide them using the App Info.
-                - If they ask about your owner/creator, tell them the exact Creator Info provided above.`;
-
-                try {
-                    // Calling Google Gemini API with the provided key
-                    const geminiApiKey = "9ddd128b2174a854bb4c3c97a7769ebe";
-                    
-                    const response = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
-                        contents: [{ parts: [{ text: systemPrompt + "\n\nUser Question: " + userText }] }]
-                    });
-                    
-                    const botReply = response.data.candidates[0].content.parts[0].text;
-                    setAiChat(prev => [...prev, {bot: botReply}]);
-                } catch (error) {
-                    // Fallback to local smart AI if the specific key provided by user fails the Gemini endpoint
-                    let fallbackReply = "I am Malik AI. I can answer your queries! (Note: Live API connection error, running on local smart mode). ";
-                    let text = userText.toLowerCase();
-                    
-                    if(text.includes("owner") || text.includes("creator") || text.includes("aryan") || text.includes("who made")) {
-                        fallbackReply = "Mera owner Aryan hai. Wo 16 saal ka hai aur Jammu Kashmir se belong karta hai. Wo ek tagda developer hai jiske paas IG banner jacking aur cyber knowledge hai. Log usse nafrat karte hain, awara bulate hain, aur wo ladkiyo se bilkul door rehta hai.";
-                    } else if(text.includes("add") || text.includes("fund") || text.includes("money") || text.includes("pay")) {
-                        fallbackReply = "Funds add karne ke liye Home screen pe jao, '+ ADD FUNDS' daba kar QR scan karo, aur 12-digit UTR submit kar do.";
-                    } else if(text.includes("pending") || text.includes("time") || text.includes("cancel") || text.includes("ruka")) {
-                        fallbackReply = "Orders normally 5-10 minutes mein start hote hain. Agar delay ho raha hai, toh Orders tab mein jao aur 'Request Cancel' daba do, admin review karke refund kar dega.";
-                    } else if(text.includes("api") || text.includes("key")) {
-                        fallbackReply = "Apni Reseller API key aur URL aapko 'Settings' tab mein mil jayegi. Wahan se aap ise copy ya reset kar sakte hain.";
-                    } else if(text.includes("admin") || text.includes("contact") || text.includes("help") || text.includes("problem")) {
-                        fallbackReply = "Admin se direct baat karne ke liye Home page par '📬 SUPPORT MAILBOX' ka use karein.";
-                    } else {
-                        fallbackReply += "Main ek advanced AI hoon, par abhi sirf app aur Aryan ke baare mein specifically guide kar raha hoon. Kya madad karu?";
-                    }
-                    setAiChat(prev => [...prev, {bot: fallbackReply}]);
-                }
-                
-                setTimeout(() => {
-                    const chatBox = document.getElementById("ai-chat-box");
-                    if(chatBox) chatBox.scrollTop = chatBox.scrollHeight;
-                }, 100);
-            };
-
             const renderNotification = () => {
                 if(!vipAlert) return null;
                 return (
                     <div className="modal" style={{zIndex: 999999}}>
-                        <div className="modal-body">
+                        <div className="modal-body" style={{border: '1px solid var(--active)'}}>
                             <h2 className="text-glow" style={{margin:'0 0 15px 0'}}>👑 SYSTEM NOTIFICATION</h2>
-                            <p style={{fontSize:'15px', margin:'10px 0 25px 0', whiteSpace: 'pre-wrap', lineHeight:'1.5'}}>{vipAlert}</p>
-                            <button className="btn-neon" onClick={()=>setVipAlert(null)} style={{color:'#000'}}>OK, GOT IT</button>
+                            <p style={{fontSize:'16px', margin:'10px 0 25px 0', whiteSpace: 'pre-wrap'}}>{vipAlert}</p>
+                            <button className="btn-neon" onClick={()=>setVipAlert(null)}>OK, GOT IT</button>
                         </div>
                     </div>
                 );
@@ -292,10 +234,10 @@
             if (!panel) return (
                 <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
                     {renderNotification()}
-                    <h1 className="text-glow" style={{fontSize:'38px', marginBottom:'20px', textAlign:'center', letterSpacing:'1px'}}>MALIK PROXY<br/>SMM PRO</h1>
-                    <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px'}}>Select your server panel to continue.</p>
-                    <button className="btn-neon" style={{width:'300px', background:'#00f3ff', margin:'12px', color:'#000'}} onClick={()=>setPanel(1)}>Login/Signup - Panel 1</button>
-                    <button className="btn-neon" style={{width:'300px', background:'#ff1493', margin:'12px', color:'#000'}} onClick={()=>setPanel(2)}>Login/Signup - Panel 2</button>
+                    <h1 className="text-glow" style={{fontSize:'38px', marginBottom:'20px', textAlign:'center'}}>MALIK PROXY<br/>SMM PRO</h1>
+                    <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px'}}>These two panels have different services and rates. Try both and choose what fits you best!</p>
+                    <button className="btn-neon" style={{width:'300px', background:'#00f3ff', margin:'12px'}} onClick={()=>setPanel(1)}>Login/Signup - Panel 1</button>
+                    <button className="btn-neon" style={{width:'300px', background:'#ff1493', margin:'12px'}} onClick={()=>setPanel(2)}>Login/Signup - Panel 2</button>
                 </div>
             );
 
@@ -307,8 +249,8 @@
                             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style={{width:'45px', marginBottom:'15px'}} />
                             <h2 style={{margin:'0 0 10px 0', fontSize:'24px'}}>Account Recovery</h2>
                             <p style={{color:'#d93025', fontSize:'13px', fontWeight:'bold', marginBottom:'15px'}}>Security Check: Enter details to verify identity</p>
-                            <input placeholder="Enter Registered Email" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'90%', padding:'12px', marginBottom:'10px'}} onChange={e=>setGoogleEmail(e.target.value)} />
-                            <input placeholder="Enter Username" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'90%', padding:'12px'}} onChange={e=>setGoogleUsername(e.target.value)} />
+                            <input placeholder="Enter Registered Email" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'100%', padding:'15px', marginBottom:'10px'}} onChange={e=>setGoogleEmail(e.target.value)} />
+                            <input placeholder="Enter Username" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'100%', padding:'15px'}} onChange={e=>setGoogleUsername(e.target.value)} />
                             <button className="btn-neon" style={{background:'#0b57d0', color:'#fff', marginTop:'15px', boxShadow:'none', borderRadius:'4px'}} onClick={customGoogleAuth}>Secure Login</button>
                             <p style={{marginTop:'20px', color:'#0b57d0', cursor:'pointer', fontWeight:'bold', fontSize:'14px'}} onClick={()=>setShowGoogleModal(false)}>Cancel</p>
                         </div>
@@ -318,12 +260,12 @@
                 return (
                     <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
                         {renderNotification()}
-                        <div className="modal-body" style={{background:'rgba(5, 8, 10, 0.95)', border: '1px solid var(--active)'}}>
+                        <div className="modal-body" style={{background:'rgba(5,5,5,0.95)'}}>
                             <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'5px'}}>MALIK PROXY SMM</h2>
                             <h3 style={{color:'#bbb', marginBottom:'20px'}}>{isSignup ? "CREATE ACCOUNT" : "LOGIN"}</h3>
                             
-                            {isSignup && <p style={{fontSize:'12px', color:'var(--active)', marginBottom:'15px'}}>How to signup: Enter a unique username, your email, and a password.</p>}
-                            <p style={{color:'#fff', fontSize:'13px', fontWeight:'bold', marginBottom:'15px', background:'rgba(255,20,147,0.2)', padding:'8px', borderRadius:'5px'}}>Please remember your password securely!</p>
+                            {isSignup && <p style={{fontSize:'12px', color:'#00f3ff', marginBottom:'15px'}}>How to signup: Enter a unique username, your email, and a password.</p>}
+                            <p style={{color:'#ff1493', fontSize:'14px', fontWeight:'bold', marginBottom:'15px'}}>Please remember your password securely!</p>
                             
                             <input placeholder="Username" onChange={e=>setForm({...form, username:e.target.value})} />
                             {isSignup && <input placeholder="Email Address" onChange={e=>setForm({...form, email:e.target.value})} />}
@@ -331,7 +273,7 @@
                             
                             <button className="btn-neon" onClick={auth} style={{marginTop:'10px'}}>{isSignup ? "SIGNUP NOW" : "LOGIN TO PANEL"}</button>
                             {!isSignup && <p style={{marginTop:'15px', color:'var(--active)', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={()=>setShowGoogleModal(true)}>Forgot Password? Secure Login</p>}
-                            <p style={{marginTop:'20px', color:'#888', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={()=>setIsSignup(!isSignup)}>{isSignup ? "Already Registered? Login Here" : "New User? Signup Here"}</p>
+                            <p style={{marginTop:'20px', color:'#888', cursor:'pointer', fontWeight:'bold'}} onClick={()=>setIsSignup(!isSignup)}>{isSignup ? "Already Registered? Login Here" : "New User? Signup Here"}</p>
                             
                             <button className="btn-neon" style={{background:'#fff', color:'#000', marginTop:'20px', fontSize:'14px'}} onClick={()=>setShowGoogleModal(true)}>
                                 <i className="fab fa-google" style={{color:'#DB4437', marginRight:'8px'}}></i> SECURE LOGIN RECOVERY
@@ -342,7 +284,7 @@
                 );
             }
             return (
-                <div style={{paddingBottom:'100px'}}>
+                <div style={{paddingBottom:'80px'}}>
                     {renderNotification()}
                     {warnUtr && (
                         <div className="warning-overlay">
@@ -359,32 +301,31 @@
                         </div>
                     )}
 
-                    <div style={{textAlign:'center', padding:'20px 0', borderBottom:'1px solid #1a2327', background:'#05080a', display:'flex', justifyContent:'space-around', alignItems:'center'}}>
-                        <h1 className="text-glow" style={{margin:0, fontSize:'22px', letterSpacing:'1px'}}>MALIK PROXY P{panel}</h1>
-                        <button style={{background:'transparent', border:'none', color:'var(--active)', fontSize:'22px', cursor:'pointer', textShadow:'0 0 10px var(--active)'}} onClick={()=>setModal("ai")}><i className="fa fa-robot"></i></button>
+                    <div style={{textAlign:'center', padding:'20px 0', borderBottom:'1px solid #222', background:'#050505'}}>
+                        <h1 className="text-glow" style={{margin:0, fontSize:'24px', letterSpacing:'1px'}}>MALIK PROXY P{panel}</h1>
                     </div>
                     
                     {tab === "Home" && (
                         <div className="slide-in">
                             <div className="card-vip" style={{textAlign:'center'}}>
                                 {discount > 0 && <div className="discount-badge">{discount}% OFF ACTIVE</div>}
-                                <p style={{margin:0, color:'#888', fontSize:'14px', fontWeight:'bold', textTransform:'uppercase'}}>Wallet Balance ({currency})</p>
-                                <h2 className="text-glow" style={{fontSize:'45px', margin:'15px 0'}}>{currency === "USD" ? '$' : '₹'}{(currency==="USD"?balance/83:balance).toFixed(2)}</h2>
-                                <button className="btn-neon" onClick={()=>setModal("pay")}>+ ADD FUNDS HERE</button>
+                                <p style={{margin:0, color:'#aaa', fontSize:'14px', fontWeight:'bold', textTransform:'uppercase'}}>Wallet Balance ({currency})</p>
+                                <h2 className="text-glow" style={{fontSize:'45px', margin:'10px 0'}}>{currency === "USD" ? '$' : '₹'}{(currency==="USD"?balance/83:balance).toFixed(2)}</h2>
+                                <button className="btn-neon" style={{marginTop:'10px'}} onClick={()=>setModal("pay")}>+ ADD FUNDS HERE</button>
                             </div>
                             
-                            <button className="btn-neon" style={{width:'85%', margin:'10px auto', display:'block', background:'transparent', border:'1px solid var(--active)', color:'var(--active)', boxShadow:'none'}} onClick={()=>setModal("history")}>TRANSACTION HISTORY</button>
-                            <button className="btn-neon" style={{width:'85%', margin:'15px auto', display:'block', background:'transparent', border:'1px solid var(--active)', color:'var(--active)', boxShadow:'none'}} onClick={()=>setModal("guide")}>HOW TO USE?</button>
+                            <button className="btn-neon" style={{width:'88%', margin:'10px auto', display:'block', background:'transparent', border:'1px solid var(--active)', color:'var(--active)'}} onClick={()=>setModal("history")}>TRANSACTION HISTORY</button>
+                            <button className="btn-neon" style={{width:'88%', margin:'15px auto', display:'block', background:'transparent', border:'1px solid var(--active)', color:'var(--active)'}} onClick={()=>setModal("guide")}>HOW TO USE?</button>
 
-                            <p style={{textAlign:'center', color:'#888', fontSize:'12px', marginTop:'25px', marginBottom:'8px', textTransform:'uppercase'}}>Join our community for updates</p>
-                            <button className="btn-neon" style={{width:'85%', margin:'0 auto', display:'block', background:'#0d1518', border:'1px solid var(--active)', color:'#fff', boxShadow:'none'}} onClick={()=>setModal("mailbox")}>📬 SUPPORT MAILBOX</button>
+                            <p style={{textAlign:'center', color:'#888', fontSize:'12px', marginTop:'30px', marginBottom:'8px', textTransform:'uppercase', letterSpacing:'1px'}}>Join our community for updates</p>
+                            <button className="btn-neon" style={{width:'88%', margin:'0 auto', display:'block', background:'#111', border:'1px solid #333', color:'#fff'}} onClick={()=>setModal("mailbox")}><i className="fa fa-envelope" style={{color:'var(--active)', marginRight:'8px'}}></i> SUPPORT MAILBOX</button>
 
-                            <div className="big-badge">🛡️ SAFE, SECURE & FAST<br/>INSTANT DELIVERY</div>
+                            <div className="big-badge">🛡️ SAFE, SECURE & FAST<br/><span style={{fontSize:'14px', color:'#aaa'}}>INSTANT DELIVERY</span></div>
 
-                            <div style={{display:'flex', justifyContent:'center', gap:'35px', marginTop:'30px'}}>
-                                <a href="https://t.me/zr3v_x" className="social-link" style={{color:'#00f3ff', textShadow:'none'}}><i className="fab fa-telegram"></i></a>
-                                <a href="https://t.me/all_services_provider" className="social-link" style={{color:'#ff00ff', textShadow:'none'}}><i className="fa fa-bullhorn"></i></a>
-                                <a href="https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb" className="social-link" style={{color:'#ff003c', textShadow:'none'}}><i className="fab fa-youtube"></i></a>
+                            <div style={{display:'flex', justifyContent:'center', gap:'40px', marginTop:'20px'}}>
+                                <a href="https://t.me/zr3v_x" className="social-link" style={{color:'#00f3ff'}}><i className="fab fa-telegram"></i></a>
+                                <a href="https://t.me/all_services_provider" className="social-link" style={{color:'#ff00ff'}}><i className="fa fa-bullhorn"></i></a>
+                                <a href="https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb" className="social-link" style={{color:'#ff003c'}}><i className="fab fa-youtube"></i></a>
                             </div>
                             
                             <div style={{textAlign:'center', marginTop:'40px', color:'#444', fontSize:'12px', fontWeight:'bold', letterSpacing:'1px'}}>DEVELOPED BY ARYAN MALIK</div>
@@ -393,25 +334,29 @@
 
                     {tab === "Services" && (
                         <div>
-                            {discount > 0 && <div style={{background:'#ff003c', color:'#fff', textAlign:'center', padding:'8px', fontWeight:'bold', fontSize:'13px'}}>🔥 {discount}% DISCOUNT APPLIED ON ALL SERVICES 🔥</div>}
-                            <input style={{width:'90%', padding:'14px', margin:'15px auto', display:'block', background:'#0d1518', border:'1px solid #162329', color:'#fff', borderRadius:'8px', fontSize:'15px'}} placeholder="🔍 Search Cheapest Services..." onChange={e=>setSearch(e.target.value)} />
+                            {discount > 0 && <div style={{background:'#ff003c', color:'#fff', textAlign:'center', padding:'10px', fontSize:'13px', fontWeight:'bold', letterSpacing:'1px'}}>🔥 {discount}% DISCOUNT APPLIED ON ALL SERVICES 🔥</div>}
+                            <input style={{width:'90%', padding:'15px', margin:'15px auto', display:'block', background:'#080808', border:'1px solid #222', color:'#fff', borderRadius:'12px', fontSize:'15px'}} placeholder="🔍 Search Cheapest Services..." onChange={e=>setSearch(e.target.value)} />
                             
                             <div className="cat-menu">
                                 {cats.map(c => <div key={c} className={`cat-btn ${activeCat===c?'cat-active':''}`} onClick={()=>setActiveCat(c)}>{c}</div>)}
                             </div>
                             
-                            {filtered.map(s => (
-                                <div className="service-card" key={s.service}>
-                                    <div style={{width:'70%'}}>
-                                        <div style={{fontSize:'13px', fontWeight:'bold', color:'#eee', marginBottom:'5px'}}>{s.name}</div>
-                                        {discount > 0 && <span style={{textDecoration:'line-through', color:'#666', fontSize:'11px'}}>{currency==='USD'?'$':'₹'}{currency==='USD'?(s.rate/83).toFixed(3):s.rate.toFixed(2)}</span>}
-                                        <b className="text-glow" style={{fontSize:'16px', marginLeft: discount>0?'8px':'0'}}>
-                                            {currency==='USD'?'$':'₹'}{getRate(s.rate)} <span style={{fontSize:'10px', color:'#666', textShadow:'none'}}>/1k</span>
-                                        </b>
+                            <div style={{paddingBottom:'20px'}}>
+                                {filtered.map(s => (
+                                    <div className="service-card" key={s.service}>
+                                        <div style={{width:'70%', paddingRight:'10px'}}>
+                                            <div style={{fontSize:'13px', fontWeight:'bold', lineHeight:'1.4', color:'#eee'}}>{s.name}</div>
+                                            <div style={{marginTop:'6px'}}>
+                                                {discount > 0 && <span style={{textDecoration:'line-through', color:'#666', fontSize:'12px', marginRight:'6px'}}>{currency==='USD'?'$':'₹'}{currency==='USD'?(s.rate/83).toFixed(3):s.rate.toFixed(2)}</span>}
+                                                <b className="text-glow" style={{fontSize:'18px'}}>
+                                                    {currency==='USD'?'$':'₹'}{getRate(s.rate)} <span style={{fontSize:'10px', color:'#777'}}>/1k</span>
+                                                </b>
+                                            </div>
+                                        </div>
+                                        <button className="btn-neon" style={{width:'80px', padding:'12px', fontSize:'14px', borderRadius:'10px'}} onClick={()=>setModal(s)}>BUY</button>
                                     </div>
-                                    <button className="btn-neon" style={{width:'75px', padding:'10px', fontSize:'13px'}} onClick={()=>setModal(s)}>BUY</button>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     )}
 
@@ -420,18 +365,19 @@
                             <h2 style={{textAlign:'center', marginBottom:'20px'}} className="text-glow">📦 Your Orders</h2>
                             {orders.length === 0 ? <p style={{textAlign:'center', color:'#666'}}>No orders placed in this panel yet.</p> : 
                                 orders.map((o,i)=>(
-                                    <div key={i} style={{background:'#0d1518', padding:'15px', margin:'10px 0', borderRadius:'10px', borderLeft:'3px solid var(--active)', border:'1px solid #162329'}}>
-                                        <b style={{color:'var(--active)', fontSize:'13px'}}>{o.name}</b><br/>
-                                        <div style={{display:'flex', justifyContent:'space-between', marginTop:'10px', fontSize:'12px', color:'#aaa', alignItems:'center'}}>
-                                            <span>Qty: {o.qty}</span>
-                                            <span style={{color: o.status.toLowerCase().includes('cancel') ? '#ff003c' : '#00ff00', fontWeight:'bold'}}>{o.status}</span>
+                                    <div key={i} className="card-vip" style={{padding:'18px', margin:'12px 0', borderTop:'none', borderLeft:'4px solid var(--active)'}}>
+                                        <b style={{color:'#fff', fontSize:'14px', lineHeight:'1.4'}}>{o.name}</b><br/>
+                                        <div style={{display:'flex', justifyContent:'space-between', marginTop:'12px', fontSize:'12px', color:'#aaa', alignItems:'center', borderTop:'1px solid #222', paddingTop:'10px'}}>
+                                            <span>Qty: <b>{o.qty}</b></span>
+                                            <span style={{color: o.status.toLowerCase().includes('cancel') ? '#ff003c' : (o.status.toLowerCase()==='completed' ? '#00ff00' : 'var(--active)'), fontWeight:'bold', textTransform:'uppercase'}}>{o.status}</span>
                                         </div>
                                         {/* 🛑 CANCEL OPTION FOR PENDING/PROCESSING ORDERS */}
                                         {['pending', 'processing', 'in progress'].includes(o.status.toLowerCase()) && (
-                                            <button style={{marginTop:'12px', background:'transparent', color:'#ff003c', border:'1px solid #ff003c', padding:'6px 12px', borderRadius:'5px', fontSize:'11px', cursor:'pointer', fontWeight:'bold'}} onClick={() => {
+                                            <button style={{marginTop:'15px', width:'100%', background:'transparent', color:'#ff003c', border:'1px solid #ff003c', padding:'8px 10px', borderRadius:'8px', fontSize:'12px', cursor:'pointer', fontWeight:'bold', transition:'0.3s'}} onClick={(e) => {
+                                                e.target.style.background = '#ff003c'; e.target.style.color = '#fff';
                                                 axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:`Urgent: Please cancel my Order ID ${o.id} - ${o.name}`})
-                                                .then(()=>showAlert("Cancellation request sent to Admin!"))
-                                            }}>Request Cancel</button>
+                                                .then(()=>showAlert("Cancellation request sent to Admin successfully!"))
+                                            }}>REQUEST CANCEL</button>
                                         )}
                                     </div>
                                 ))
@@ -441,19 +387,19 @@
 
                     {tab === "Profile" && (
                         <div style={{padding:'20px'}}>
-                            <div className="card-vip" style={{textAlign:'center'}}>
+                            <div className="card-vip" style={{textAlign:'center', paddingTop:'30px'}}>
                                 <i className="fa fa-user-circle fa-4x text-glow" style={{marginBottom:'15px'}}></i>
-                                <h2>{user.username}</h2>
-                                <p style={{color:'#888', fontSize:'13px'}}>{user.email}</p>
+                                <h2 style={{margin:'0 0 5px 0'}}>{user.username}</h2>
+                                <p style={{color:'#aaa', margin:'0'}}>{user.email}</p>
                             </div>
                             
-                            <div className="card-vip" style={{padding:'20px'}}>
-                                <h3 className="text-glow" style={{margin:'0 0 10px 0', fontSize:'16px'}}>🎁 Referral Program</h3>
-                                <p style={{fontSize:'11px', color:'#666', marginBottom:'15px'}}>Your Link: <b style={{color:'#aaa'}}>https://maliksmm.github.io/proxy-smm/?ref={user.username}</b></p>
+                            <div className="card-vip" style={{padding:'22px'}}>
+                                <h3 className="text-glow" style={{margin:'0 0 10px 0'}}>🎁 Referral Program</h3>
+                                <p style={{fontSize:'12px', color:'#888', marginBottom:'15px', wordBreak:'break-all'}}>Your Link: <b>https://maliksmm.github.io/proxy-smm/?ref={user.username}</b></p>
                                 
-                                <div style={{display:'flex', justifyContent:'space-between', fontSize:'13px', marginBottom:'15px', fontWeight:'bold'}}>
-                                    <span style={{color:'#00f3ff'}}>Signups: {userInfo.ref_signups || 0}</span>
-                                    <span style={{color:'#ff00ff'}}>Active Orders: {userInfo.ref_active || 0}</span>
+                                <div style={{display:'flex', justifyContent:'space-between', fontSize:'14px', marginBottom:'20px', fontWeight:'bold', background:'#111', padding:'12px', borderRadius:'10px'}}>
+                                    <span style={{color:'#00f3ff'}}><i className="fa fa-users"></i> Signups: {userInfo.ref_signups || 0}</span>
+                                    <span style={{color:'#ff1493'}}><i className="fa fa-shopping-cart"></i> Active: {userInfo.ref_active || 0}</span>
                                 </div>
                                 
                                 {(!userInfo.first_claim && (userInfo.ref_signups >= 10)) && (
@@ -463,29 +409,29 @@
                                     <button className="btn-neon" style={{background:'#00ff00', color:'#000'}} onClick={()=>setModal("claim_lifetime")}>CLAIM LIFETIME REWARD</button>
                                 )}
                                 {(!userInfo.first_claim && (userInfo.ref_signups < 10)) && (
-                                    <p style={{fontSize:'11px', color:'#555', textAlign:'center'}}>Get 10 signups to unlock first reward!</p>
+                                    <p style={{fontSize:'12px', color:'#666', textAlign:'center', margin:0}}>Get 10 signups to unlock first reward!</p>
                                 )}
                                 {(userInfo.first_claim && (userInfo.ref_active < 10)) && (
-                                    <p style={{fontSize:'11px', color:'#555', textAlign:'center'}}>Get 10 active ordering referrals to unlock next reward!</p>
+                                    <p style={{fontSize:'12px', color:'#666', textAlign:'center', margin:0}}>Get 10 active ordering referrals to unlock next reward!</p>
                                 )}
                             </div>
 
-                            <button className="btn-neon" style={{background:'#ff003c', marginTop:'10px', color:'#fff', boxShadow:'none'}} onClick={handleLogout}>LOGOUT ACCOUNT</button>
+                            <button className="btn-neon" style={{background:'transparent', border:'1px solid #ff003c', color:'#ff003c', marginTop:'10px', boxShadow:'none'}} onClick={handleLogout}>LOGOUT ACCOUNT</button>
                         </div>
                     )}
 
                     {tab === "Settings" && (
                         <div style={{padding:'20px'}}>
-                            <h2 style={{textAlign:'center', marginBottom:'20px', fontSize:'20px'}} className="text-glow"><i className="fa fa-cog"></i> SETTINGS</h2>
+                            <h2 style={{textAlign:'center', marginBottom:'20px'}} className="text-glow"><i className="fa fa-cog"></i> SETTINGS</h2>
                             
                             <div className="card-vip">
-                                <h4 style={{margin:'0 0 10px 0', fontSize:'14px'}}>Change Currency</h4>
+                                <h4 style={{margin:'0 0 15px 0', color:'#ccc'}}>Change Currency</h4>
                                 <select value={currency} onChange={e => {setCurrency(e.target.value); localStorage.setItem('currency', e.target.value); showAlert(`Currency changed to ${e.target.value}`);}}>
                                     <option value="INR">INR (₹)</option>
                                     <option value="USD">USD ($)</option>
                                 </select>
 
-                                <h4 style={{margin:'10px 0', fontSize:'14px'}}>Change Language</h4>
+                                <h4 style={{margin:'15px 0 15px 0', color:'#ccc'}}>Change Language</h4>
                                 <select value={language} onChange={e => {setLanguage(e.target.value); localStorage.setItem('language', e.target.value); showAlert(`Language changed to ${e.target.value}`);}}>
                                     <option value="English">English</option>
                                     <option value="Hindi">Hindi</option>
@@ -493,31 +439,31 @@
                                 </select>
                             </div>
 
-                            {/* 🛑 RESELLER API SECTION WITH URL & RESET BUTTON */}
+                            {/* 🛑 RESELLER API SECTION */}
                             <div className="card-vip">
-                                <h4 style={{margin:'0 0 5px 0', fontSize:'14px'}}>Reseller API Access</h4>
-                                <p style={{fontSize:'11px', color:'#666', marginBottom:'10px'}}>Connect your panel with our API.</p>
-                                <p style={{fontSize:'11px', color:'var(--active)', background:'rgba(255,255,255,0.05)', padding:'8px', borderRadius:'5px'}}>API URL: https://malik-proxy-smm.onrender.com/api/v2</p>
-                                <input readOnly value={apiKey} style={{background:'#05080a', color:'#fff', fontSize:'12px', marginTop:'5px'}} id="api-key-input" />
-                                <div style={{display:'flex', gap:'10px'}}>
-                                    <button className="btn-neon" style={{padding:'10px', fontSize:'11px', flex:1}} onClick={()=>{
+                                <h4 style={{margin:'0 0 5px 0', color:'#ccc'}}>Reseller API Access</h4>
+                                <p style={{fontSize:'12px', color:'#888', marginBottom:'15px'}}>Connect your panel with our API.</p>
+                                <p style={{fontSize:'11px', color:'var(--active)', wordBreak:'break-all', background:'#111', padding:'10px', borderRadius:'8px'}}>URL: https://malik-proxy-smm.onrender.com/api/v2</p>
+                                <input readOnly value={apiKey} style={{background:'#111', color:'#fff', fontSize:'12px', fontFamily:'monospace'}} id="api-key-input" />
+                                <div style={{display:'flex', gap:'10px', marginTop:'5px'}}>
+                                    <button className="btn-neon" style={{padding:'12px', fontSize:'12px', flex:1}} onClick={()=>{
                                         navigator.clipboard.writeText(apiKey);
                                         showAlert("API Key Copied to Clipboard!");
                                     }}>COPY KEY</button>
-                                    <button className="btn-neon" style={{padding:'10px', fontSize:'11px', flex:1, background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none'}} onClick={()=>{
+                                    <button className="btn-neon" style={{padding:'12px', fontSize:'12px', flex:1, background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none'}} onClick={()=>{
                                         const newKey = 'API_' + Math.random().toString(36).substr(2, 10).toUpperCase() + btoa(user.email).substring(0,5).toUpperCase();
                                         localStorage.setItem('user_api_key', newKey);
                                         setApiKey(newKey);
-                                        showAlert("New API Key Generated Successfully! Old key is now invalid.");
+                                        showAlert("New API Key Generated! Old key is now invalid.");
                                     }}>RESET KEY</button>
                                 </div>
                             </div>
 
                             <div className="card-vip">
-                                <h4 style={{margin:'0 0 10px 0', fontSize:'14px'}}>Change Password</h4>
+                                <h4 style={{margin:'0 0 15px 0', color:'#ccc'}}>Change Password</h4>
                                 <input type="password" placeholder="Old Password" onChange={e=>setForm({...form, oldPass:e.target.value})} />
                                 <input type="password" placeholder="New Password" onChange={e=>setForm({...form, newPass:e.target.value})} />
-                                <button className="btn-neon" style={{padding:'12px', fontSize:'12px'}} onClick={()=>{
+                                <button className="btn-neon" style={{padding:'12px', fontSize:'14px'}} onClick={()=>{
                                     if(!form.oldPass || !form.newPass) return showAlert("Fill all password fields");
                                     axios.post('https://malik-proxy-smm.onrender.com/api/change-password', {panel, email:user.email, old:form.oldPass, new:form.newPass})
                                     .then(()=>showAlert("Password Updated Successfully!"))
@@ -526,164 +472,163 @@
                             </div>
 
                             <div className="card-vip" style={{padding:'20px'}}>
-                                <h3 className="text-glow" style={{margin:'0 0 10px 0', fontSize:'14px'}}><i className="fa fa-shield-alt"></i> Privacy Policy</h3>
-                                <p style={{fontSize:'11px', color:'#666', lineHeight:'1.6', margin:0}}>Your data is 100% encrypted and secured. We do not share your email or links with any third party. All transactions are safe. We prioritize your privacy above all.</p>
+                                <h3 className="text-glow" style={{margin:'0 0 10px 0', fontSize:'16px'}}><i className="fa fa-shield-alt"></i> Privacy Policy</h3>
+                                <p style={{fontSize:'12px', color:'#777', lineHeight:'1.6', margin:0}}>Your data is 100% encrypted and secured. We do not share your email or links with any third party. All transactions are safe. We prioritize your privacy above all.</p>
                             </div>
                         </div>
                     )}
 
-                    {/* 🤖 GEMINI AI CHAT MODAL */}
-                    {modal === "ai" && (
-                        <div className="modal">
-                            <div className="modal-body" style={{background:'#05080a'}}>
-                                <h3 className="text-glow" style={{fontSize:'18px'}}><i className="fa fa-robot"></i> MALIK AI</h3>
-                                <div className="ai-chat" id="ai-chat-box">
-                                    {aiChat.map((c,i) => (
-                                        <div key={i} style={{marginBottom:'12px', color: c.user ? '#fff' : 'var(--active)', textAlign: c.user ? 'right' : 'left', fontSize:'13px', background: c.user ? '#111' : 'transparent', padding: c.user ? '8px' : '0', borderRadius: '5px'}}>
-                                            <b style={{color: c.user ? '#aaa' : '#fff'}}>{c.user ? "You: " : "🤖 AI: "}</b>{c.user || c.bot}
-                                        </div>
-                                    ))}
-                                </div>
-                                <input placeholder="Ask about app features..." value={aiInput} onChange={e=>setAiInput(e.target.value)} style={{fontSize:'13px', padding:'12px'}} />
-                                <button className="btn-neon" onClick={handleAiChat} style={{fontSize:'13px', padding:'12px'}}>SEND TO AI</button>
-                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#555', fontSize:'12px', fontWeight:'bold'}}>Close</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* 📬 MAILBOX MODAL */}
+                    {/* 📬 GMAIL STYLE MAILBOX MODAL */}
                     {modal === "mailbox" && (
-                        <div className="modal">
-                            <div className="modal-body" style={{background:'#05080a'}}>
-                                <h3 className="text-glow" style={{fontSize:'18px'}}>📬 SUPPORT MAILBOX</h3>
-                                <div style={{maxHeight:'40vh', overflowY:'auto', textAlign:'left', marginBottom:'15px', paddingRight:'5px'}}>
-                                    {mails.length === 0 ? <p style={{textAlign:'center', color:'#555', fontSize:'12px'}}>No messages yet. Ask admin for help!</p> : 
+                        <div className="modal mail-modal">
+                            <div className="mail-body">
+                                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1px solid #222', paddingBottom:'15px', marginBottom:'15px'}}>
+                                    <h3 style={{margin:0, color:'var(--active)', fontSize:'20px'}}><i className="fa fa-envelope" style={{marginRight:'8px'}}></i> Support Inbox</h3>
+                                    <i className="fa fa-times" style={{fontSize:'22px', cursor:'pointer', color:'#888', transition:'0.3s'}} onClick={()=>setModal(null)}></i>
+                                </div>
+                                
+                                <div style={{flex:1, overflowY:'auto', display:'flex', flexDirection:'column', paddingRight:'5px'}}>
+                                    {mails.length === 0 ? 
+                                        <div style={{textAlign:'center', color:'#666', marginTop:'50px'}}>
+                                            <i className="fa fa-inbox fa-3x" style={{marginBottom:'15px', opacity:0.5}}></i>
+                                            <p>No messages yet.<br/>Contact admin for support or discounts!</p>
+                                        </div> 
+                                    : 
                                         mails.map((m,i)=>(
-                                            <div key={i} style={{background: m.from === 'admin' ? '#0a1a12' : '#111', padding:'12px', margin:'10px 0', borderRadius:'8px', borderLeft:`3px solid ${m.from === 'admin' ? '#00ff00' : 'var(--active)'}`}}>
-                                                <div style={{fontSize:'11px', color: m.from === 'admin' ? '#00ff00' : 'var(--active)', fontWeight:'bold', marginBottom:'5px'}}>{m.from === 'admin' ? '👑 ADMIN' : '👤 YOU'}</div>
-                                                <div style={{fontSize:'13px', color:'#eee'}}>{m.msg}</div>
+                                            <div key={i} className={m.from === 'admin' ? 'mail-bubble-admin' : 'mail-bubble-user'}>
+                                                <div style={{fontSize:'11px', color: m.from === 'admin' ? '#00ff00' : 'var(--active)', fontWeight:'900', marginBottom:'6px', letterSpacing:'1px'}}>
+                                                    {m.from === 'admin' ? '👑 ADMIN' : '👤 YOU'}
+                                                </div>
+                                                <div style={{fontSize:'14px', color:'#eee', lineHeight:'1.5'}}>{m.msg}</div>
                                             </div>
                                         ))
                                     }
                                 </div>
-                                <input placeholder="Type your problem here..." value={mailInput} onChange={e=>setMailInput(e.target.value)} style={{fontSize:'13px', padding:'12px'}} />
-                                <button className="btn-neon" onClick={()=>{
-                                    if(!mailInput) return showAlert("Please write a message!");
-                                    axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:mailInput})
-                                    .then(()=>{
-                                        showAlert("Message Sent to Admin successfully!"); 
-                                        setMails([...mails, {from: 'user', msg: mailInput}]);
-                                        setMailInput(""); 
-                                    })
-                                }}>SEND MESSAGE</button>
-                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#555', fontSize:'12px', fontWeight:'bold'}}>Close Window</p>
+                                
+                                <div style={{display:'flex', gap:'10px', marginTop:'15px', paddingTop:'15px', borderTop:'1px solid #222'}}>
+                                    <input style={{flex:1, margin:0, borderRadius:'25px', padding:'15px 20px', background:'#111', border:'1px solid #333'}} placeholder="Type your message..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
+                                    <button className="btn-neon" style={{width:'52px', height:'52px', borderRadius:'50%', padding:'0', display:'flex', justifyContent:'center', alignItems:'center'}} onClick={()=>{
+                                        if(!mailInput) return showAlert("Please write a message!");
+                                        axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:mailInput})
+                                        .then(()=>{
+                                            setMails([...mails, {from: 'user', msg: mailInput}]);
+                                            setMailInput(""); 
+                                            setTimeout(() => {
+                                                const mailContainer = document.querySelector('.mail-body > div:nth-child(2)');
+                                                if(mailContainer) mailContainer.scrollTop = mailContainer.scrollHeight;
+                                            }, 100);
+                                        })
+                                    }}><i className="fa fa-paper-plane" style={{fontSize:'18px'}}></i></button>
+                                </div>
                             </div>
                         </div>
                     )}
 
                     {typeof modal === 'string' && modal.includes("claim") && (
                         <div className="modal">
-                            <div className="modal-body" style={{background:'#05080a'}}>
-                                <h3 className="text-glow" style={{fontSize:'18px'}}>CLAIM YOUR GIFT</h3>
-                                <p style={{color:'#888', fontSize:'12px', margin:'0 0 20px 0'}}>Submit your links for 1k Followers & 100k Views!</p>
-                                <input placeholder="Paste Link For Followers" onChange={e=>setForm({...form, f_link:e.target.value})} style={{fontSize:'13px', padding:'12px'}} />
-                                <input placeholder="Paste Link For Views" onChange={e=>setForm({...form, v_link:e.target.value})} style={{fontSize:'13px', padding:'12px'}} />
+                            <div className="modal-body">
+                                <h3 className="text-glow">CLAIM YOUR GIFT</h3>
+                                <p style={{color:'#aaa', fontSize:'13px', margin:'0 0 20px 0'}}>Submit your links for 1k Followers & 100k Views!</p>
+                                <input placeholder="Paste Link For Followers" onChange={e=>setForm({...form, f_link:e.target.value})} />
+                                <input placeholder="Paste Link For Views" onChange={e=>setForm({...form, v_link:e.target.value})} />
                                 <button className="btn-neon" onClick={()=>{
                                     if(!form.f_link || !form.v_link) return showAlert("Please provide both links!");
                                     axios.post('https://malik-proxy-smm.onrender.com/api/claim-reward', {panel, email:user.email, views_link:form.v_link, followers_link:form.f_link})
                                     .then(()=>{showAlert("Reward Claimed! Admin will process it soon.");setModal(null);})
-                                }} style={{fontSize:'13px', padding:'12px'}}>SUBMIT LINKS</button>
-                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#555', fontSize:'12px', fontWeight:'bold'}}>Close Window</p>
+                                }}>SUBMIT LINKS</button>
+                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777'}}>Close Window</p>
                             </div>
                         </div>
                     )}
 
                     {modal === "pay" && (
                         <div className="modal">
-                            <div className="modal-body" style={{background:'#05080a'}}>
-                                <h3 className="text-glow" style={{fontSize:'18px'}}>ADD FUNDS</h3>
-                                <div style={{background:'#fff', padding:'8px', borderRadius:'12px', display:'inline-block', margin:'15px 0'}}>
-                                    <img src={panel === 1 ? appConfig.qr_1 : appConfig.qr_2} style={{width:'180px', display:'block'}} onError={(e)=>e.target.src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=followersincrease870@oksbi"} />
+                            <div className="modal-body">
+                                <h3 className="text-glow">ADD FUNDS</h3>
+                                <div style={{background:'#fff', padding:'10px', borderRadius:'15px', display:'inline-block', margin:'15px 0'}}>
+                                    <img src={panel === 1 ? appConfig.qr_1 : appConfig.qr_2} style={{width:'220px', display:'block'}} onError={(e)=>e.target.src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=followersincrease870@oksbi"} />
                                 </div>
-                                <p style={{color:'#888', fontSize:'12px', margin:'0'}}>Scan QR or Pay via UPI</p>
-                                <div className="text-glow" style={{fontWeight:'bold', marginBottom:'10px', fontSize:'14px'}}>followersincrease870@oksbi</div>
+                                <p style={{color:'#aaa', fontSize:'13px', margin:'0'}}>Scan QR or Pay via UPI</p>
+                                <div className="text-glow" style={{fontWeight:'bold', marginBottom:'10px', fontSize:'16px', letterSpacing:'1px'}}>followersincrease870@oksbi</div>
                                 
-                                <p style={{color:'#ff003c', fontSize:'10px', fontWeight:'bold', marginBottom:'15px', background:'rgba(255,0,60,0.1)', padding:'5px', borderRadius:'5px'}}>For International / Other payment methods, please contact Admin via Support Mailbox.</p>
+                                <p style={{color:'#ff003c', fontSize:'11px', fontWeight:'bold', marginBottom:'20px', padding:'10px', background:'rgba(255,0,60,0.1)', borderRadius:'8px', border:'1px solid #ff003c'}}>For International / Other payment methods, please contact Admin via Support Mailbox.</p>
                                 
-                                <input placeholder="Amount Paid (INR)" type="number" onChange={e=>setForm({...form, amt:e.target.value})} style={{fontSize:'13px', padding:'12px'}} />
-                                <input placeholder="12-digit UTR or Transaction ID" onChange={e=>setForm({...form, utr:e.target.value})} style={{fontSize:'13px', padding:'12px'}} />
-                                <button className="btn-neon" onClick={()=>axios.post('https://malik-proxy-smm.onrender.com/api/add-funds', {panel, email:user.email, amount:form.amt, utr:form.utr}).then(()=>{showAlert("Payment Request Sent!");setModal(null);})} style={{fontSize:'13px', padding:'12px'}}>SUBMIT REQUEST</button>
-                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#555', fontSize:'12px', fontWeight:'bold'}}>Close Window</p>
+                                <input placeholder="Amount Paid (INR)" type="number" onChange={e=>setForm({...form, amt:e.target.value})} />
+                                <input placeholder="12-digit UTR or Transaction ID" onChange={e=>setForm({...form, utr:e.target.value})} />
+                                <button className="btn-neon" onClick={()=>axios.post('https://malik-proxy-smm.onrender.com/api/add-funds', {panel, email:user.email, amount:form.amt, utr:form.utr}).then(()=>{showAlert("Payment Request Sent!");setModal(null);})}>SUBMIT REQUEST</button>
+                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777'}}>Close Window</p>
                             </div>
                         </div>
                     )}
 
                     {modal === "guide" && (
                         <div className="modal">
-                            <div className="modal-body" style={{textAlign:'left', background:'#05080a'}}>
-                                <h2 className="text-glow" style={{textAlign:'center', fontSize:'18px'}}>How to Use?</h2>
-                                <p style={{color:'#ccc', lineHeight:'1.6', fontSize:'13px'}}>
+                            <div className="modal-body" style={{textAlign:'left'}}>
+                                <h2 className="text-glow" style={{textAlign:'center'}}>How to Use?</h2>
+                                <p style={{color:'#bbb', lineHeight:'1.8', fontSize:'14px'}}>
                                     1. <b>Add Funds:</b> Click the Add Funds button, scan the QR code or use the UPI ID to pay.<br/>
                                     2. <b>Submit UTR:</b> Enter the amount and 12-digit UTR number correctly.<br/>
                                     3. <b>Wait:</b> Admin will approve it within 5-10 minutes.<br/>
                                     4. <b>Order:</b> Go to Services, select the cheapest service, paste your link, enter quantity, and click Place Order.<br/>
                                     5. <b>Done:</b> Your order will start instantly!
                                 </p>
-                                <button className="btn-neon" onClick={()=>setModal(null)} style={{marginTop:'15px', fontSize:'13px', padding:'12px'}}>UNDERSTOOD</button>
+                                <button className="btn-neon" onClick={()=>setModal(null)} style={{marginTop:'20px'}}>UNDERSTOOD</button>
                             </div>
                         </div>
                     )}
 
                     {modal === "history" && (
                         <div className="modal">
-                            <div className="modal-body" style={{background:'#05080a'}}>
-                                <h3 className="text-glow" style={{fontSize:'18px'}}>TRANSACTION HISTORY</h3>
+                            <div className="modal-body">
+                                <h3 className="text-glow">TRANSACTION HISTORY</h3>
                                 <div style={{maxHeight:'50vh', overflowY:'auto', textAlign:'left'}}>
-                                    {txns.length === 0 ? <p style={{textAlign:'center', color:'#555', fontSize:'12px'}}>No Transactions Yet.</p> : 
+                                    {txns.length === 0 ? <p style={{textAlign:'center', color:'#666'}}>No Transactions Yet.</p> : 
                                         txns.map((t,i)=>(
-                                            <div key={i} style={{background:'#0d1518', padding:'10px', margin:'10px 0', borderRadius:'8px', borderLeft:'3px solid var(--active)', border:'1px solid #162329'}}>
-                                                <div style={{display:'flex', justifyContent:'space-between'}}>
-                                                    <b style={{fontSize:'13px'}}>{currency==='USD'?'$':'₹'}{(currency==='USD'?t.amount/83:t.amount).toFixed(2)}</b>
-                                                    <span style={{color: t.status==='Approved'?'#00ff00':'#ff003c', fontSize:'12px', fontWeight:'bold'}}>{t.status}</span>
+                                            <div key={i} style={{background:'#0a0a0a', padding:'12px 15px', margin:'10px 0', borderRadius:'12px', borderLeft:'4px solid var(--active)', borderTop:'1px solid #222', borderRight:'1px solid #111', borderBottom:'1px solid #111'}}>
+                                                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                                                    <b style={{fontSize:'16px'}}>{currency==='USD'?'$':'₹'}{(currency==='USD'?t.amount/83:t.amount).toFixed(2)}</b>
+                                                    <span style={{color: t.status==='Approved'?'#00ff00':'#ff003c', fontWeight:'bold', fontSize:'12px', textTransform:'uppercase'}}>{t.status}</span>
                                                 </div>
-                                                <div style={{fontSize:'10px', color:'#666', marginTop:'5px'}}>UTR/TXN: {t.utr}</div>
+                                                <div style={{fontSize:'11px', color:'#777', marginTop:'8px'}}>UTR: <span style={{color:'#aaa'}}>{t.utr}</span></div>
                                             </div>
                                         ))
                                     }
                                 </div>
-                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#555', fontSize:'12px', fontWeight:'bold'}}>Close Window</p>
+                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777'}}>Close Window</p>
                             </div>
                         </div>
                     )}
 
                     {typeof modal === 'object' && modal !== null && (
                         <div className="modal">
-                            <div className="modal-body" style={{background:'#05080a'}}>
-                                <h4 className="text-glow" style={{marginBottom:'20px', fontSize:'15px', lineHeight:'1.4'}}>{modal.name}</h4>
-                                <input placeholder="Paste Valid Link Here" onChange={e=>setForm({...form, link:e.target.value})} style={{fontSize:'13px', padding:'12px'}} />
-                                <input placeholder="Quantity (Min 10)" type="number" onChange={e=>setForm({...form, qty:e.target.value})} style={{fontSize:'13px', padding:'12px'}} />
-                                <h2 className="text-glow" style={{margin:'20px 0', fontSize:'22px'}}>Total: {currency==='USD'?'$':'₹'}{((form.qty/1000)*getRate(modal.rate)).toFixed(3)}</h2>
+                            <div className="modal-body">
+                                <h4 className="text-glow" style={{marginBottom:'20px', lineHeight:'1.4', fontSize:'16px'}}>{modal.name}</h4>
+                                <input placeholder="Paste Valid Link Here" onChange={e=>setForm({...form, link:e.target.value})} />
+                                <input placeholder="Quantity (Min 10)" type="number" onChange={e=>setForm({...form, qty:e.target.value})} />
+                                <div style={{background:'#111', padding:'15px', borderRadius:'12px', margin:'20px 0', border:'1px solid #333'}}>
+                                    <p style={{margin:'0 0 5px 0', color:'#aaa', fontSize:'12px', textTransform:'uppercase'}}>Total Charge</p>
+                                    <h2 className="text-glow" style={{margin:0, fontSize:'28px'}}>{currency==='USD'?'$':'₹'}{((form.qty/1000)*getRate(modal.rate)).toFixed(3)}</h2>
+                                </div>
                                 <button className="btn-neon" onClick={()=>{
-                                    if(!form.link || form.link.length < 4) { showAlert("Idhar valid link daalo! ⚠️"); return; }
-                                    const c = (form.qty/1000)*(modal.rate * (1 - discount/100)); // Base charge recorded
+                                    if(!form.link || form.link.length < 4) { showAlert("Please enter a valid link! ⚠️"); return; }
+                                    const c = (form.qty/1000)*(modal.rate * (1 - discount/100));
                                     axios.post('https://malik-proxy-smm.onrender.com/api/place-order', {panel, email:user.email, username:user.username, service:modal.service, service_name:modal.name, link:form.link, qty:form.qty, charge:c})
                                     .then(r => {
                                         showAlert("Order Placed Successfully! 🚀"); 
                                         setModal(null);
                                     }).catch(e=>showAlert(e.response.data.error || "Order Failed!"));
-                                }} style={{fontSize:'14px'}}>CONFIRM ORDER</button>
-                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#555', fontSize:'12px', fontWeight:'bold'}}>Cancel</p>
+                                }}>CONFIRM ORDER</button>
+                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777', fontWeight:'bold'}}>Cancel</p>
                             </div>
                         </div>
                     )}
 
-                    {/* Bottom Navigation with Profile and Settings side-by-side */}
                     <div className="bottom-nav">
                         <div className={`nav-btn ${tab==="Home"?"nav-active":""}`} onClick={()=>setTab("Home")}><i className="fa fa-home"></i>Home</div>
                         <div className={`nav-btn ${tab==="Services"?"nav-active":""}`} onClick={()=>setTab("Services")}><i className="fa fa-bolt"></i>Services</div>
                         <div className={`nav-btn ${tab==="Orders"?"nav-active":""}`} onClick={()=>setTab("Orders")}><i className="fa fa-box"></i>Orders</div>
-                        <div className={`nav-btn ${tab==="Settings"?"nav-active":""}`} onClick={()=>setTab("Settings")}><i className="fa fa-cog"></i>Settings</div>
                         <div className={`nav-btn ${tab==="Profile"?"nav-active":""}`} onClick={()=>setTab("Profile")}><i className="fa fa-user-circle"></i>Profile</div>
+                        <div className={`nav-btn ${tab==="Settings"?"nav-active":""}`} onClick={()=>setTab("Settings")}><i className="fa fa-cog"></i>Settings</div>
                     </div>
                 </div>
             );
