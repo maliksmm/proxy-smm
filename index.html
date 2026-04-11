@@ -102,7 +102,7 @@
         const { useState, useEffect, useMemo, useRef } = React;
         
         const AppUI = () => {
-            const [appPanels, setAppPanels] = useState([]);
+            const [appPanels, setAppPanels] = useState([]); // Dynamic Panels
             const [panel, setPanel] = useState(localStorage.getItem('aryan_panel') || null);
             const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
             
@@ -121,7 +121,7 @@
             
             const [mails, setMails] = useState([]);
             const [mailInput, setMailInput] = useState("");
-            const [activeMail, setActiveMail] = useState(null);
+            const [activeMail, setActiveMail] = useState(null); // Detailed Mail View
             
             const [appConfig, setAppConfig] = useState({
                 socials: {tg: "https://t.me/zr3v_x", yt: "https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb", ig: "", wp: ""},
@@ -131,7 +131,7 @@
             const [currency, setCurrency] = useState(localStorage.getItem('currency') || "INR");
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
             const [couponInput, setCouponInput] = useState("");
-            const [followStep, setFollowStep] = useState(false);
+            const [followStep, setFollowStep] = useState(false); // For Reward Claim
             
             const [apiKeyStatus, setApiKeyStatus] = useState(localStorage.getItem('api_status') || "none");
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
@@ -145,6 +145,7 @@
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:'', f_link:'', v_link:'', oldPass:'', newPass:''});
             const prevOrdersRef = useRef([]);
 
+            // Fetch dynamic panels on mount
             useEffect(() => {
                 axios.get('https://malik-proxy-smm.onrender.com/api/init-app').then(r => {
                     setAppPanels(r.data.panels);
@@ -232,7 +233,10 @@
             useEffect(() => {
                 if(panel) {
                     axios.post('https://malik-proxy-smm.onrender.com/api/get-services', { panel }).then(r => {
-                        setServices(r.data.map(s => ({...s, rate: parseFloat(s.rate)*2})).sort((a,b)=>a.rate-b.rate));
+                        setServices(r.data.map(s => ({
+                            ...s, 
+                            rate: (panel == 1 || panel == "1") ? parseFloat(s.rate) * 2 : parseFloat(s.rate) * 2 * 83 
+                        })).sort((a,b)=>a.rate-b.rate));
                     });
                 }
             }, [panel]);
@@ -281,7 +285,7 @@
                 if(currency === "USD") finalRate = finalRate / 83;
                 
                 if (finalRate < 1 && finalRate > 0) {
-                    return parseFloat(finalRate.toFixed(4)).toString();
+                    return parseFloat(finalRate.toFixed(3)).toString();
                 }
                 return finalRate.toFixed(2);
             };
@@ -462,7 +466,7 @@
                                         <div style={{width:'72%', paddingRight:'10px'}}>
                                             <div style={{fontSize:'13px', fontWeight:'bold', lineHeight:'1.4', color:'#ddd'}}>{s.name}</div>
                                             <div style={{marginTop:'8px'}}>
-                                                {discount > 0 && <span style={{textDecoration:'line-through', color:'#555', fontSize:'11px', marginRight:'6px'}}>{currency==='USD'?'$':'₹'}{currency==='USD'?(s.rate/83).toFixed(3):s.rate.toFixed(2)}</span>}
+                                                {discount > 0 && <span style={{textDecoration:'line-through', color:'#555', fontSize:'11px', marginRight:'6px'}}>{currency==='USD'?'$':'₹'}{currency==='USD'?(s.rate/83).toFixed(3):parseFloat(s.rate).toFixed(2)}</span>}
                                                 <b className="text-glow" style={{fontSize:'16px'}}>
                                                     {currency==='USD'?'$':'₹'}{getRate(s.rate)} <span style={{fontSize:'10px', color:'#555'}}>/1k</span>
                                                 </b>
@@ -679,6 +683,7 @@
                                         .then(()=>{
                                             setMails([...mails, {from: 'user', msg: mailInput}]);
                                             setMailInput("");
+                                            showAlert("Message Sent to Admin!");
                                         })
                                     }}>
                                         <i className="fa fa-paper-plane"></i>
