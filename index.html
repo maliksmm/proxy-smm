@@ -10,19 +10,15 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --p1: #00f3ff; --p2: #ff1493; }
+        :root { --p1: #00f3ff; --p2: #ff1493; --active: #00f3ff; }
         body, html { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
         .login-bg { background: #000; }
 
-        .theme-p1 { --active: var(--p1); --bg: #050505; }
-        .theme-p2 { --active: var(--p2); --bg: #0a0005; }
-        
         .text-glow { color: var(--active); text-shadow: 0 0 5px var(--active); }
         .card-vip { background: #0a0a0a; padding: 25px; border-radius: 16px; margin: 15px; border: 1px solid #1a1a1a; border-top: 4px solid var(--active); position:relative; overflow:hidden; }
         
-        .btn-neon { background: var(--active); color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); font-size: 14px; text-transform: uppercase; transition: 0.2s; letter-spacing: 1px; }
-        .theme-p2 .btn-neon { box-shadow: 0 0 10px rgba(255, 20, 147, 0.4); }
+        .btn-neon { background: var(--active); color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 0 10px var(--active); font-size: 14px; text-transform: uppercase; transition: 0.2s; letter-spacing: 1px; }
         .btn-neon:active { transform: scale(0.96); box-shadow: none; }
         
         .cat-menu { display: flex; overflow-x: auto; padding: 12px 15px; background: #000; border-bottom: 1px solid #111; gap: 12px; scrollbar-width: none; }
@@ -30,27 +26,43 @@
         .cat-btn { padding: 8px 20px; border-radius: 20px; background: #111; border: 1px solid #222; color: #888; white-space: nowrap; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s; }
         .cat-active { border-color: var(--active); color: var(--active); background: rgba(255,255,255,0.05); }
         
-        .service-card { background: #080808; margin: 15px; padding: 18px; border-radius: 16px; border-left: 4px solid var(--active); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; border-right: 1px solid #111; border-top: 1px solid #111; }
+        .service-card { background: #080808; margin: 15px; padding: 18px; border-radius: 16px; border-left: 4px solid var(--active); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; border-right: 1px solid #111; border-top: 1px solid #111; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
         .modal-body { background: #080808; width: 90%; max-width: 420px; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.9); max-height: 85vh; overflow-y: auto; }
         
-        .gmail-modal { width: 100%; height: 100%; background: #121212; display: flex; flex-direction: column; border: none; position: absolute; top: 0; left: 0; }
-        .gmail-header { background: #202124; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333; }
-        .gmail-header h3 { margin: 0; font-size: 18px; color: #fff; font-weight: 500; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .mail-list { flex: 1; overflow-y: auto; background: #121212; padding-bottom: 80px; }
-        .mail-item { display: flex; padding: 15px; border-bottom: 1px solid #202124; align-items: flex-start; position: relative; }
-        .mail-avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; margin-right: 15px; color: #fff; flex-shrink: 0; }
-        .avatar-admin { background: #1a73e8; }
-        .avatar-user { background: #e37400; }
-        .mail-content { flex: 1; text-align: left; padding-right: 20px; }
-        .mail-sender { font-weight: bold; font-size: 15px; color: #e8eaed; margin-bottom: 4px; }
-        .mail-snippet { font-size: 13px; color: #9aa0a6; line-height: 1.4; word-wrap: break-word; }
-        .mail-delete { position: absolute; right: 15px; top: 25px; color: #5f6368; cursor: pointer; padding: 5px; transition: 0.2s; }
-        .mail-delete:hover { color: #ff003c; }
-        .gmail-compose-box { position: fixed; bottom: 0; left: 0; width: 100%; background: #202124; border-top: 1px solid #333; display: flex; padding: 10px 15px; align-items: center; box-sizing: border-box; }
-        .gmail-input { flex: 1; background: #121212; border: 1px solid #333; border-radius: 20px; padding: 12px 15px; color: #fff; margin-right: 10px; margin-bottom: 0; outline: none; }
-        .gmail-send { background: var(--active); color: #000; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        /* 📩 GMAIL PRO MAILBOX STYLES - Dynamic Themes */
+        .gmail-modal { width: 100%; height: 100%; display: flex; flex-direction: column; border: none; position: absolute; top: 0; left: 0; }
+        .mail-theme-1 { background: #121212; }
+        .mail-theme-2 { background: #00111a; }
+        .mail-theme-3 { background: #1a0011; }
+        
+        .gmail-header { background: rgba(0,0,0,0.8); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--active); backdrop-filter: blur(10px); }
+        .gmail-header h3 { margin: 0; font-size: 18px; color: #fff; font-weight: bold; letter-spacing: 1px; }
+        .mail-list { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+        .mail-item { display: flex; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: flex-start; cursor: pointer; transition: 0.3s; }
+        .mail-item:hover { background: rgba(255,255,255,0.02); }
+        
+        .mail-avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; margin-right: 15px; color: #000; flex-shrink: 0; box-shadow: 0 0 10px var(--active); }
+        .avatar-admin { background: var(--active); }
+        .avatar-user { background: #555; color: #fff; box-shadow: none; }
+        
+        .mail-content { flex: 1; text-align: left; padding-right: 10px; }
+        .mail-sender { font-weight: 900; font-size: 15px; color: var(--active); margin-bottom: 4px; text-shadow: 0 0 5px var(--active); }
+        .mail-snippet { font-size: 13px; color: #bbb; line-height: 1.4; word-wrap: break-word; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+        
+        .gmail-compose-box { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); border-top: 1px solid var(--active); display: flex; padding: 10px 15px; align-items: center; box-sizing: border-box; backdrop-filter: blur(10px); }
+        .gmail-input { flex: 1; background: #111; border: 1px solid #333; border-radius: 20px; padding: 12px 15px; color: #fff; margin-right: 10px; margin-bottom: 0; outline: none; }
+        .gmail-input:focus { border-color: var(--active); }
+        .gmail-send { background: var(--active); color: #000; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 10px var(--active); }
+
+        .mail-detail-box { position: absolute; top:0; left:0; width:100%; height:100%; background:#0a0a0a; z-index:10000; display:flex; flex-direction:column; }
+        .md-header { padding: 15px 20px; background: #000; border-bottom: 1px solid var(--active); display: flex; align-items: center; gap: 15px; }
+        .md-body { padding: 20px; flex: 1; overflow-y: auto; text-align: left; }
+        .md-sender-info { display: flex; align-items: center; margin-bottom: 25px; }
+        .md-text { font-size: 15px; line-height: 1.6; color: #eee; white-space: pre-wrap; }
+        .md-link { color: var(--active); text-decoration: underline; font-weight: bold; }
+        .md-actions { display: flex; gap: 10px; margin-top: 30px; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #050505; padding: 12px 0; border-top: 1px solid #1a1a1a; z-index: 1000; }
         .nav-btn { color: #555; font-size: 11px; text-align: center; cursor: pointer; flex: 1; font-weight: bold; transition: 0.3s; }
@@ -58,25 +70,38 @@
         .nav-active { color: var(--active); text-shadow: 0 0 10px var(--active); transform: translateY(-2px); }
         
         input, select { width: 100%; padding: 15px; margin-bottom: 15px; background: #0a0a0a; border: 1px solid #222; color: #fff; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; }
-        input:focus, select:focus { border-color: var(--active); background: #111; }
+        input:focus, select:focus { border-color: var(--active); background: #111; box-shadow: 0 0 5px var(--active); }
         
-        .social-link { font-size: 40px; margin: 0 15px; transition: 0.3s; color: #555; }
-        .social-link:hover { transform: scale(1.1); color: var(--active); }
+        /* 🌟 Glowing Social Links */
+        .social-container { display:flex; justify-content:center; gap:35px; margin-top:20px; }
+        .social-link { font-size: 40px; transition: 0.3s; color: #555; }
+        .glow-tg { color: #00f3ff; text-shadow: 0 0 15px #00f3ff; }
+        .glow-yt { color: #ff003c; text-shadow: 0 0 15px #ff003c; }
+        .glow-ig { color: #ff1493; text-shadow: 0 0 15px #ff1493; }
+        .glow-wp { color: #00ff00; text-shadow: 0 0 15px #00ff00; }
+        .social-link:hover { transform: scale(1.2); }
+
         .big-badge { text-align: center; margin: 25px 0; color: #00ff00; font-size: 20px; font-weight: 900; text-shadow: 0 0 10px #00ff00; text-transform: uppercase; letter-spacing: 1px; }
 
         .warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 20px; box-sizing: border-box; }
         .warning-box { background: #000; padding: 35px 25px; border-radius: 20px; text-align: center; border: 2px solid #fff; }
 
-        .discount-badge { position:absolute; top:0; right:0; background:#ff003c; padding:6px 20px; border-bottom-left-radius:15px; font-weight:900; font-size:11px; animation: pulse 2s infinite; letter-spacing: 1px; color: #fff; }
+        .discount-badge { position:absolute; top:0; right:0; background:#ff003c; padding:6px 20px; border-bottom-left-radius:15px; font-weight:900; font-size:11px; animation: pulse 2s infinite; letter-spacing: 1px; color: #fff; z-index: 10; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+
+        .coupon-box { display: flex; gap: 10px; margin-top: 15px; }
+        .coupon-box input { margin: 0; flex: 1; text-transform: uppercase; }
+        .coupon-box button { width: auto; padding: 0 20px; }
     </style>
 </head>
-<body id="bdy" class="login-bg theme-p1">
+<body id="bdy" class="login-bg">
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
+        
         const AppUI = () => {
-            const [panel, setPanel] = useState(parseInt(localStorage.getItem('aryan_panel')) || null);
+            const [appPanels, setAppPanels] = useState([]); // Dynamic Panels
+            const [panel, setPanel] = useState(localStorage.getItem('aryan_panel') || null);
             const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
             
             const [tab, setTab] = useState("Home");
@@ -94,11 +119,17 @@
             
             const [mails, setMails] = useState([]);
             const [mailInput, setMailInput] = useState("");
+            const [activeMail, setActiveMail] = useState(null); // Detailed Mail View
             
-            const [appConfig, setAppConfig] = useState({qr_1: "./AccountQRCodeJ&K Bank - 6648_DARK_THEME (13).png", qr_2: "./AccountQRCodeJ&K Bank - 6648_DARK_THEME (13).png"});
+            const [appConfig, setAppConfig] = useState({
+                socials: {tg: "https://t.me/zr3v_x", yt: "https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb", ig: "", wp: ""},
+                mail_theme: "1"
+            });
             const [discount, setDiscount] = useState(0);
             const [currency, setCurrency] = useState(localStorage.getItem('currency') || "INR");
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
+            const [couponInput, setCouponInput] = useState("");
+            const [followStep, setFollowStep] = useState(false); // For Reward Claim
             
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
 
@@ -110,6 +141,24 @@
             
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:'', f_link:'', v_link:'', oldPass:'', newPass:''});
             const prevOrdersRef = useRef([]);
+
+            // Fetch dynamic panels on mount
+            useEffect(() => {
+                axios.get('https://malik-proxy-smm.onrender.com/api/init-app').then(r => {
+                    setAppPanels(r.data.panels);
+                    if(r.data.panels.length === 1 && !panel) {
+                        setPanel(r.data.panels[0].id);
+                        localStorage.setItem('aryan_panel', r.data.panels[0].id);
+                    }
+                }).catch(e => console.log("Init Error:", e));
+            }, []);
+
+            useEffect(() => {
+                if(panel && appPanels.length > 0) {
+                    const activeP = appPanels.find(p => p.id === panel);
+                    if(activeP) document.documentElement.style.setProperty('--active', activeP.color);
+                }
+            }, [panel, appPanels]);
 
             useEffect(() => {
                 if ("Notification" in window && Notification.permission !== "granted") {
@@ -130,10 +179,13 @@
             useEffect(() => {
                 if(user && panel) {
                     const sync = () => axios.post('https://malik-proxy-smm.onrender.com/api/sync', { email: user.email, panel }).then(r => {
-                        setBalance(r.data.balance); setTxns(r.data.txns); 
+                        setBalance(r.data.balance); 
+                        setTxns(r.data.txns); 
                         setUserInfo(r.data.user_info || {});
                         setMails(r.data.all_mails || []);
-                        if(r.data.config) setAppConfig(r.data.config);
+                        if(r.data.config) {
+                            setAppConfig(prev => ({...prev, ...r.data.config}));
+                        }
                         setDiscount(r.data.discount || 0);
                         
                         const newOrders = r.data.orders.slice().reverse();
@@ -151,7 +203,7 @@
                         setOrders(newOrders);
 
                         if (r.data.unread_mails && r.data.unread_mails.length > 0) {
-                            r.data.unread_mails.forEach(m => showAlert("📬 NEW MAIL FROM ADMIN:\n\n" + m));
+                            r.data.unread_mails.forEach(m => showAlert("📬 NEW VIP MAIL FROM ADMIN:\n\n" + m));
                         }
                         
                         const rej = r.data.txns.find(t => t.status === "Rejected" && !localStorage.getItem(`warn_${t.utr}`));
@@ -168,9 +220,8 @@
 
             useEffect(() => {
                 if(panel) {
-                    document.getElementById('bdy').className = `login-bg theme-p${panel}`;
                     axios.post('https://malik-proxy-smm.onrender.com/api/get-services', { panel }).then(r => {
-                        setServices(r.data.map(s => ({...s, rate: panel===1?s.rate*2:s.rate*2*83})).sort((a,b)=>a.rate-b.rate));
+                        setServices(r.data.map(s => ({...s, rate: s.rate*2})).sort((a,b)=>a.rate-b.rate));
                     });
                 }
             }, [panel]);
@@ -182,14 +233,14 @@
                     const ref_code = localStorage.getItem('ref_by') || '';
                     axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ref: ref_code, username: form.username.trim(), email: form.email.trim(), pass: form.pass.trim() })
                     .then(() => {
-                        const ud = { email: form.email.trim().toLowerCase(), username: form.username.trim().toLowerCase() };
+                        const ud = { email: form.email.trim().toLowerCase(), username: form.username.trim() }; // Keep username original case for display
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     }).catch((e) => showAlert(e.response.data.error || "Please give valid details!"));
                 } else {
                     if(!form.username || !form.pass) return showAlert("Please give valid details!");
                     axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: form.username.trim(), pass: form.pass.trim() })
                     .then((r) => {
-                        const ud = { email: r.data.email, username: form.username.trim().toLowerCase() };
+                        const ud = { email: r.data.email, username: r.data.username || form.username.trim() };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     }).catch((e) => showAlert(e.response.data.error || "Invalid Username or Password!"));
                 }
@@ -197,10 +248,10 @@
 
             const customGoogleAuth = () => {
                 if(!googleEmail.includes("@") || !googleUsername) return showAlert("Please enter both Email and Username!");
-                axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel || 1, email: googleEmail.trim(), username: googleUsername.trim() })
+                axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel, email: googleEmail.trim(), username: googleUsername.trim() })
                 .then((r)=>{
                     const ud = { email: r.data.email, username: r.data.username };
-                    setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel || 1);
+                    setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     setShowGoogleModal(false);
                 }).catch((e)=>showAlert(e.response.data.error || "Login Failed"));
             };
@@ -208,6 +259,10 @@
             const handleLogout = () => {
                 localStorage.removeItem('user');
                 setUser(null); setTab("Home");
+                if(appPanels.length > 1) {
+                    setPanel(null);
+                    localStorage.removeItem('aryan_panel');
+                }
             };
 
             const getRate = (rate) => {
@@ -216,10 +271,14 @@
                 return finalRate.toFixed(3);
             };
 
-            const handleDeleteMail = (index) => {
-                const newMails = [...mails];
-                newMails.splice(index, 1);
-                setMails(newMails);
+            const copyToClipboard = (text) => {
+                navigator.clipboard.writeText(text);
+                showAlert("Copied to clipboard!");
+            };
+
+            const formatMailText = (text) => {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                return text.split(urlRegex).map((part, i) => urlRegex.test(part) ? <a key={i} href={part} target="_blank" className="md-link">{part}</a> : part);
             };
 
             const filtered = useMemo(() => {
@@ -245,17 +304,18 @@
                 );
             };
 
-            if (!panel) return (
+            if (!panel && appPanels.length > 0) return (
                 <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
                     {renderNotification()}
                     <h1 className="text-glow" style={{fontSize:'35px', marginBottom:'20px', textAlign:'center', fontWeight:'900', letterSpacing:'1px'}}>MALIK PROXY<br/>SMM PRO</h1>
-                    <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px', fontSize:'13px'}}>These two panels have different services and rates. Try both and choose what fits you best!</p>
-                    <button className="btn-neon" style={{width:'85%', maxWidth:'350px', background:'#00f3ff', margin:'10px', color:'#000'}} onClick={()=>setPanel(1)}>Login/Signup - Panel 1</button>
-                    <button className="btn-neon" style={{width:'85%', maxWidth:'350px', background:'#ff1493', margin:'10px', color:'#000'}} onClick={()=>setPanel(2)}>Login/Signup - Panel 2</button>
+                    <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px', fontSize:'13px'}}>Select an active panel to continue</p>
+                    {appPanels.map(p => (
+                        <button key={p.id} className="btn-neon" style={{width:'85%', maxWidth:'350px', background: p.color, margin:'10px', color:'#000', boxShadow:`0 0 15px ${p.color}`}} onClick={()=>{setPanel(p.id); localStorage.setItem('aryan_panel', p.id);}}>Login/Signup - {p.name}</button>
+                    ))}
                 </div>
             );
 
-            if (!user) {
+            if (!user && panel) {
                 if(showGoogleModal) return (
                     <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
                         {renderNotification()}
@@ -265,7 +325,7 @@
                             <p style={{color:'#d93025', fontSize:'12px', fontWeight:'bold', marginBottom:'15px'}}>Security Check: Enter details to verify identity</p>
                             <input placeholder="Enter Registered Email" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'100%', padding:'15px', marginBottom:'10px'}} onChange={e=>setGoogleEmail(e.target.value)} />
                             <input placeholder="Enter Username" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'100%', padding:'15px'}} onChange={e=>setGoogleUsername(e.target.value)} />
-                            <button className="btn-neon" style={{background:'#0b57d0', color:'#fff', marginTop:'15px', borderRadius:'8px'}} onClick={customGoogleAuth}>Secure Login</button>
+                            <button className="btn-neon" style={{background:'#0b57d0', color:'#fff', marginTop:'15px', borderRadius:'8px', boxShadow:'none'}} onClick={customGoogleAuth}>Secure Login</button>
                             <p style={{marginTop:'20px', color:'#0b57d0', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={()=>setShowGoogleModal(false)}>Cancel</p>
                         </div>
                     </div>
@@ -278,8 +338,8 @@
                             <h2 className="text-glow" style={{fontSize:'24px', marginBottom:'5px', letterSpacing:'1px'}}>MALIK PROXY SMM</h2>
                             <h3 style={{color:'#888', marginBottom:'20px', fontSize:'14px', textTransform:'uppercase'}}>{isSignup ? "CREATE ACCOUNT" : "LOGIN"}</h3>
                             
-                            {isSignup && <p style={{fontSize:'12px', color:'#00f3ff', marginBottom:'15px'}}>How to signup: Enter a unique username, your email, and a password.</p>}
-                            <p style={{color:'#ff1493', fontSize:'12px', fontWeight:'bold', marginBottom:'15px'}}>Please remember your password securely!</p>
+                            {isSignup && <p style={{fontSize:'12px', color:'var(--active)', marginBottom:'15px'}}>How to signup: Enter a unique username, your email, and a password.</p>}
+                            <p style={{color:'#ff003c', fontSize:'12px', fontWeight:'bold', marginBottom:'15px'}}>Please remember your password securely!</p>
                             
                             <input placeholder="Username" onChange={e=>setForm({...form, username:e.target.value})} />
                             {isSignup && <input placeholder="Email Address" onChange={e=>setForm({...form, email:e.target.value})} />}
@@ -292,11 +352,14 @@
                             <button className="btn-neon" style={{background:'#fff', color:'#000', marginTop:'20px', fontSize:'13px', boxShadow:'none'}} onClick={()=>setShowGoogleModal(true)}>
                                 <i className="fab fa-google" style={{color:'#DB4437', marginRight:'8px'}}></i> SECURE LOGIN RECOVERY
                             </button>
-                            <p style={{marginTop:'25px', color:'#444', cursor:'pointer', fontSize:'12px'}} onClick={()=>setPanel(null)}>← Switch Panel</p>
+                            {appPanels.length > 1 && <p style={{marginTop:'25px', color:'#444', cursor:'pointer', fontSize:'12px'}} onClick={()=>setPanel(null)}>← Switch Panel</p>}
                         </div>
                     </div>
                 );
             }
+
+            const actPanelData = appPanels.find(p => p.id === panel) || {name: `P${panel}`};
+
             return (
                 <div style={{paddingBottom:'80px'}}>
                     {renderNotification()}
@@ -307,7 +370,7 @@
                                 <p style={{fontSize:'14px', lineHeight:'1.6', color:'#fff', fontWeight:'bold'}}>
                                     If you submit fake payment again, your account and email may be affected. Second time this happens, your account will be blocked and deleted!
                                 </p>
-                                <button className="btn-neon" style={{background:'#fff', color:'#ff0000', marginTop:'25px'}} onClick={() => {
+                                <button className="btn-neon" style={{background:'#fff', color:'#ff0000', marginTop:'25px', boxShadow:'none'}} onClick={() => {
                                     localStorage.setItem(`warn_${warnUtr}`, 'true');
                                     setWarnUtr(null);
                                 }}>I UNDERSTAND</button>
@@ -316,7 +379,7 @@
                     )}
 
                     <div style={{textAlign:'center', padding:'20px 0', borderBottom:'1px solid #111', background:'#050505'}}>
-                        <h1 className="text-glow" style={{margin:0, fontSize:'22px', letterSpacing:'1px'}}>MALIK PROXY P{panel}</h1>
+                        <h1 className="text-glow" style={{margin:0, fontSize:'22px', letterSpacing:'1px'}}>MALIK PROXY {actPanelData.name.toUpperCase()}</h1>
                     </div>
                     
                     {tab === "Home" && (
@@ -333,16 +396,17 @@
                                 <button className="btn-neon" style={{flex:1, background:'#111', border:'1px solid #222', color:'#fff', boxShadow:'none', fontSize:'12px'}} onClick={()=>setModal("guide")}><i className="fa fa-book" style={{color:'var(--active)', display:'block', marginBottom:'5px', fontSize:'18px'}}></i> Guide</button>
                             </div>
 
-                            <p style={{textAlign:'center', color:'#666', fontSize:'11px', marginTop:'35px', marginBottom:'8px', textTransform:'uppercase', letterSpacing:'1px', fontWeight:'bold'}}>Join our community for updates</p>
-                            <button className="btn-neon" style={{width:'92%', margin:'0 auto', display:'block', background:'#080808', border:'1px solid var(--active)', color:'#fff'}} onClick={()=>setModal("mailbox")}><i className="fa fa-envelope" style={{color:'var(--active)', marginRight:'8px'}}></i> SUPPORT MAILBOX</button>
+                            <div className="social-container">
+                                {appConfig.socials?.tg && <a href={appConfig.socials.tg} className="social-link glow-tg"><i className="fab fa-telegram"></i></a>}
+                                {appConfig.socials?.yt && <a href={appConfig.socials.yt} className="social-link glow-yt"><i className="fab fa-youtube"></i></a>}
+                                {appConfig.socials?.ig && <a href={appConfig.socials.ig} className="social-link glow-ig"><i className="fab fa-instagram"></i></a>}
+                                {appConfig.socials?.wp && <a href={appConfig.socials.wp} className="social-link glow-wp"><i className="fab fa-whatsapp"></i></a>}
+                            </div>
+                            <p style={{textAlign:'center', color:'#888', fontSize:'10px', marginTop:'15px', marginBottom:'25px', textTransform:'uppercase', letterSpacing:'1px', fontWeight:'bold'}}>Connect with us for rewards and update</p>
+
+                            <button className="btn-neon" style={{width:'92%', margin:'0 auto', display:'block', background:'#080808', border:'1px solid var(--active)', color:'#fff', boxShadow:'0 0 10px rgba(0,0,0,0.5)'}} onClick={()=>setModal("mailbox")}><i className="fa fa-envelope" style={{color:'var(--active)', marginRight:'8px'}}></i> SUPPORT MAILBOX</button>
 
                             <div className="big-badge">🛡️ SAFE, SECURE & FAST<br/><span style={{fontSize:'12px', color:'#777'}}>INSTANT DELIVERY</span></div>
-
-                            <div style={{display:'flex', justifyContent:'center', gap:'40px', marginTop:'20px'}}>
-                                <a href="https://t.me/zr3v_x" className="social-link"><i className="fab fa-telegram"></i></a>
-                                <a href="https://t.me/all_services_provider" className="social-link"><i className="fa fa-bullhorn"></i></a>
-                                <a href="https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb" className="social-link"><i className="fab fa-youtube"></i></a>
-                            </div>
                             
                             <div style={{textAlign:'center', marginTop:'40px', color:'#333', fontSize:'11px', fontWeight:'bold', letterSpacing:'1px'}}>DEVELOPED BY ARYAN MALIK</div>
                         </div>
@@ -350,7 +414,7 @@
 
                     {tab === "Services" && (
                         <div>
-                            {discount > 0 && <div style={{background:'#ff003c', color:'#fff', textAlign:'center', padding:'8px', fontSize:'12px', fontWeight:'bold', letterSpacing:'1px'}}>🔥 {discount}% DISCOUNT APPLIED ON ALL SERVICES 🔥</div>}
+                            {discount > 0 && <div style={{background:'#ff003c', color:'#fff', textAlign:'center', padding:'8px', fontSize:'12px', fontWeight:'bold', letterSpacing:'1px', position:'sticky', top:0, zIndex:10}}>🔥 {discount}% DISCOUNT APPLIED ON ALL SERVICES 🔥</div>}
                             <input style={{width:'92%', padding:'15px', margin:'15px auto', display:'block', background:'#080808', border:'1px solid #222', color:'#fff', borderRadius:'8px', fontSize:'14px'}} placeholder="🔍 Search Cheapest Services..." onChange={e=>setSearch(e.target.value)} />
                             
                             <div className="cat-menu">
@@ -400,38 +464,60 @@
                         </div>
                     )}
 
-                    {tab === "Profile" && (
+                    {tab === "Rewards" && (
                         <div style={{padding:'20px'}}>
-                            <div className="card-vip" style={{textAlign:'center', paddingTop:'30px'}}>
-                                <i className="fa fa-user-circle fa-4x text-glow" style={{marginBottom:'15px'}}></i>
-                                <h2 style={{margin:'0 0 5px 0', fontSize:'20px'}}>{user.username}</h2>
-                                <p style={{color:'#777', margin:'0', fontSize:'13px'}}>{user.email}</p>
-                            </div>
+                            <h2 style={{textAlign:'center', marginBottom:'20px', fontSize:'18px'}} className="text-glow"><i className="fa fa-gift"></i> REWARDS & REFERRALS</h2>
                             
                             <div className="card-vip" style={{padding:'22px'}}>
-                                <h3 className="text-glow" style={{margin:'0 0 10px 0', fontSize:'16px'}}>🎁 Referral Program</h3>
-                                <p style={{fontSize:'11px', color:'#666', marginBottom:'15px', wordBreak:'break-all'}}>Link: <b>https://maliksmm.github.io/proxy-smm/?ref={user.username}</b></p>
-                                
+                                <h3 style={{margin:'0 0 10px 0', fontSize:'15px', color:'#fff'}}>🎁 Invite & Earn</h3>
+                                <p style={{fontSize:'12px', color:'#888', marginBottom:'15px'}}>Share this link with your friends. Get rewards when they join and order!</p>
+                                <input readOnly value={`https://maliksmm.github.io/proxy-smm/?ref=${user.username}`} style={{background:'#111', color:'var(--active)', fontSize:'11px', marginBottom:'10px', border:'1px solid #222'}} />
+                                <button className="btn-neon" style={{padding:'10px', fontSize:'12px', marginBottom:'20px'}} onClick={()=>copyToClipboard(`https://maliksmm.github.io/proxy-smm/?ref=${user.username}`)}>COPY REFERRAL LINK</button>
+
                                 <div style={{display:'flex', justifyContent:'space-between', fontSize:'13px', marginBottom:'20px', fontWeight:'bold', background:'#111', padding:'12px', borderRadius:'8px', border:'1px solid #1a1a1a'}}>
                                     <span style={{color:'#00f3ff'}}><i className="fa fa-users"></i> Signups: {userInfo.ref_signups || 0}</span>
                                     <span style={{color:'#ff1493'}}><i className="fa fa-shopping-cart"></i> Active: {userInfo.ref_active || 0}</span>
                                 </div>
                                 
                                 {(!userInfo.first_claim && (userInfo.ref_signups >= 10)) && (
-                                    <button className="btn-neon" style={{background:'#00ff00', color:'#000'}} onClick={()=>setModal("claim_first")}>CLAIM 1k Fol + 100k V</button>
+                                    <button className="btn-neon" style={{background:'#00ff00', color:'#000'}} onClick={()=>setFollowStep(true)}>CLAIM 1k Fol + 100k V</button>
                                 )}
                                 {(userInfo.first_claim && (userInfo.ref_active >= 10)) && (
-                                    <button className="btn-neon" style={{background:'#00ff00', color:'#000'}} onClick={()=>setModal("claim_lifetime")}>CLAIM LIFETIME REWARD</button>
+                                    <button className="btn-neon" style={{background:'#00ff00', color:'#000'}} onClick={()=>setFollowStep(true)}>CLAIM LIFETIME REWARD</button>
                                 )}
                                 {(!userInfo.first_claim && (userInfo.ref_signups < 10)) && (
-                                    <p style={{fontSize:'11px', color:'#555', textAlign:'center', margin:0}}>Get 10 signups to unlock first reward!</p>
+                                    <p style={{fontSize:'11px', color:'#555', textAlign:'center', margin:0}}>Get 10 signups to unlock your first reward!</p>
                                 )}
                                 {(userInfo.first_claim && (userInfo.ref_active < 10)) && (
                                     <p style={{fontSize:'11px', color:'#555', textAlign:'center', margin:0}}>Get 10 active ordering referrals to unlock next reward!</p>
                                 )}
                             </div>
 
-                            <button className="btn-neon" style={{background:'transparent', border:'1px solid #ff003c', color:'#ff003c', marginTop:'10px', boxShadow:'none'}} onClick={handleLogout}>LOGOUT ACCOUNT</button>
+                            <div className="card-vip" style={{padding:'22px'}}>
+                                <h3 style={{margin:'0 0 10px 0', fontSize:'15px', color:'#fff'}}>🎟️ Redeem Coupon</h3>
+                                <p style={{fontSize:'11px', color:'#888', marginBottom:'10px'}}>Got a secret coupon code from Admin? Enter it below to add funds instantly!</p>
+                                <div className="coupon-box">
+                                    <input placeholder="ENTER CODE" value={couponInput} onChange={e=>setCouponInput(e.target.value)} />
+                                    <button className="btn-neon" onClick={()=>{
+                                        if(!couponInput) return showAlert("Enter a valid code!");
+                                        axios.post('https://malik-proxy-smm.onrender.com/api/apply-coupon', {panel, email:user.email, code:couponInput})
+                                        .then(r => {
+                                            showAlert(`🎉 Coupon Applied! ₹${r.data.amount} added to your wallet.`);
+                                            setCouponInput("");
+                                        }).catch(e=>showAlert(e.response.data.error || "Invalid or Expired Coupon!"));
+                                    }}>APPLY</button>
+                                </div>
+                            </div>
+                            
+                            <div className="card-vip" style={{padding:'20px'}}>
+                                <h4 style={{margin:'0 0 10px 0', color:'var(--active)'}}>How to use refer & get reward?</h4>
+                                <ul style={{fontSize:'11px', color:'#888', paddingLeft:'15px', lineHeight:'1.8', margin:0}}>
+                                    <li>Copy your referral link and share it.</li>
+                                    <li>When 10 friends signup, you unlock the First Reward.</li>
+                                    <li>Click Claim, follow our Socials, and submit your IG link.</li>
+                                    <li>Admin will review and send a Coupon Code to your Mailbox!</li>
+                                </ul>
+                            </div>
                         </div>
                     )}
 
@@ -439,6 +525,12 @@
                         <div style={{padding:'20px'}}>
                             <h2 style={{textAlign:'center', marginBottom:'20px', fontSize:'18px'}} className="text-glow"><i className="fa fa-cog"></i> SETTINGS</h2>
                             
+                            <div className="card-vip" style={{textAlign:'center', padding:'20px'}}>
+                                <i className="fa fa-user-circle fa-3x text-glow" style={{marginBottom:'10px'}}></i>
+                                <h2 style={{margin:'0 0 5px 0', fontSize:'18px'}}>{user.username}</h2>
+                                <p style={{color:'#777', margin:'0', fontSize:'12px'}}>{user.email}</p>
+                            </div>
+
                             <div className="card-vip">
                                 <h4 style={{margin:'0 0 10px 0', color:'#aaa', fontSize:'14px'}}>Change Currency</h4>
                                 <select value={currency} onChange={e => {setCurrency(e.target.value); localStorage.setItem('currency', e.target.value); showAlert(`Currency changed to ${e.target.value}`);}}>
@@ -458,12 +550,9 @@
                                 <h4 style={{margin:'0 0 5px 0', color:'#aaa', fontSize:'14px'}}>Reseller API Access</h4>
                                 <p style={{fontSize:'11px', color:'#666', marginBottom:'15px'}}>Connect your panel with our API.</p>
                                 <p style={{fontSize:'11px', color:'var(--active)', wordBreak:'break-all', background:'#111', padding:'10px', borderRadius:'6px', border:'1px solid #1a1a1a'}}>URL: https://malik-proxy-smm.onrender.com/api/v2</p>
-                                <input readOnly value={apiKey} style={{background:'#111', color:'#ccc', fontSize:'12px', fontFamily:'monospace', border:'1px solid #1a1a1a'}} id="api-key-input" />
+                                <input readOnly value={apiKey} style={{background:'#111', color:'#ccc', fontSize:'12px', fontFamily:'monospace', border:'1px solid #1a1a1a'}} />
                                 <div style={{display:'flex', gap:'10px', marginTop:'5px'}}>
-                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1}} onClick={()=>{
-                                        navigator.clipboard.writeText(apiKey);
-                                        showAlert("API Key Copied to Clipboard!");
-                                    }}>COPY KEY</button>
+                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1}} onClick={()=>copyToClipboard(apiKey)}>COPY KEY</button>
                                     <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1, background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none'}} onClick={()=>{
                                         const newKey = 'API_' + Math.random().toString(36).substr(2, 10).toUpperCase() + btoa(user.email).substring(0,5).toUpperCase();
                                         localStorage.setItem('user_api_key', newKey);
@@ -485,49 +574,44 @@
                                 }}>UPDATE PASSWORD</button>
                             </div>
 
-                            <div className="card-vip" style={{padding:'20px'}}>
-                                <h3 className="text-glow" style={{margin:'0 0 10px 0', fontSize:'15px'}}><i className="fa fa-shield-alt"></i> Privacy Policy</h3>
-                                <p style={{fontSize:'11px', color:'#666', lineHeight:'1.6', margin:0}}>Your data is 100% encrypted and secured. We do not share your email or links with any third party. All transactions are safe. We prioritize your privacy above all.</p>
-                            </div>
+                            <button className="btn-neon" style={{background:'transparent', border:'1px solid #ff003c', color:'#ff003c', marginTop:'10px', boxShadow:'none'}} onClick={handleLogout}>LOGOUT ACCOUNT</button>
                         </div>
                     )}
 
-                    {/* 📩 PROFESSIONAL GMAIL STYLE MAILBOX */}
-                    {modal === "mailbox" && (
+                    {/* 📩 PROFESSIONAL GMAIL STYLE MAILBOX WITH THEMES */}
+                    {modal === "mailbox" && !activeMail && (
                         <div className="modal">
-                            <div className="gmail-modal">
+                            <div className={`gmail-modal mail-theme-${appConfig.mail_theme || '1'}`}>
                                 <div className="gmail-header">
                                     <div style={{display:'flex', alignItems:'center', gap:'15px'}}>
                                         <i className="fa fa-arrow-left" style={{fontSize:'18px', color:'#fff', cursor:'pointer'}} onClick={()=>setModal(null)}></i>
-                                        <h3>Inbox</h3>
+                                        <h3>Support Inbox</h3>
                                     </div>
                                 </div>
                                 <div className="mail-list">
                                     {mails.length === 0 ? (
                                         <div style={{textAlign:'center', marginTop:'100px', color:'#5f6368'}}>
-                                            <i className="fa fa-inbox fa-4x" style={{opacity:0.5, marginBottom:'15px'}}></i>
-                                            <p style={{fontSize:'15px', fontWeight:'500', margin:0}}>Nothing to see here.</p>
-                                            <p style={{fontSize:'12px', marginTop:'5px'}}>You have no messages.</p>
+                                            <i className="fa fa-envelope-open fa-4x" style={{opacity:0.3, marginBottom:'15px'}}></i>
+                                            <p style={{fontSize:'15px', fontWeight:'500', margin:0, color:'#888'}}>Nothing to see here.</p>
                                         </div>
                                     ) : mails.slice().reverse().map((m, i) => {
                                         const actualIndex = mails.length - 1 - i;
                                         return (
-                                        <div key={i} className="mail-item">
+                                        <div key={i} className="mail-item" onClick={()=>setActiveMail(m)}>
                                             <div className={`mail-avatar ${m.from==='admin' ? 'avatar-admin' : 'avatar-user'}`}>
-                                                {m.from==='admin' ? 'A' : 'M'}
+                                                {m.from==='admin' ? <i className="fa fa-crown"></i> : 'M'}
                                             </div>
                                             <div className="mail-content">
                                                 <div className="mail-sender">
-                                                    <span>{m.from==='admin' ? 'Support Admin' : 'Me'}</span>
+                                                    <span>{m.from==='admin' ? '👑 ADMIN VIP' : 'Me'}</span>
                                                 </div>
                                                 <div className="mail-snippet">{m.msg}</div>
                                             </div>
-                                            <i className="fa fa-trash mail-delete" onClick={()=>handleDeleteMail(actualIndex)} title="Delete locally"></i>
                                         </div>
                                     )})}
                                 </div>
                                 <div className="gmail-compose-box">
-                                    <input className="gmail-input" placeholder="Compose email..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
+                                    <input className="gmail-input" placeholder="Type message to Admin..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
                                     <button className="gmail-send" onClick={()=>{
                                         if(!mailInput) return showAlert("Please write a message!");
                                         axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:mailInput})
@@ -544,17 +628,64 @@
                         </div>
                     )}
 
-                    {typeof modal === 'string' && modal.includes("claim") && (
+                    {/* 📩 DETAILED MAIL VIEW (Open, Read, Copy, Links) */}
+                    {activeMail && (
+                        <div className="mail-detail-box">
+                            <div className="md-header">
+                                <i className="fa fa-arrow-left" style={{fontSize:'18px', cursor:'pointer'}} onClick={()=>setActiveMail(null)}></i>
+                                <h3 style={{margin:0, fontSize:'16px'}}>Message Details</h3>
+                            </div>
+                            <div className="md-body">
+                                <div className="md-sender-info">
+                                    <div className={`mail-avatar ${activeMail.from==='admin' ? 'avatar-admin' : 'avatar-user'}`} style={{width:'50px', height:'50px', fontSize:'22px'}}>
+                                        {activeMail.from==='admin' ? <i className="fa fa-crown"></i> : 'M'}
+                                    </div>
+                                    <div>
+                                        <div className="text-glow" style={{fontWeight:'900', fontSize:'18px'}}>{activeMail.from==='admin' ? '👑 ADMIN VIP' : 'You'}</div>
+                                        <div style={{fontSize:'11px', color:'#888'}}>to {activeMail.from==='admin' ? 'Me' : 'Support Admin'}</div>
+                                    </div>
+                                </div>
+                                <div className="md-text">
+                                    {formatMailText(activeMail.msg)}
+                                </div>
+                                <div className="md-actions">
+                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', background:'#111', border:'1px solid var(--active)', color:'var(--active)', boxShadow:'none'}} onClick={()=>copyToClipboard(activeMail.msg)}><i className="fa fa-copy"></i> COPY TEXT</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 🎁 REWARD CLAIM FLOW (FOLLOW FIRST) */}
+                    {followStep && (
                         <div className="modal">
                             <div className="modal-body">
-                                <h3 className="text-glow" style={{fontSize:'18px'}}>CLAIM YOUR GIFT</h3>
-                                <p style={{color:'#888', fontSize:'12px', margin:'0 0 20px 0'}}>Submit your links for 1k Followers & 100k Views!</p>
+                                <h3 className="text-glow" style={{fontSize:'18px'}}>STEP 1: FOLLOW US</h3>
+                                <p style={{color:'#aaa', fontSize:'12px', margin:'10px 0 20px 0'}}>You must follow all our social accounts to claim your reward!</p>
+                                <div className="social-container" style={{marginBottom:'30px'}}>
+                                    {appConfig.socials?.tg && <a href={appConfig.socials.tg} target="_blank" className="social-link glow-tg"><i className="fab fa-telegram"></i></a>}
+                                    {appConfig.socials?.yt && <a href={appConfig.socials.yt} target="_blank" className="social-link glow-yt"><i className="fab fa-youtube"></i></a>}
+                                    {appConfig.socials?.ig && <a href={appConfig.socials.ig} target="_blank" className="social-link glow-ig"><i className="fab fa-instagram"></i></a>}
+                                </div>
+                                <button className="btn-neon" onClick={()=>{setFollowStep(false); setModal("claim_final");}}>I HAVE FOLLOWED ALL</button>
+                                <p onClick={()=>setFollowStep(false)} style={{marginTop:'20px', cursor:'pointer', color:'#666', fontSize:'13px'}}>Cancel</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {modal === "claim_final" && (
+                        <div className="modal">
+                            <div className="modal-body">
+                                <h3 className="text-glow" style={{fontSize:'18px'}}>STEP 2: SUBMIT LINKS</h3>
+                                <p style={{color:'#aaa', fontSize:'12px', margin:'0 0 20px 0'}}>Submit your links for 1k Followers & 100k Views!</p>
                                 <input placeholder="Paste Link For Followers" onChange={e=>setForm({...form, f_link:e.target.value})} />
                                 <input placeholder="Paste Link For Views" onChange={e=>setForm({...form, v_link:e.target.value})} />
                                 <button className="btn-neon" onClick={()=>{
                                     if(!form.f_link || !form.v_link) return showAlert("Please provide both links!");
                                     axios.post('https://malik-proxy-smm.onrender.com/api/claim-reward', {panel, email:user.email, views_link:form.v_link, followers_link:form.f_link})
-                                    .then(()=>{showAlert("Reward Claimed! Admin will process it soon.");setModal(null);})
+                                    .then(()=>{
+                                        showAlert("Wait some time, reward coupon will be sent to your mailbox!");
+                                        setModal(null);
+                                    })
                                 }}>SUBMIT LINKS</button>
                                 <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#666', fontSize:'13px'}}>Close Window</p>
                             </div>
@@ -566,7 +697,7 @@
                             <div className="modal-body">
                                 <h3 className="text-glow" style={{fontSize:'18px'}}>ADD FUNDS</h3>
                                 <div style={{background:'#fff', padding:'10px', borderRadius:'12px', display:'inline-block', margin:'15px 0'}}>
-                                    <img src={panel === 1 ? appConfig.qr_1 : appConfig.qr_2} style={{width:'200px', display:'block'}} onError={(e)=>e.target.src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=followersincrease870@oksbi"} />
+                                    <img src={actPanelData.id === '1' ? appConfig.qr_1 : appConfig.qr_2} style={{width:'200px', display:'block'}} onError={(e)=>e.target.src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=followersincrease870@oksbi"} />
                                 </div>
                                 <p style={{color:'#888', fontSize:'12px', margin:'0'}}>Scan QR or Pay via UPI</p>
                                 <div className="text-glow" style={{fontWeight:'bold', marginBottom:'10px', fontSize:'14px', letterSpacing:'1px'}}>followersincrease870@oksbi</div>
@@ -647,8 +778,8 @@
                         <div className={`nav-btn ${tab==="Home"?"nav-active":""}`} onClick={()=>setTab("Home")}><i className="fa fa-home"></i>Home</div>
                         <div className={`nav-btn ${tab==="Services"?"nav-active":""}`} onClick={()=>setTab("Services")}><i className="fa fa-bolt"></i>Services</div>
                         <div className={`nav-btn ${tab==="Orders"?"nav-active":""}`} onClick={()=>setTab("Orders")}><i className="fa fa-box"></i>Orders</div>
+                        <div className={`nav-btn ${tab==="Rewards"?"nav-active":""}`} onClick={()=>setTab("Rewards")}><i className="fa fa-gift"></i>Rewards</div>
                         <div className={`nav-btn ${tab==="Settings"?"nav-active":""}`} onClick={()=>setTab("Settings")}><i className="fa fa-cog"></i>Settings</div>
-                        <div className={`nav-btn ${tab==="Profile"?"nav-active":""}`} onClick={()=>setTab("Profile")}><i className="fa fa-user-circle"></i>Profile</div>
                     </div>
                 </div>
             );
