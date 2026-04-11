@@ -10,69 +10,62 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 🎨 P1 = CYAN, P2 = PINK (Clean & Sharp Look) */
+        /* 🎨 P1 = CYAN, P2 = PINK */
         :root { --p1: #00f3ff; --p2: #ff1493; }
         body, html { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
-        .login-bg { background: #050505; }
+        .login-bg { background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%); position: relative; }
+        .login-bg::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 50% 0%, var(--active) 0%, transparent 45%); opacity: 0.15; pointer-events:none; }
 
         .theme-p1 { --active: var(--p1); --bg: #000d11; }
         .theme-p2 { --active: var(--p2); --bg: #1a000a; }
         
         .text-glow { color: var(--active); text-shadow: 0 0 8px var(--active); }
-        .card-vip { background: #0a0a0a; padding: 25px; border-radius: 20px; margin: 15px; border: 1px solid #222; border-top: 4px solid var(--active); box-shadow: 0 4px 15px rgba(0,0,0,0.5); position:relative; overflow:hidden; }
+        .card-vip { background: var(--bg); padding: 25px; border-radius: 20px; margin: 15px; border: 1px solid #222; border-top: 5px solid var(--active); box-shadow: 0 4px 10px rgba(0,0,0,0.6); position:relative; overflow:hidden; }
         
-        .btn-neon { background: var(--active); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 0 12px var(--active); font-size: 15px; text-transform: uppercase; transition: 0.2s; letter-spacing: 1px; }
-        .btn-neon:active { transform: scale(0.96); box-shadow: 0 0 5px var(--active); }
+        .btn-neon { background: var(--active); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 0 8px var(--active); font-size: 16px; text-transform: uppercase; transition: 0.2s; }
+        .btn-neon:active { transform: scale(0.96); opacity: 0.9; }
         
-        .cat-menu { display: flex; overflow-x: auto; padding: 12px 15px; background: #050505; border-bottom: 1px solid #222; gap: 12px; scrollbar-width: none; }
+        .cat-menu { display: flex; overflow-x: auto; padding: 12px; background: #080808; border-bottom: 2px solid #222; gap: 12px; scrollbar-width: none; }
         .cat-menu::-webkit-scrollbar { display: none; }
-        .cat-btn { padding: 10px 22px; border-radius: 25px; background: #111; border: 1px solid #333; color: #888; white-space: nowrap; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s; }
-        .cat-active { border-color: var(--active); color: var(--active); background: rgba(255,255,255,0.03); }
+        .cat-btn { padding: 10px 20px; border-radius: 25px; background: #111; border: 1px solid #333; color: #888; white-space: nowrap; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s; }
+        .cat-active { border-color: var(--active); color: var(--active); background: rgba(255,255,255,0.05); }
         
-        .service-card { background: #080808; margin: 15px; padding: 18px; border-radius: 16px; border-left: 4px solid var(--active); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; border-right: 1px solid #111; border-top: 1px solid #111; }
+        .service-card { background: #0a0a0a; margin: 12px 15px; padding: 18px; border-radius: 15px; border-left: 4px solid var(--active); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .modal-body { background: #000; width: 88%; max-width: 400px; padding: 30px; border-radius: 25px; text-align: center; border: 2px solid var(--active); box-shadow: 0 0 15px var(--active); max-height: 85vh; overflow-y: auto; }
         
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
-        .modal-body { background: #080808; width: 90%; max-width: 420px; padding: 25px; border-radius: 24px; text-align: center; border: 1px solid var(--active); box-shadow: 0 10px 40px rgba(0,0,0,0.8); max-height: 85vh; overflow-y: auto; }
-        
-        /* 📬 PROFESSIONAL GMAIL-STYLE MAILBOX UI */
-        .mail-modal { align-items: center; }
-        .mail-body { width: 100%; max-width: 450px; height: 85vh; background: #0a0a0a; border-radius: 20px; padding: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #333; box-shadow: 0 10px 50px rgba(0,0,0,0.9); }
-        .mail-header { background: #111; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #222; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; }
-        .mail-header i.back-btn { font-size: 20px; color: #fff; cursor: pointer; transition: 0.2s; }
-        .mail-header i.back-btn:active { transform: translateX(-3px); }
-        .mail-header-info { margin-left: 15px; display: flex; align-items: center; gap: 12px; }
-        .mail-avatar { width: 40px; height: 40px; background: var(--active); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; color: #000; }
-        .mail-header-text { text-align: left; }
-        .mail-header-text h3 { margin: 0; font-size: 16px; color: #fff; letter-spacing: 0.5px; }
-        .mail-header-text p { margin: 0; font-size: 11px; color: #00ff00; font-weight: bold; }
-        .mail-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #050505; gap: 10px; }
-        .mail-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative; word-wrap: break-word; }
-        .mail-admin { align-self: flex-start; background: #1a1a1a; color: #eee; border-bottom-left-radius: 4px; border: 1px solid #333; }
-        .mail-user { align-self: flex-end; background: var(--active); color: #000; border-bottom-right-radius: 4px; font-weight: 600; box-shadow: 0 2px 8px var(--active); }
-        .mail-input-area { padding: 15px; background: #111; border-top: 1px solid #222; display: flex; align-items: center; gap: 12px; }
-        .mail-input-area input { flex: 1; background: #050505; border: 1px solid #333; color: #fff; padding: 14px 18px; border-radius: 25px; margin: 0; font-size: 14px; outline: none; transition: 0.3s; }
-        .mail-input-area input:focus { border-color: var(--active); }
-        .mail-send-btn { background: var(--active); color: #000; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: none; cursor: pointer; font-size: 18px; transition: 0.2s; box-shadow: 0 0 10px var(--active); }
-        .mail-send-btn:active { transform: scale(0.85); }
+        /* 📩 GMAIL PRO MAILBOX STYLES */
+        .gmail-modal { width: 100%; height: 100%; background: #121212; border-radius: 0; padding: 0; display: flex; flex-direction: column; border: none; box-shadow: none; max-width: 100%; max-height: 100%; }
+        .gmail-header { background: #202124; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 2; }
+        .gmail-header h3 { margin: 0; font-size: 18px; color: #fff; font-weight: 500; }
+        .gmail-fab { position: absolute; bottom: 30px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--active); color: #000; display: flex; justify-content: center; align-items: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); border: none; cursor: pointer; z-index: 10; transition: 0.3s; }
+        .gmail-fab:active { transform: scale(0.9); }
+        .mail-item { display: flex; padding: 15px 20px; border-bottom: 1px solid #202124; align-items: flex-start; background: #121212; }
+        .mail-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; margin-right: 15px; color: #fff; flex-shrink: 0; }
+        .avatar-admin { background: #1a73e8; }
+        .avatar-user { background: #e37400; }
+        .mail-content { flex: 1; text-align: left; }
+        .mail-sender { font-weight: bold; font-size: 15px; color: #e8eaed; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .mail-snippet { font-size: 13px; color: #9aa0a6; line-height: 1.5; word-wrap: break-word; }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #050505; padding: 12px 0; border-top: 1px solid #222; z-index: 1000; }
-        .nav-btn { color: #555; font-size: 11px; text-align: center; cursor: pointer; flex: 1; font-weight: bold; transition: 0.3s; }
-        .nav-btn i { font-size: 22px; margin-bottom: 4px; display: block; }
-        .nav-active { color: var(--active); text-shadow: 0 0 8px var(--active); transform: translateY(-2px); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #050505; padding: 15px 0; border-top: 2px solid #222; z-index: 1000; }
+        .nav-btn { color: #555; font-size: 11px; text-align: center; cursor: pointer; flex: 1; font-weight: bold; }
+        .nav-btn i { font-size: 22px; margin-bottom: 5px; display: block; }
+        .nav-active { color: var(--active); text-shadow: 0 0 10px var(--active); transform: translateY(-3px); }
         
-        input, select { width: 100%; padding: 16px; margin-bottom: 15px; background: #0a0a0a; border: 1px solid #222; color: #fff; border-radius: 12px; font-size: 14px; outline: none; box-sizing: border-box; }
-        input:focus, select:focus { border-color: var(--active); background: #111; }
+        input, select { width: 92%; padding: 15px; margin-bottom: 15px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 12px; font-size: 15px; outline: none; }
+        input:focus, select:focus { border-color: var(--active); box-shadow: 0 0 8px var(--active); }
         
-        .social-link { font-size: 40px; margin: 0 15px; transition: 0.3s; }
-        .social-link:hover { transform: scale(1.1); text-shadow: 0 0 10px currentColor; }
-        .big-badge { text-align: center; margin: 25px 0; color: #00ff00; font-size: 20px; font-weight: 900; text-shadow: 0 0 10px #00ff00; text-transform: uppercase; letter-spacing: 1px; }
+        .social-link { font-size: 45px; margin: 0 15px; transition: 0.3s; }
+        .social-link:hover { transform: scale(1.1); }
+        .big-badge { text-align: center; margin: 30px 0; color: #00ff00; font-size: 22px; font-weight: 900; text-shadow: 0 0 15px #00ff00; text-transform: uppercase; letter-spacing: 1px; }
 
         .warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 20px; box-sizing: border-box; }
         .warning-box { background: #000; padding: 35px 25px; border-radius: 20px; text-align: center; border: 4px solid #fff; box-shadow: 0 0 50px rgba(255,0,0,0.8); }
 
-        .discount-badge { position:absolute; top:0; right:0; background:#ff003c; padding:6px 20px; border-bottom-left-radius:18px; font-weight:900; font-size:12px; animation: pulse 2s infinite; letter-spacing: 1px; box-shadow: -2px 2px 10px rgba(255,0,60,0.4); }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        .discount-badge { position:absolute; top:0; right:0; background:#ff003c; padding:5px 15px; border-bottom-left-radius:15px; font-weight:bold; font-size:12px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     </style>
 </head>
 <body id="bdy" class="login-bg theme-p1">
@@ -106,9 +99,6 @@
             
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
 
-            const [aiInput, setAiInput] = useState("");
-            const [aiChat, setAiChat] = useState([{bot: "Hello! I am the Malik Proxy AI Assistant. I can guide you on how to use the app, add funds, or solve order issues. How can I help you today?"}]);
-
             const [vipAlert, setVipAlert] = useState(null);
             const showAlert = (msg) => setVipAlert(msg);
             
@@ -117,7 +107,6 @@
             
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:'', f_link:'', v_link:'', oldPass:'', newPass:''});
             const prevOrdersRef = useRef([]);
-            const mailEndRef = useRef(null);
 
             useEffect(() => {
                 if ("Notification" in window && Notification.permission !== "granted") {
@@ -188,24 +177,24 @@
                     if(!form.username || !form.email || !form.pass) return showAlert("Please give valid details!");
                     if(!form.email.includes('@')) return showAlert("Please give valid details!");
                     const ref_code = localStorage.getItem('ref_by') || '';
-                    axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ref: ref_code, ...form })
+                    axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ref: ref_code, username: form.username.trim(), email: form.email.trim(), pass: form.pass.trim() })
                     .then(() => {
-                        const ud = { email: form.email.toLowerCase().trim(), username: form.username.toLowerCase().trim() };
+                        const ud = { email: form.email.trim().toLowerCase(), username: form.username.trim().toLowerCase() };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     }).catch((e) => showAlert(e.response.data.error || "Please give valid details!"));
                 } else {
                     if(!form.username || !form.pass) return showAlert("Please give valid details!");
-                    axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: form.username, pass: form.pass })
+                    axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: form.username.trim(), pass: form.pass.trim() })
                     .then((r) => {
-                        const ud = { email: r.data.email, username: form.username.toLowerCase().trim() };
+                        const ud = { email: r.data.email, username: form.username.trim().toLowerCase() };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
-                    }).catch((e) => showAlert(e.response.data.error || "Please give valid details!"));
+                    }).catch((e) => showAlert(e.response.data.error || "Invalid Username or Password!"));
                 }
             };
 
             const customGoogleAuth = () => {
                 if(!googleEmail.includes("@") || !googleUsername) return showAlert("Please enter both Email and Username!");
-                axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel || 1, email: googleEmail, username: googleUsername })
+                axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel || 1, email: googleEmail.trim(), username: googleUsername.trim() })
                 .then((r)=>{
                     const ud = { email: r.data.email, username: r.data.username };
                     setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel || 1);
@@ -234,64 +223,11 @@
 
             const cats = ["All", "Instagram", "YouTube", "Telegram", "Facebook", "TikTok"];
 
-            // 🧠 SMART HINGLISH/ENGLISH AI CHAT LOGIC
-            const handleAiChat = () => {
-                if(!aiInput) return;
-                let text = aiInput.toLowerCase();
-                let isHindi = text.includes("kya") || text.includes("kese") || text.includes("hai") || text.includes("bhai") || text.includes("karu") || text.includes("kyu") || text.includes("nahi") || text.includes("wapas");
-                
-                let reply = isHindi ? 
-                    "Main sirf Malik Proxy SMM app ke baare mein baat kar sakta hoon bhai. App, funds, orders, ya services se related kuch bhi pooch lo!" : 
-                    "I am specifically designed to assist with Malik Proxy SMM app functions. Please ask me about adding funds, placing orders, or using the app.";
-                
-                if(text.includes("pending") || text.includes("slow") || text.includes("time") || text.includes("ruka")) {
-                    reply = isHindi ? 
-                        "Agar tera order pending ya processing mein hai, toh thoda wait kar le bhai. Normally 5-10 minute lagte hain. Agar bohot time ho gaya hai, toh Orders tab se 'Request Cancel' daba de ya Admin ko mail kar de." : 
-                        "Orders typically start within 5-10 minutes. However, server loads can sometimes cause delays. If it's taking too long, please use the 'Request Cancel' button in the Orders tab or mail the Admin.";
-                } else if(text.includes("add") || text.includes("fund") || text.includes("money") || text.includes("pay") || text.includes("paisa")) {
-                    reply = isHindi ? 
-                        "Fund add karne ke liye 'Home' pe ja, '+ ADD FUNDS HERE' daba. Phir QR scan karke pay kar aur 12-digit UTR daal ke submit kar de. 5 minute mein balance update ho jayega!" : 
-                        "To add funds:\n1. Go to Home > '+ ADD FUNDS HERE'.\n2. Scan the QR code or copy UPI ID.\n3. Make payment.\n4. Enter Amount and 12-digit UTR in the app.\n5. Click Submit. Admin will approve it within 5-10 mins.";
-                } else if(text.includes("cancel") || text.includes("refund") || text.includes("wapas")) {
-                    reply = isHindi ? 
-                        "Order cancel karna hai? Orders tab mein jaake apne order ke neeche 'Request Cancel' daba de. Tera paisa wallet mein wapas aa jayega jab admin request approve karega." : 
-                        "To cancel an order, go to the 'Orders' tab and click 'Request Cancel' below your pending order. The admin will review it and refund the amount to your wallet.";
-                } else if(text.includes("api") || text.includes("key")) {
-                    reply = isHindi ? 
-                        "API key chahiye ya reset karni hai? Settings tab mein 'Reseller API Access' ka option hai, wahan se URL aur Key dono mil jayegi. Change karni ho toh Reset daba dena." : 
-                        "You can find your API URL and generate/reset your API Key in the 'Settings' tab under the 'Reseller API Access' section.";
-                } else if(text.includes("contact") || text.includes("admin") || text.includes("help") || text.includes("baat")) {
-                    reply = isHindi ? 
-                        "Admin se baat karni hai toh Home screen par '📬 SUPPORT MAILBOX' daba kar message bhej de. Admin direct app mein hi reply kar dega!" : 
-                        "For account, payment, or order problems, please click '📬 SUPPORT MAILBOX' on the Home screen to send a direct message to the Admin. They will reply to you shortly.";
-                } else if(text.includes("discount") || text.includes("cheap") || text.includes("offer") || text.includes("sasta")) {
-                    reply = isHindi ? 
-                        "Discount chahiye? Admin randomly offers nikalta rehta hai. App notifications aur Mailbox check karta reh, ya admin se mail pe baat kar le!" : 
-                        "Admin provides random discounts and special holiday offers! Keep an eye on your Mailbox and app dashboard for active discount notifications.";
-                } else if(text.includes("developer") || text.includes("owner") || text.includes("code") || text.includes("banaya")) {
-                    reply = isHindi ? 
-                        "Main toh bas ek AI bot hoon bhai! Mujhe in baaton ka idea nahi. App ke related kuch puchna hai toh batao." : 
-                        "I am an AI assistant. I cannot share developer information or administrative details. I can only guide you on how to use Malik Proxy SMM.";
-                }
-                
-                setAiChat([...aiChat, {user: aiInput}, {bot: reply}]);
-                setAiInput("");
-                setTimeout(() => {
-                    const chatBox = document.getElementById("ai-chat-box");
-                    if(chatBox) chatBox.scrollTop = chatBox.scrollHeight;
-                }, 100);
-            };
-
-            const scrollToBottom = () => {
-                mailEndRef.current?.scrollIntoView({ behavior: "smooth" });
-            };
-            useEffect(() => { if(modal === "mailbox") scrollToBottom(); }, [mails, modal]);
-
             const renderNotification = () => {
                 if(!vipAlert) return null;
                 return (
                     <div className="modal" style={{zIndex: 999999}}>
-                        <div className="modal-body" style={{border: '1px solid var(--active)'}}>
+                        <div className="modal-body" style={{border: '2px solid var(--active)', boxShadow: '0 0 20px var(--active)'}}>
                             <h2 className="text-glow" style={{margin:'0 0 15px 0'}}>👑 SYSTEM NOTIFICATION</h2>
                             <p style={{fontSize:'16px', margin:'10px 0 25px 0', whiteSpace: 'pre-wrap'}}>{vipAlert}</p>
                             <button className="btn-neon" onClick={()=>setVipAlert(null)}>OK, GOT IT</button>
@@ -303,7 +239,7 @@
             if (!panel) return (
                 <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
                     {renderNotification()}
-                    <h1 className="text-glow" style={{fontSize:'38px', marginBottom:'20px', textAlign:'center', fontWeight:'900'}}>MALIK PROXY<br/>SMM PRO</h1>
+                    <h1 className="text-glow" style={{fontSize:'38px', marginBottom:'20px', textAlign:'center'}}>MALIK PROXY<br/>SMM PRO</h1>
                     <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px'}}>These two panels have different services and rates. Try both and choose what fits you best!</p>
                     <button className="btn-neon" style={{width:'300px', background:'#00f3ff', margin:'12px', boxShadow:'0 0 10px #00f3ff'}} onClick={()=>setPanel(1)}>Login/Signup - Panel 1</button>
                     <button className="btn-neon" style={{width:'300px', background:'#ff1493', margin:'12px', boxShadow:'0 0 10px #ff1493'}} onClick={()=>setPanel(2)}>Login/Signup - Panel 2</button>
@@ -318,8 +254,8 @@
                             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style={{width:'45px', marginBottom:'15px'}} />
                             <h2 style={{margin:'0 0 10px 0', fontSize:'24px'}}>Account Recovery</h2>
                             <p style={{color:'#d93025', fontSize:'13px', fontWeight:'bold', marginBottom:'15px'}}>Security Check: Enter details to verify identity</p>
-                            <input placeholder="Enter Registered Email" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'100%', padding:'15px', marginBottom:'10px'}} onChange={e=>setGoogleEmail(e.target.value)} />
-                            <input placeholder="Enter Username" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'100%', padding:'15px'}} onChange={e=>setGoogleUsername(e.target.value)} />
+                            <input placeholder="Enter Registered Email" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'90%', padding:'12px', marginBottom:'10px'}} onChange={e=>setGoogleEmail(e.target.value)} />
+                            <input placeholder="Enter Username" style={{background:'#f1f3f4', color:'#000', border:'1px solid #ccc', width:'90%', padding:'12px'}} onChange={e=>setGoogleUsername(e.target.value)} />
                             <button className="btn-neon" style={{background:'#0b57d0', color:'#fff', marginTop:'15px', boxShadow:'none', borderRadius:'4px'}} onClick={customGoogleAuth}>Secure Login</button>
                             <p style={{marginTop:'20px', color:'#0b57d0', cursor:'pointer', fontWeight:'bold', fontSize:'14px'}} onClick={()=>setShowGoogleModal(false)}>Cancel</p>
                         </div>
@@ -329,8 +265,8 @@
                 return (
                     <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
                         {renderNotification()}
-                        <div className="modal-body" style={{background:'rgba(5,5,5,0.95)'}}>
-                            <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'5px', fontWeight:'900'}}>MALIK PROXY SMM</h2>
+                        <div className="modal-body" style={{background:'rgba(0,0,0,0.85)', backdropFilter:'blur(10px)'}}>
+                            <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'5px'}}>MALIK PROXY SMM</h2>
                             <h3 style={{color:'#bbb', marginBottom:'20px'}}>{isSignup ? "CREATE ACCOUNT" : "LOGIN"}</h3>
                             
                             {isSignup && <p style={{fontSize:'12px', color:'#00f3ff', marginBottom:'15px'}}>How to signup: Enter a unique username, your email, and a password.</p>}
@@ -353,7 +289,7 @@
                 );
             }
             return (
-                <div style={{paddingBottom:'80px'}}>
+                <div style={{paddingBottom:'100px'}}>
                     {renderNotification()}
                     {warnUtr && (
                         <div className="warning-overlay">
@@ -370,63 +306,58 @@
                         </div>
                     )}
 
-                    <div style={{textAlign:'center', padding:'20px 0', borderBottom:'1px solid #222', background:'#050505', display:'flex', justifyContent:'space-around', alignItems:'center'}}>
-                        <h1 className="text-glow" style={{margin:0, fontSize:'24px', letterSpacing:'1px', fontWeight:'900'}}>MALIK PROXY P{panel}</h1>
-                        <button style={{background:'transparent', border:'none', color:'var(--active)', fontSize:'20px', cursor:'pointer'}} onClick={()=>setModal("ai")}><i className="fa fa-robot"></i></button>
+                    <div style={{textAlign:'center', padding:'20px 0', borderBottom:'2px solid var(--active)', background:'#050505'}}>
+                        <h1 className="text-glow" style={{margin:0, fontSize:'24px', letterSpacing:'1px'}}>MALIK PROXY P{panel}</h1>
                     </div>
                     
                     {tab === "Home" && (
                         <div className="slide-in">
                             <div className="card-vip" style={{textAlign:'center'}}>
                                 {discount > 0 && <div className="discount-badge">{discount}% OFF ACTIVE</div>}
-                                <p style={{margin:0, color:'#aaa', fontSize:'14px', fontWeight:'bold', textTransform:'uppercase'}}>Wallet Balance ({currency})</p>
-                                <h2 className="text-glow" style={{fontSize:'45px', margin:'10px 0'}}>{currency === "USD" ? '$' : '₹'}{(currency==="USD"?balance/83:balance).toFixed(2)}</h2>
-                                <button className="btn-neon" style={{marginTop:'10px'}} onClick={()=>setModal("pay")}>+ ADD FUNDS HERE</button>
+                                <p style={{margin:0, color:'#aaa', fontSize:'16px', fontWeight:'bold'}}>Wallet Balance ({currency})</p>
+                                <h2 className="text-glow" style={{fontSize:'50px', margin:'15px 0'}}>{currency === "USD" ? '$' : '₹'}{(currency==="USD"?balance/83:balance).toFixed(2)}</h2>
+                                <button className="btn-neon" onClick={()=>setModal("pay")}>+ ADD FUNDS HERE</button>
                             </div>
                             
-                            <button className="btn-neon" style={{width:'88%', margin:'10px auto', display:'block', background:'transparent', border:'1px solid var(--active)', color:'var(--active)'}} onClick={()=>setModal("history")}>TRANSACTION HISTORY</button>
-                            <button className="btn-neon" style={{width:'88%', margin:'15px auto', display:'block', background:'transparent', border:'1px solid var(--active)', color:'var(--active)'}} onClick={()=>setModal("guide")}>HOW TO USE?</button>
+                            <button className="btn-neon" style={{width:'85%', margin:'10px auto', display:'block', background:'transparent', border:'2px solid var(--active)', color:'var(--active)'}} onClick={()=>setModal("history")}>TRANSACTION HISTORY</button>
+                            <button className="btn-neon" style={{width:'85%', margin:'20px auto', display:'block', background:'transparent', border:'2px solid var(--active)', color:'var(--active)'}} onClick={()=>setModal("guide")}>HOW TO USE?</button>
 
-                            <p style={{textAlign:'center', color:'#888', fontSize:'12px', marginTop:'30px', marginBottom:'8px', textTransform:'uppercase', letterSpacing:'1px'}}>Join our community for updates</p>
-                            <button className="btn-neon" style={{width:'88%', margin:'0 auto', display:'block', background:'#111', border:'1px solid #333', color:'#fff'}} onClick={()=>setModal("mailbox")}><i className="fa fa-envelope" style={{color:'var(--active)', marginRight:'8px'}}></i> SUPPORT MAILBOX</button>
+                            <p style={{textAlign:'center', color:'#aaa', fontSize:'13px', marginTop:'25px', marginBottom:'5px'}}>Join our community for updates</p>
+                            <button className="btn-neon" style={{width:'85%', margin:'0 auto', display:'block', background:'rgba(255,255,255,0.05)', border:'2px solid var(--active)', color:'#fff'}} onClick={()=>setModal("mailbox")}><i className="fa fa-envelope" style={{color:'var(--active)', marginRight:'8px'}}></i> SUPPORT MAILBOX</button>
 
-                            <div className="big-badge">🛡️ SAFE, SECURE & FAST<br/><span style={{fontSize:'14px', color:'#aaa'}}>INSTANT DELIVERY</span></div>
+                            <div className="big-badge">🛡️ SAFE, SECURE & FAST<br/>INSTANT DELIVERY</div>
 
-                            <div style={{display:'flex', justifyContent:'center', gap:'40px', marginTop:'20px'}}>
+                            <div style={{display:'flex', justifyContent:'center', gap:'35px', marginTop:'30px'}}>
                                 <a href="https://t.me/zr3v_x" className="social-link" style={{color:'#00f3ff'}}><i className="fab fa-telegram"></i></a>
                                 <a href="https://t.me/all_services_provider" className="social-link" style={{color:'#ff00ff'}}><i className="fa fa-bullhorn"></i></a>
                                 <a href="https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb" className="social-link" style={{color:'#ff003c'}}><i className="fab fa-youtube"></i></a>
                             </div>
                             
-                            <div style={{textAlign:'center', marginTop:'40px', color:'#444', fontSize:'12px', fontWeight:'bold', letterSpacing:'1px'}}>DEVELOPED BY ARYAN MALIK</div>
+                            <div style={{textAlign:'center', marginTop:'40px', color:'#555', fontSize:'14px', fontWeight:'bold'}}>DEVELOPED BY ARYAN MALIK</div>
                         </div>
                     )}
 
                     {tab === "Services" && (
                         <div>
-                            {discount > 0 && <div style={{background:'#ff003c', color:'#fff', textAlign:'center', padding:'10px', fontSize:'13px', fontWeight:'bold', letterSpacing:'1px'}}>🔥 {discount}% DISCOUNT APPLIED ON ALL SERVICES 🔥</div>}
-                            <input style={{width:'90%', padding:'15px', margin:'15px auto', display:'block', background:'#080808', border:'1px solid #222', color:'#fff', borderRadius:'12px', fontSize:'15px'}} placeholder="🔍 Search Cheapest Services..." onChange={e=>setSearch(e.target.value)} />
+                            {discount > 0 && <div style={{background:'#ff003c', color:'#fff', textAlign:'center', padding:'8px', fontWeight:'bold'}}>🔥 {discount}% DISCOUNT APPLIED ON ALL SERVICES 🔥</div>}
+                            <input style={{width:'90%', padding:'15px', margin:'15px auto', display:'block', background:'#0a0a0a', border:'1px solid var(--active)', color:'#fff', borderRadius:'12px', fontSize:'16px'}} placeholder="🔍 Search Cheapest Services..." onChange={e=>setSearch(e.target.value)} />
                             
                             <div className="cat-menu">
                                 {cats.map(c => <div key={c} className={`cat-btn ${activeCat===c?'cat-active':''}`} onClick={()=>setActiveCat(c)}>{c}</div>)}
                             </div>
                             
-                            <div style={{paddingBottom:'20px'}}>
-                                {filtered.map(s => (
-                                    <div className="service-card" key={s.service}>
-                                        <div style={{width:'70%', paddingRight:'10px'}}>
-                                            <div style={{fontSize:'13px', fontWeight:'bold', lineHeight:'1.4', color:'#eee'}}>{s.name}</div>
-                                            <div style={{marginTop:'6px'}}>
-                                                {discount > 0 && <span style={{textDecoration:'line-through', color:'#666', fontSize:'12px', marginRight:'6px'}}>{currency==='USD'?'$':'₹'}{currency==='USD'?(s.rate/83).toFixed(3):s.rate.toFixed(2)}</span>}
-                                                <b className="text-glow" style={{fontSize:'18px'}}>
-                                                    {currency==='USD'?'$':'₹'}{getRate(s.rate)} <span style={{fontSize:'10px', color:'#777'}}>/1k</span>
-                                                </b>
-                                            </div>
-                                        </div>
-                                        <button className="btn-neon" style={{width:'80px', padding:'12px', fontSize:'14px', borderRadius:'10px'}} onClick={()=>setModal(s)}>BUY</button>
+                            {filtered.map(s => (
+                                <div className="service-card" key={s.service}>
+                                    <div style={{width:'70%'}}>
+                                        <div style={{fontSize:'13px', fontWeight:'bold'}}>{s.name}</div>
+                                        {discount > 0 && <span style={{textDecoration:'line-through', color:'#888', fontSize:'12px'}}>{currency==='USD'?'$':'₹'}{currency==='USD'?(s.rate/83).toFixed(3):s.rate.toFixed(2)}</span>}
+                                        <b className="text-glow" style={{fontSize:'16px', marginLeft: discount>0?'8px':'0'}}>
+                                            {currency==='USD'?'$':'₹'}{getRate(s.rate)} <span style={{fontSize:'10px', color:'#666'}}>/1k</span>
+                                        </b>
                                     </div>
-                                ))}
-                            </div>
+                                    <button className="btn-neon" style={{width:'80px', padding:'12px', fontSize:'14px'}} onClick={()=>setModal(s)}>BUY</button>
+                                </div>
+                            ))}
                         </div>
                     )}
 
@@ -435,19 +366,18 @@
                             <h2 style={{textAlign:'center', marginBottom:'20px'}} className="text-glow">📦 Your Orders</h2>
                             {orders.length === 0 ? <p style={{textAlign:'center', color:'#666'}}>No orders placed in this panel yet.</p> : 
                                 orders.map((o,i)=>(
-                                    <div key={i} className="card-vip" style={{padding:'18px', margin:'12px 0', borderTop:'none', borderLeft:'4px solid var(--active)'}}>
-                                        <b style={{color:'#fff', fontSize:'14px', lineHeight:'1.4'}}>{o.name}</b><br/>
-                                        <div style={{display:'flex', justifyContent:'space-between', marginTop:'12px', fontSize:'12px', color:'#aaa', alignItems:'center', borderTop:'1px solid #222', paddingTop:'10px'}}>
-                                            <span>Qty: <b>{o.qty}</b></span>
-                                            <span style={{color: o.status.toLowerCase().includes('cancel') ? '#ff003c' : (o.status.toLowerCase()==='completed' ? '#00ff00' : 'var(--active)'), fontWeight:'bold', textTransform:'uppercase'}}>{o.status}</span>
+                                    <div key={i} style={{background:'#0a0a0a', padding:'15px', margin:'10px 0', borderRadius:'12px', borderLeft:'4px solid var(--active)'}}>
+                                        <b style={{color:'var(--active)'}}>{o.name}</b><br/>
+                                        <div style={{display:'flex', justifyContent:'space-between', marginTop:'8px', fontSize:'12px', color:'#aaa', alignItems:'center'}}>
+                                            <span>Qty: {o.qty}</span>
+                                            <span style={{color: o.status.toLowerCase().includes('cancel') ? '#ff003c' : '#00ff00'}}>Status: {o.status}</span>
                                         </div>
-                                        {/* 🛑 CANCEL OPTION FOR PENDING/PROCESSING ORDERS (ONLY IF CANCEL IS AVAILABLE) */}
+                                        {/* 🛑 CANCEL BUTTON LOGIC UPDATED TO ONLY SHOW IF SERVICE HAS CANCEL OPTION */}
                                         {['pending', 'processing', 'in progress'].includes(o.status.toLowerCase()) && o.name.toLowerCase().includes('cancel') && (
-                                            <button style={{marginTop:'15px', width:'100%', background:'transparent', color:'#ff003c', border:'1px solid #ff003c', padding:'8px 10px', borderRadius:'8px', fontSize:'12px', cursor:'pointer', fontWeight:'bold', transition:'0.3s'}} onClick={(e) => {
-                                                e.target.style.background = '#ff003c'; e.target.style.color = '#fff';
+                                            <button style={{marginTop:'10px', background:'transparent', color:'#ff003c', border:'1px solid #ff003c', padding:'5px 10px', borderRadius:'5px', fontSize:'12px', cursor:'pointer'}} onClick={() => {
                                                 axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:`Urgent: Please cancel my Order ID ${o.id} - ${o.name}`})
-                                                .then(()=>showAlert("Cancellation request sent to Admin successfully!"))
-                                            }}>REQUEST CANCEL</button>
+                                                .then(()=>showAlert("Cancellation request sent to Admin!"))
+                                            }}>Request Cancel</button>
                                         )}
                                     </div>
                                 ))
@@ -457,19 +387,19 @@
 
                     {tab === "Profile" && (
                         <div style={{padding:'20px'}}>
-                            <div className="card-vip" style={{textAlign:'center', paddingTop:'30px'}}>
+                            <div className="card-vip" style={{textAlign:'center'}}>
                                 <i className="fa fa-user-circle fa-4x text-glow" style={{marginBottom:'15px'}}></i>
-                                <h2 style={{margin:'0 0 5px 0'}}>{user.username}</h2>
-                                <p style={{color:'#aaa', margin:'0'}}>{user.email}</p>
+                                <h2>{user.username}</h2>
+                                <p style={{color:'#aaa'}}>{user.email}</p>
                             </div>
                             
-                            <div className="card-vip" style={{padding:'22px'}}>
+                            <div className="card-vip" style={{padding:'20px'}}>
                                 <h3 className="text-glow" style={{margin:'0 0 10px 0'}}>🎁 Referral Program</h3>
-                                <p style={{fontSize:'12px', color:'#888', marginBottom:'15px', wordBreak:'break-all'}}>Your Link: <b>https://maliksmm.github.io/proxy-smm/?ref={user.username}</b></p>
+                                <p style={{fontSize:'12px', color:'#888', marginBottom:'15px'}}>Your Link: <b>https://maliksmm.github.io/proxy-smm/?ref={user.username}</b></p>
                                 
-                                <div style={{display:'flex', justifyContent:'space-between', fontSize:'14px', marginBottom:'20px', fontWeight:'bold', background:'#111', padding:'12px', borderRadius:'10px'}}>
-                                    <span style={{color:'#00f3ff'}}><i className="fa fa-users"></i> Signups: {userInfo.ref_signups || 0}</span>
-                                    <span style={{color:'#ff1493'}}><i className="fa fa-shopping-cart"></i> Active: {userInfo.ref_active || 0}</span>
+                                <div style={{display:'flex', justifyContent:'space-between', fontSize:'14px', marginBottom:'15px', fontWeight:'bold'}}>
+                                    <span style={{color:'#00f3ff'}}>Signups: {userInfo.ref_signups || 0}</span>
+                                    <span style={{color:'#ff00ff'}}>Active Orders: {userInfo.ref_active || 0}</span>
                                 </div>
                                 
                                 {(!userInfo.first_claim && (userInfo.ref_signups >= 10)) && (
@@ -479,14 +409,14 @@
                                     <button className="btn-neon" style={{background:'#00ff00', color:'#000'}} onClick={()=>setModal("claim_lifetime")}>CLAIM LIFETIME REWARD</button>
                                 )}
                                 {(!userInfo.first_claim && (userInfo.ref_signups < 10)) && (
-                                    <p style={{fontSize:'12px', color:'#666', textAlign:'center', margin:0}}>Get 10 signups to unlock first reward!</p>
+                                    <p style={{fontSize:'12px', color:'#666', textAlign:'center'}}>Get 10 signups to unlock first reward!</p>
                                 )}
                                 {(userInfo.first_claim && (userInfo.ref_active < 10)) && (
-                                    <p style={{fontSize:'12px', color:'#666', textAlign:'center', margin:0}}>Get 10 active ordering referrals to unlock next reward!</p>
+                                    <p style={{fontSize:'12px', color:'#666', textAlign:'center'}}>Get 10 active ordering referrals to unlock next reward!</p>
                                 )}
                             </div>
 
-                            <button className="btn-neon" style={{background:'transparent', border:'1px solid #ff003c', color:'#ff003c', marginTop:'10px', boxShadow:'none'}} onClick={handleLogout}>LOGOUT ACCOUNT</button>
+                            <button className="btn-neon" style={{background:'red', marginTop:'20px'}} onClick={handleLogout}>LOGOUT ACCOUNT</button>
                         </div>
                     )}
 
@@ -495,13 +425,13 @@
                             <h2 style={{textAlign:'center', marginBottom:'20px'}} className="text-glow"><i className="fa fa-cog"></i> SETTINGS</h2>
                             
                             <div className="card-vip">
-                                <h4 style={{margin:'0 0 15px 0', color:'#ccc'}}>Change Currency</h4>
+                                <h4>Change Currency</h4>
                                 <select value={currency} onChange={e => {setCurrency(e.target.value); localStorage.setItem('currency', e.target.value); showAlert(`Currency changed to ${e.target.value}`);}}>
                                     <option value="INR">INR (₹)</option>
                                     <option value="USD">USD ($)</option>
                                 </select>
 
-                                <h4 style={{margin:'15px 0 15px 0', color:'#ccc'}}>Change Language</h4>
+                                <h4>Change Language</h4>
                                 <select value={language} onChange={e => {setLanguage(e.target.value); localStorage.setItem('language', e.target.value); showAlert(`Language changed to ${e.target.value}`);}}>
                                     <option value="English">English</option>
                                     <option value="Hindi">Hindi</option>
@@ -509,31 +439,30 @@
                                 </select>
                             </div>
 
-                            {/* 🛑 RESELLER API SECTION */}
                             <div className="card-vip">
-                                <h4 style={{margin:'0 0 5px 0', color:'#ccc'}}>Reseller API Access</h4>
-                                <p style={{fontSize:'12px', color:'#888', marginBottom:'15px'}}>Connect your panel with our API.</p>
-                                <p style={{fontSize:'11px', color:'var(--active)', wordBreak:'break-all', background:'#111', padding:'10px', borderRadius:'8px'}}>URL: https://malik-proxy-smm.onrender.com/api/v2</p>
-                                <input readOnly value={apiKey} style={{background:'#111', color:'#fff', fontSize:'12px', fontFamily:'monospace'}} id="api-key-input" />
-                                <div style={{display:'flex', gap:'10px', marginTop:'5px'}}>
-                                    <button className="btn-neon" style={{padding:'12px', fontSize:'12px', flex:1}} onClick={()=>{
+                                <h4>Reseller API Access</h4>
+                                <p style={{fontSize:'12px', color:'#aaa'}}>Connect your panel with our API.</p>
+                                <p style={{fontSize:'11px', color:'var(--active)'}}>URL: https://malik-proxy-smm.onrender.com/api/v2</p>
+                                <input readOnly value={apiKey} style={{background:'#222', color:'var(--active)', fontSize:'12px'}} id="api-key-input" />
+                                <div style={{display:'flex', gap:'10px'}}>
+                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1}} onClick={()=>{
                                         navigator.clipboard.writeText(apiKey);
                                         showAlert("API Key Copied to Clipboard!");
                                     }}>COPY KEY</button>
-                                    <button className="btn-neon" style={{padding:'12px', fontSize:'12px', flex:1, background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none'}} onClick={()=>{
+                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1, background:'#ff003c', boxShadow:'0 0 10px rgba(255,0,60,0.5)'}} onClick={()=>{
                                         const newKey = 'API_' + Math.random().toString(36).substr(2, 10).toUpperCase() + btoa(user.email).substring(0,5).toUpperCase();
                                         localStorage.setItem('user_api_key', newKey);
                                         setApiKey(newKey);
-                                        showAlert("New API Key Generated! Old key is now invalid.");
+                                        showAlert("New API Key Generated Successfully! Old key is now invalid.");
                                     }}>RESET KEY</button>
                                 </div>
                             </div>
 
                             <div className="card-vip">
-                                <h4 style={{margin:'0 0 15px 0', color:'#ccc'}}>Change Password</h4>
+                                <h4>Change Password</h4>
                                 <input type="password" placeholder="Old Password" onChange={e=>setForm({...form, oldPass:e.target.value})} />
                                 <input type="password" placeholder="New Password" onChange={e=>setForm({...form, newPass:e.target.value})} />
-                                <button className="btn-neon" style={{padding:'12px', fontSize:'14px'}} onClick={()=>{
+                                <button className="btn-neon" style={{padding:'10px'}} onClick={()=>{
                                     if(!form.oldPass || !form.newPass) return showAlert("Fill all password fields");
                                     axios.post('https://malik-proxy-smm.onrender.com/api/change-password', {panel, email:user.email, old:form.oldPass, new:form.newPass})
                                     .then(()=>showAlert("Password Updated Successfully!"))
@@ -542,75 +471,75 @@
                             </div>
 
                             <div className="card-vip" style={{padding:'20px'}}>
-                                <h3 className="text-glow" style={{margin:'0 0 10px 0', fontSize:'16px'}}><i className="fa fa-shield-alt"></i> Privacy Policy</h3>
-                                <p style={{fontSize:'12px', color:'#777', lineHeight:'1.6', margin:0}}>Your data is 100% encrypted and secured. We do not share your email or links with any third party. All transactions are safe. We prioritize your privacy above all.</p>
+                                <h3 className="text-glow" style={{margin:'0 0 10px 0'}}><i className="fa fa-shield-alt"></i> Privacy Policy</h3>
+                                <p style={{fontSize:'12px', color:'#888', lineHeight:'1.6'}}>Your data is 100% encrypted and secured. We do not share your email or links with any third party. All transactions are safe. We prioritize your privacy above all.</p>
                             </div>
                         </div>
                     )}
 
-                    {/* 🤖 HINGLISH AI CHAT MODAL */}
-                    {modal === "ai" && (
+                    {/* 📬 GMAIL STYLE MAILBOX MODAL */}
+                    {modal === "mailbox" && (
                         <div className="modal">
-                            <div className="modal-body" style={{background:'#0a0a0a'}}>
-                                <h3 className="text-glow"><i className="fa fa-robot"></i> MALIK AI</h3>
-                                <div className="ai-chat" id="ai-chat-box">
-                                    {aiChat.map((c,i) => (
-                                        <div key={i} style={{marginBottom:'10px', color: c.user ? '#fff' : 'var(--active)', textAlign: c.user ? 'right' : 'left'}}>
-                                            <b>{c.user ? "You: " : "AI: "}</b>{c.user || c.bot}
+                            <div className="gmail-modal">
+                                <div className="gmail-header">
+                                    <div style={{display:'flex', alignItems:'center', gap:'15px'}}>
+                                        <i className="fa fa-bars" style={{fontSize:'18px', color:'#fff'}}></i>
+                                        <h3 style={{fontFamily:'sans-serif'}}>Support Inbox</h3>
+                                    </div>
+                                    <i className="fa fa-times" onClick={()=>setModal(null)} style={{fontSize:'20px', cursor:'pointer', color:'#fff'}}></i>
+                                </div>
+                                <div style={{flex:1, overflowY:'auto', background:'#121212', paddingBottom:'80px'}}>
+                                    {mails.length === 0 ? (
+                                        <div style={{textAlign:'center', marginTop:'80px', color:'#5f6368'}}>
+                                            <i className="fa fa-inbox fa-4x" style={{opacity:0.6, marginBottom:'15px'}}></i>
+                                            <p style={{fontSize:'16px', fontWeight:'500'}}>Nothing to see here.</p>
+                                            <p style={{fontSize:'13px'}}>Click the button below to message Admin.</p>
+                                        </div>
+                                    ) : mails.slice().reverse().map((m,i) => (
+                                        <div key={i} className="mail-item">
+                                            <div className={`mail-avatar ${m.from==='admin' ? 'avatar-admin' : 'avatar-user'}`}>
+                                                {m.from==='admin' ? 'A' : 'M'}
+                                            </div>
+                                            <div className="mail-content">
+                                                <div className="mail-sender">
+                                                    <span>{m.from==='admin' ? 'Support Admin' : 'Me'}</span>
+                                                    <span style={{fontSize:'11px', color:'#5f6368'}}>New</span>
+                                                </div>
+                                                <div className="mail-snippet">{m.msg}</div>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
-                                <input placeholder="Ask about app features..." value={aiInput} onChange={e=>setAiInput(e.target.value)} />
-                                <button className="btn-neon" onClick={handleAiChat}>SEND TO AI</button>
-                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777'}}>Close</p>
+                                <button className="gmail-fab" onClick={()=>setModal("compose")}>
+                                    <i className="fa fa-pen"></i>
+                                </button>
                             </div>
                         </div>
                     )}
 
-                    {/* 📬 PROFESSIONAL GMAIL STYLE MAILBOX MODAL */}
-                    {modal === "mailbox" && (
-                        <div className="modal mail-modal">
-                            <div className="mail-body">
-                                <div className="mail-header">
-                                    <i className="fa fa-arrow-left back-btn" onClick={()=>setModal(null)}></i>
-                                    <div className="mail-header-info">
-                                        <div className="mail-avatar"><i className="fa fa-headset"></i></div>
-                                        <div className="mail-header-text">
-                                            <h3>Support Inbox</h3>
-                                            <p>Admin Online</p>
-                                        </div>
+                    {/* 📬 GMAIL STYLE COMPOSE MODAL */}
+                    {modal === "compose" && (
+                        <div className="modal">
+                            <div className="gmail-modal" style={{background:'#202124'}}>
+                                <div className="gmail-header" style={{background:'#303134'}}>
+                                    <div style={{display:'flex', alignItems:'center', gap:'15px'}}>
+                                        <i className="fa fa-arrow-left" onClick={()=>setModal("mailbox")} style={{fontSize:'18px', cursor:'pointer', color:'#fff'}}></i>
+                                        <h3>Compose</h3>
                                     </div>
-                                </div>
-                                
-                                <div className="mail-content">
-                                    {mails.length === 0 ? 
-                                        <div style={{textAlign:'center', color:'#666', marginTop:'50px'}}>
-                                            <i className="fa fa-inbox fa-3x" style={{marginBottom:'15px', opacity:0.5}}></i>
-                                            <p>No messages yet.<br/>Contact admin for support or discounts!</p>
-                                        </div> 
-                                    : 
-                                        mails.map((m,i)=>(
-                                            <div key={i} className={`mail-bubble ${m.from === 'admin' ? 'mail-admin' : 'mail-user'}`}>
-                                                <div style={{fontSize:'10px', opacity:0.7, marginBottom:'4px'}}>
-                                                    {m.from === 'admin' ? 'Support Team' : 'You'}
-                                                </div>
-                                                {m.msg}
-                                            </div>
-                                        ))
-                                    }
-                                    <div ref={mailEndRef} />
-                                </div>
-                                
-                                <div className="mail-input-area">
-                                    <input placeholder="Type your message..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
-                                    <button className="mail-send-btn" onClick={()=>{
+                                    <i className="fa fa-paper-plane" style={{color:'var(--active)', fontSize:'18px', cursor:'pointer'}} onClick={()=>{
                                         if(!mailInput) return showAlert("Please write a message!");
                                         axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:mailInput})
                                         .then(()=>{
                                             setMails([...mails, {from: 'user', msg: mailInput}]);
-                                            setMailInput(""); 
+                                            setMailInput("");
+                                            setModal("mailbox");
+                                            showAlert("Message Sent to Admin!");
                                         })
-                                    }}><i className="fa fa-paper-plane"></i></button>
+                                    }}></i>
+                                </div>
+                                <div style={{padding:'20px'}}>
+                                    <div style={{borderBottom:'1px solid #3c4043', paddingBottom:'10px', marginBottom:'15px', color:'#9aa0a6', fontSize:'14px', textAlign:'left'}}>To: Support Admin</div>
+                                    <textarea style={{width:'100%', height:'250px', background:'transparent', border:'none', color:'#fff', outline:'none', fontSize:'15px', resize:'none', fontFamily:'inherit'}} placeholder="Compose email..." value={mailInput} onChange={e=>setMailInput(e.target.value)}></textarea>
                                 </div>
                             </div>
                         </div>
@@ -641,9 +570,9 @@
                                     <img src={panel === 1 ? appConfig.qr_1 : appConfig.qr_2} style={{width:'220px', display:'block'}} onError={(e)=>e.target.src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=followersincrease870@oksbi"} />
                                 </div>
                                 <p style={{color:'#aaa', fontSize:'13px', margin:'0'}}>Scan QR or Pay via UPI</p>
-                                <div className="text-glow" style={{fontWeight:'bold', marginBottom:'10px', fontSize:'16px', letterSpacing:'1px'}}>followersincrease870@oksbi</div>
+                                <div className="text-glow" style={{fontWeight:'bold', marginBottom:'10px', fontSize:'15px'}}>followersincrease870@oksbi</div>
                                 
-                                <p style={{color:'#ff003c', fontSize:'11px', fontWeight:'bold', marginBottom:'20px', padding:'10px', background:'rgba(255,0,60,0.1)', borderRadius:'8px', border:'1px solid #ff003c'}}>For International / Other payment methods, please contact Admin via Support Mailbox.</p>
+                                <p style={{color:'#ff003c', fontSize:'11px', fontWeight:'bold', marginBottom:'15px'}}>For International / Other payment methods, please contact Admin via Support Mailbox.</p>
                                 
                                 <input placeholder="Amount Paid (INR)" type="number" onChange={e=>setForm({...form, amt:e.target.value})} />
                                 <input placeholder="12-digit UTR or Transaction ID" onChange={e=>setForm({...form, utr:e.target.value})} />
@@ -664,7 +593,7 @@
                                     4. <b>Order:</b> Go to Services, select the cheapest service, paste your link, enter quantity, and click Place Order.<br/>
                                     5. <b>Done:</b> Your order will start instantly!
                                 </p>
-                                <button className="btn-neon" onClick={()=>setModal(null)} style={{marginTop:'20px'}}>UNDERSTOOD</button>
+                                <button className="btn-neon" onClick={()=>setModal(null)} style={{marginTop:'15px'}}>UNDERSTOOD</button>
                             </div>
                         </div>
                     )}
@@ -676,12 +605,12 @@
                                 <div style={{maxHeight:'50vh', overflowY:'auto', textAlign:'left'}}>
                                     {txns.length === 0 ? <p style={{textAlign:'center', color:'#666'}}>No Transactions Yet.</p> : 
                                         txns.map((t,i)=>(
-                                            <div key={i} style={{background:'#0a0a0a', padding:'12px 15px', margin:'10px 0', borderRadius:'12px', borderLeft:'4px solid var(--active)', borderTop:'1px solid #222', borderRight:'1px solid #111', borderBottom:'1px solid #111'}}>
-                                                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                                                    <b style={{fontSize:'16px'}}>{currency==='USD'?'$':'₹'}{(currency==='USD'?t.amount/83:t.amount).toFixed(2)}</b>
-                                                    <span style={{color: t.status==='Approved'?'#00ff00':'#ff003c', fontWeight:'bold', fontSize:'12px', textTransform:'uppercase'}}>{t.status}</span>
+                                            <div key={i} style={{background:'#0a0a0a', padding:'10px', margin:'10px 0', borderRadius:'8px', borderLeft:'3px solid var(--active)'}}>
+                                                <div style={{display:'flex', justifyContent:'space-between'}}>
+                                                    <b>{currency==='USD'?'$':'₹'}{(currency==='USD'?t.amount/83:t.amount).toFixed(2)}</b>
+                                                    <span style={{color: t.status==='Approved'?'#0f0':'#f00'}}>{t.status}</span>
                                                 </div>
-                                                <div style={{fontSize:'11px', color:'#777', marginTop:'8px'}}>UTR: <span style={{color:'#aaa'}}>{t.utr}</span></div>
+                                                <div style={{fontSize:'10px', color:'#555', marginTop:'5px'}}>UTR/TXN: {t.utr}</div>
                                             </div>
                                         ))
                                     }
@@ -694,15 +623,12 @@
                     {typeof modal === 'object' && modal !== null && (
                         <div className="modal">
                             <div className="modal-body">
-                                <h4 className="text-glow" style={{marginBottom:'20px', lineHeight:'1.4', fontSize:'16px'}}>{modal.name}</h4>
+                                <h4 className="text-glow" style={{marginBottom:'20px'}}>{modal.name}</h4>
                                 <input placeholder="Paste Valid Link Here" onChange={e=>setForm({...form, link:e.target.value})} />
                                 <input placeholder="Quantity (Min 10)" type="number" onChange={e=>setForm({...form, qty:e.target.value})} />
-                                <div style={{background:'#111', padding:'15px', borderRadius:'12px', margin:'20px 0', border:'1px solid #333'}}>
-                                    <p style={{margin:'0 0 5px 0', color:'#aaa', fontSize:'12px', textTransform:'uppercase'}}>Total Charge</p>
-                                    <h2 className="text-glow" style={{margin:0, fontSize:'28px'}}>{currency==='USD'?'$':'₹'}{((form.qty/1000)*getRate(modal.rate)).toFixed(3)}</h2>
-                                </div>
+                                <h2 className="text-glow" style={{margin:'20px 0'}}>Total: {currency==='USD'?'$':'₹'}{((form.qty/1000)*getRate(modal.rate)).toFixed(3)}</h2>
                                 <button className="btn-neon" onClick={()=>{
-                                    if(!form.link || form.link.length < 4) { showAlert("Please enter a valid link! ⚠️"); return; }
+                                    if(!form.link || form.link.length < 4) { showAlert("Idhar valid link daalo! ⚠️"); return; }
                                     const c = (form.qty/1000)*(modal.rate * (1 - discount/100)); // Base charge recorded
                                     axios.post('https://malik-proxy-smm.onrender.com/api/place-order', {panel, email:user.email, username:user.username, service:modal.service, service_name:modal.name, link:form.link, qty:form.qty, charge:c})
                                     .then(r => {
@@ -710,7 +636,7 @@
                                         setModal(null);
                                     }).catch(e=>showAlert(e.response.data.error || "Order Failed!"));
                                 }}>CONFIRM ORDER</button>
-                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777', fontWeight:'bold'}}>Cancel</p>
+                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777'}}>Cancel</p>
                             </div>
                         </div>
                     )}
