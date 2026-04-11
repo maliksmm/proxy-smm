@@ -94,6 +94,8 @@
         .coupon-box { display: flex; gap: 10px; margin-top: 15px; }
         .coupon-box input { margin: 0; flex: 1; text-transform: uppercase; }
         .coupon-box button { width: auto; padding: 0 20px; }
+        
+        .profile-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--active); box-shadow: 0 0 10px var(--active); }
     </style>
 </head>
 <body id="bdy" class="login-bg">
@@ -112,7 +114,10 @@
             const [activeCat, setActiveCat] = useState("All");
             const [search, setSearch] = useState("");
             const [modal, setModal] = useState(null);
-            const [isSignup, setIsSignup] = useState(false);
+            
+            // SMART LOGIN/SIGNUP FLOW
+            const [isSignup, setIsSignup] = useState(localStorage.getItem('has_logged_in_before') !== 'true');
+            
             const [orders, setOrders] = useState([]);
             const [txns, setTxns] = useState([]);
             const [warnUtr, setWarnUtr] = useState(null); 
@@ -121,7 +126,7 @@
             
             const [mails, setMails] = useState([]);
             const [mailInput, setMailInput] = useState("");
-            const [activeMail, setActiveMail] = useState(null); // Detailed Mail View
+            const [activeMail, setActiveMail] = useState(null); 
             
             const [appConfig, setAppConfig] = useState({
                 socials: {tg: "https://t.me/zr3v_x", yt: "https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb", ig: "", wp: ""},
@@ -131,7 +136,7 @@
             const [currency, setCurrency] = useState(localStorage.getItem('currency') || "INR");
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
             const [couponInput, setCouponInput] = useState("");
-            const [followStep, setFollowStep] = useState(false); // For Reward Claim
+            const [followStep, setFollowStep] = useState(false); 
             
             const [apiKeyStatus, setApiKeyStatus] = useState(localStorage.getItem('api_status') || "none");
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
@@ -143,6 +148,7 @@
             const [googleUsername, setGoogleUsername] = useState("");
             
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:'', f_link:'', v_link:'', oldPass:'', newPass:''});
+            const [profileForm, setProfileForm] = useState({ avatar: '', username: '', email: '' });
             const prevOrdersRef = useRef([]);
 
             // Fetch dynamic panels on mount
@@ -172,7 +178,12 @@
             useEffect(() => {
                 const params = new URLSearchParams(window.location.search);
                 if(params.get('ref')) localStorage.setItem('ref_by', params.get('ref'));
-            }, []);
+                
+                // Initialize profile form if user exists
+                if(user) {
+                    setProfileForm({ avatar: user.avatar || '', username: user.username || '', email: user.email || '' });
+                }
+            }, [user]);
 
             useEffect(() => {
                 if(user && panel) {
@@ -180,6 +191,16 @@
                         setBalance(r.data.balance); 
                         setTxns(r.data.txns); 
                         setUserInfo(r.data.user_info || {});
+                        
+                        // Sync profile data dynamically if updated from backend
+                        if(r.data.user_info) {
+                            const updatedUser = { ...user, avatar: r.data.user_info.avatar, username: r.data.user_info.username || user.username };
+                            if(JSON.stringify(user) !== JSON.stringify(updatedUser)) {
+                                setUser(updatedUser);
+                                localStorage.setItem('user', JSON.stringify(updatedUser));
+                            }
+                        }
+
                         setMails(r.data.all_mails || []);
                         if(r.data.config) {
                             setAppConfig(prev => ({...prev, ...r.data.config}));
@@ -215,7 +236,7 @@
                         setOrders(newOrders);
 
                         if (r.data.unread_mails && r.data.unread_mails.length > 0) {
-                            r.data.unread_mails.forEach(m => showAlert(m)); 
+                            r.data.unread_mails.forEach(m => showAlert("📬 NEW VIP MAIL FROM ADMIN:\n\n" + m));
                         }
                         
                         const rej = r.data.txns.find(t => t.status === "Rejected" && !localStorage.getItem(`warn_${t.utr}`));
@@ -248,15 +269,17 @@
                     const ref_code = localStorage.getItem('ref_by') || '';
                     axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ref: ref_code, username: form.username.trim(), email: form.email.trim(), pass: form.pass.trim() })
                     .then(() => {
-                        const ud = { email: form.email.trim().toLowerCase(), username: form.username.trim() }; 
+                        const ud = { email: form.email.trim().toLowerCase(), username: form.username.trim(), avatar: '' }; 
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
+                        localStorage.setItem('has_logged_in_before', 'true');
                     }).catch((e) => showAlert(e.response.data.error || "Please give valid details!"));
                 } else {
                     if(!form.username || !form.pass) return showAlert("Please give valid details!");
                     axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: form.username.trim(), pass: form.pass.trim() })
                     .then((r) => {
-                        const ud = { email: r.data.email, username: r.data.username || form.username.trim() };
+                        const ud = { email: r.data.email, username: r.data.username || form.username.trim(), avatar: r.data.avatar || '' };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
+                        localStorage.setItem('has_logged_in_before', 'true');
                     }).catch((e) => showAlert(e.response.data.error || "Invalid Username or Password!"));
                 }
             };
@@ -265,19 +288,20 @@
                 if(!googleEmail.includes("@") || !googleUsername) return showAlert("Please enter both Email and Username!");
                 axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel, email: googleEmail.trim(), username: googleUsername.trim() })
                 .then((r)=>{
-                    const ud = { email: r.data.email, username: r.data.username };
+                    const ud = { email: r.data.email, username: r.data.username, avatar: r.data.avatar || '' };
                     setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
+                    localStorage.setItem('has_logged_in_before', 'true');
                     setShowGoogleModal(false);
                 }).catch((e)=>showAlert(e.response.data.error || "Login Failed"));
             };
 
             const handleLogout = () => {
-                localStorage.removeItem('user');
                 setUser(null); setTab("Home");
                 if(appPanels.length > 1) {
                     setPanel(null);
                     localStorage.removeItem('aryan_panel');
                 }
+                setIsSignup(false); // Default to login next time
             };
 
             const getRate = (rate) => {
@@ -285,7 +309,7 @@
                 if(currency === "USD") finalRate = finalRate / 83;
                 
                 if (finalRate < 1 && finalRate > 0) {
-                    return parseFloat(finalRate.toFixed(3)).toString();
+                    return parseFloat(finalRate.toFixed(4)).toString();
                 }
                 return finalRate.toFixed(2);
             };
@@ -346,10 +370,14 @@
             if (!panel && appPanels.length > 0) return (
                 <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
                     {renderNotification()}
-                    <h1 className="text-glow" style={{fontSize:'35px', marginBottom:'20px', textAlign:'center', fontWeight:'900', letterSpacing:'1px'}}>MALIK PROXY<br/>SMM PRO</h1>
-                    <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px', fontSize:'13px'}}>Select an active panel to continue</p>
+                    <h1 className="text-glow" style={{fontSize:'35px', marginBottom:'15px', textAlign:'center', fontWeight:'900', letterSpacing:'1px'}}>MALIK PROXY<br/>SMM PRO</h1>
+                    
+                    <p style={{color:'#888', marginBottom:'25px', fontWeight:'bold', textAlign:'center', padding:'0 20px', fontSize:'13px', lineHeight:'1.5'}}>
+                        Dono panels ke alag-alag rates aur services hain. Check karke dekho jo pasand aaye wo use karo. Saare panels ki quality 100% High hai!
+                    </p>
+                    
                     {appPanels.map(p => (
-                        <button key={p.id} className="btn-neon" style={{width:'85%', maxWidth:'350px', background: p.color, margin:'10px', color:'#000', boxShadow:`0 0 15px ${p.color}`}} onClick={()=>{setPanel(p.id); localStorage.setItem('aryan_panel', p.id);}}>Login/Signup - {p.name}</button>
+                        <button key={p.id} className="btn-neon" style={{width:'85%', maxWidth:'350px', background: p.color, margin:'10px', color:'#000', boxShadow:`0 0 15px ${p.color}`}} onClick={()=>{setPanel(p.id); localStorage.setItem('aryan_panel', p.id);}}>Enter - {p.name}</button>
                     ))}
                 </div>
             );
@@ -565,9 +593,25 @@
                             <h2 style={{textAlign:'center', marginBottom:'20px', fontSize:'18px'}} className="text-glow"><i className="fa fa-cog"></i> SETTINGS</h2>
                             
                             <div className="card-vip" style={{textAlign:'center', padding:'20px'}}>
-                                <i className="fa fa-user-circle fa-3x text-glow" style={{marginBottom:'10px'}}></i>
+                                {user.avatar ? <img src={user.avatar} className="profile-img" /> : <i className="fa fa-user-circle fa-3x text-glow" style={{marginBottom:'10px'}}></i>}
                                 <h2 style={{margin:'0 0 5px 0', fontSize:'18px'}}>{user.username}</h2>
                                 <p style={{color:'#777', margin:'0', fontSize:'12px'}}>{user.email}</p>
+                            </div>
+                            
+                            <div className="card-vip">
+                                <h4 style={{margin:'0 0 15px 0', color:'#aaa', fontSize:'14px'}}>Update Profile</h4>
+                                <input placeholder="Profile Pic URL (Optional)" value={profileForm.avatar} onChange={e=>setProfileForm({...profileForm, avatar:e.target.value})} />
+                                <input placeholder="New Username" value={profileForm.username} onChange={e=>setProfileForm({...profileForm, username:e.target.value})} />
+                                <input placeholder="New Email" value={profileForm.email} onChange={e=>setProfileForm({...profileForm, email:e.target.value})} />
+                                <button className="btn-neon" style={{padding:'12px', fontSize:'13px'}} onClick={()=>{
+                                    if(!profileForm.username || !profileForm.email) return showAlert("Username and Email are required!");
+                                    axios.post('https://malik-proxy-smm.onrender.com/api/update-profile', {panel, old_email: user.email, new_username: profileForm.username, new_email: profileForm.email, avatar: profileForm.avatar})
+                                    .then(r => {
+                                        const ud = { ...user, email: r.data.email, username: r.data.username, avatar: r.data.avatar };
+                                        setUser(ud); localStorage.setItem('user', JSON.stringify(ud));
+                                        showAlert("Profile Updated Successfully!");
+                                    }).catch(e=>showAlert(e.response.data.error || "Failed to update profile!"));
+                                }}>UPDATE PROFILE</button>
                             </div>
 
                             <div className="card-vip">
@@ -683,7 +727,6 @@
                                         .then(()=>{
                                             setMails([...mails, {from: 'user', msg: mailInput}]);
                                             setMailInput("");
-                                            showAlert("Message Sent to Admin!");
                                         })
                                     }}>
                                         <i className="fa fa-paper-plane"></i>
