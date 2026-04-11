@@ -126,7 +126,7 @@
             
             const [mails, setMails] = useState([]);
             const [mailInput, setMailInput] = useState("");
-            const [activeMail, setActiveMail] = useState(null); 
+            const [activeMail, setActiveMail] = useState(null); // Detailed Mail View
             
             const [appConfig, setAppConfig] = useState({
                 socials: {tg: "https://t.me/zr3v_x", yt: "https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb", ig: "", wp: ""},
@@ -136,7 +136,7 @@
             const [currency, setCurrency] = useState(localStorage.getItem('currency') || "INR");
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
             const [couponInput, setCouponInput] = useState("");
-            const [followStep, setFollowStep] = useState(false); 
+            const [followStep, setFollowStep] = useState(false); // For Reward Claim
             
             const [apiKeyStatus, setApiKeyStatus] = useState(localStorage.getItem('api_status') || "none");
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
@@ -301,14 +301,13 @@
                     setPanel(null);
                     localStorage.removeItem('aryan_panel');
                 }
-                setIsSignup(false); // Default to login next time
+                setIsSignup(false); 
             };
 
             const getRate = (rate) => {
                 let finalRate = rate * (1 - discount/100);
                 if(currency === "USD") finalRate = finalRate / 83;
                 
-                // Drop extra zeros for small decimals (e.g. 0.130 -> 0.13)
                 if (finalRate < 1 && finalRate > 0) {
                     return parseFloat(finalRate.toFixed(4)).toString();
                 }
@@ -321,17 +320,15 @@
             };
 
             const handleDeleteMail = (index, e) => {
-                e.stopPropagation();
+                if(e) e.stopPropagation();
+                // Optimistic UI update
                 const newMails = [...mails];
                 newMails.splice(index, 1);
                 setMails(newMails);
-            };
-
-            const clearAllMails = () => {
-                if(window.confirm("Are you sure you want to clear all your mails?")) {
-                    setMails([]);
-                    showAlert("All mails cleared locally.");
-                }
+                
+                // Permanent Database delete
+                axios.post('https://malik-proxy-smm.onrender.com/api/delete-mail', { panel, email: user.email, index: index })
+                .catch(err => console.log(err));
             };
 
             const formatMailText = (text) => {
@@ -695,7 +692,6 @@
                                         <i className="fa fa-arrow-left" style={{fontSize:'18px', color:'#fff', cursor:'pointer'}} onClick={()=>setModal(null)}></i>
                                         <h3>Support Inbox</h3>
                                     </div>
-                                    <div style={{fontSize:'12px', color:'#ff003c', cursor:'pointer', fontWeight:'bold', border:'1px solid #ff003c', padding:'5px 10px', borderRadius:'5px'}} onClick={clearAllMails}>Clear All</div>
                                 </div>
                                 <div className="mail-list">
                                     {mails.length === 0 ? (
@@ -706,17 +702,19 @@
                                     ) : mails.slice().reverse().map((m, i) => {
                                         const actualIndex = mails.length - 1 - i;
                                         return (
-                                        <div key={i} className="mail-item" onClick={()=>setActiveMail(m)}>
+                                        <div key={i} className="mail-item" onClick={()=>setActiveMail({...m, originalIndex: actualIndex})}>
                                             <div className={`mail-avatar ${m.from==='admin' ? 'avatar-admin' : 'avatar-user'}`}>
-                                                {m.from==='admin' ? <i className="fa fa-crown"></i> : 'M'}
+                                                {m.from==='admin' ? <i className="fa fa-crown" style={{color:'#000'}}></i> : 'M'}
                                             </div>
                                             <div className="mail-content">
                                                 <div className="mail-sender">
-                                                    <span>{m.from==='admin' ? '👑 ADMIN VIP' : 'Me'}</span>
+                                                    <span>{m.from==='admin' ? 'ADMIN' : 'Me'}</span>
                                                 </div>
                                                 <div className="mail-snippet">{m.msg.includes('http') ? 'Contains Media/Link...' : m.msg}</div>
                                             </div>
-                                            <i className="fa fa-trash mail-delete-icon" onClick={(e)=>handleDeleteMail(actualIndex, e)} title="Delete locally"></i>
+                                            {m.from !== 'admin' && (
+                                                <i className="fa fa-trash mail-delete-icon" onClick={(e)=>handleDeleteMail(actualIndex, e)} title="Delete"></i>
+                                            )}
                                         </div>
                                     )})}
                                 </div>
@@ -747,10 +745,10 @@
                             <div className="md-body">
                                 <div className="md-sender-info">
                                     <div className={`mail-avatar ${activeMail.from==='admin' ? 'avatar-admin' : 'avatar-user'}`} style={{width:'50px', height:'50px', fontSize:'22px'}}>
-                                        {activeMail.from==='admin' ? <i className="fa fa-crown"></i> : 'M'}
+                                        {activeMail.from==='admin' ? <i className="fa fa-crown" style={{color:'#000'}}></i> : 'M'}
                                     </div>
                                     <div>
-                                        <div className="text-glow" style={{fontWeight:'900', fontSize:'18px', letterSpacing:'1px'}}>{activeMail.from==='admin' ? '👑 ADMIN VIP' : 'You'}</div>
+                                        <div className="text-glow" style={{fontWeight:'900', fontSize:'18px', letterSpacing:'1px'}}>{activeMail.from==='admin' ? 'ADMIN' : 'You'}</div>
                                         <div style={{fontSize:'11px', color:'#888'}}>to {activeMail.from==='admin' ? 'Me' : 'Support Admin'}</div>
                                     </div>
                                 </div>
@@ -758,7 +756,12 @@
                                     {formatMailText(activeMail.msg)}
                                 </div>
                                 <div className="md-actions">
-                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', background:'#111', border:'1px solid var(--active)', color:'var(--active)', boxShadow:'none'}} onClick={()=>copyToClipboard(activeMail.msg)}><i className="fa fa-copy"></i> COPY TEXT</button>
+                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', background:'#111', border:'1px solid var(--active)', color:'var(--active)', boxShadow:'none', flex:1}} onClick={()=>copyToClipboard(activeMail.msg)}><i className="fa fa-copy"></i> COPY TEXT</button>
+                                    
+                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none', flex:1}} onClick={()=>{
+                                        handleDeleteMail(activeMail.originalIndex);
+                                        setActiveMail(null);
+                                    }}><i className="fa fa-trash"></i> DELETE</button>
                                 </div>
                             </div>
                         </div>
