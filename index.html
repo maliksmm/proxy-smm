@@ -19,11 +19,9 @@
         .theme-p1 { --active: var(--p1); --bg: #000d11; }
         .theme-p2 { --active: var(--p2); --bg: #1a000a; }
         
-        /* 🌟 Clean Text Glow */
         .text-glow { color: var(--active); text-shadow: 0 0 8px var(--active); }
         .card-vip { background: #0a0a0a; padding: 25px; border-radius: 20px; margin: 15px; border: 1px solid #222; border-top: 4px solid var(--active); box-shadow: 0 4px 15px rgba(0,0,0,0.5); position:relative; overflow:hidden; }
         
-        /* 🌟 Clean Sharp Button */
         .btn-neon { background: var(--active); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 0 12px var(--active); font-size: 15px; text-transform: uppercase; transition: 0.2s; letter-spacing: 1px; }
         .btn-neon:active { transform: scale(0.96); box-shadow: 0 0 5px var(--active); }
         
@@ -32,17 +30,31 @@
         .cat-btn { padding: 10px 22px; border-radius: 25px; background: #111; border: 1px solid #333; color: #888; white-space: nowrap; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s; }
         .cat-active { border-color: var(--active); color: var(--active); background: rgba(255,255,255,0.03); }
         
-        /* 🌟 Clean Service Card Matching Photo 2 */
         .service-card { background: #080808; margin: 15px; padding: 18px; border-radius: 16px; border-left: 4px solid var(--active); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; border-right: 1px solid #111; border-top: 1px solid #111; }
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
         .modal-body { background: #080808; width: 90%; max-width: 420px; padding: 25px; border-radius: 24px; text-align: center; border: 1px solid var(--active); box-shadow: 0 10px 40px rgba(0,0,0,0.8); max-height: 85vh; overflow-y: auto; }
         
-        /* 🌟 Mailbox Pro Styling */
-        .mail-modal { align-items: flex-end; }
-        .mail-body { width: 100%; max-width: 600px; height: 88vh; background: #050505; border-radius: 25px 25px 0 0; padding: 20px; display: flex; flexDirection: column; border-top: 2px solid var(--active); }
-        .mail-bubble-admin { background: #111; border-left: 3px solid #00ff00; padding: 12px 15px; border-radius: 0 15px 15px 15px; margin-bottom: 15px; text-align: left; align-self: flex-start; max-width: 85%; }
-        .mail-bubble-user { background: #1a1a1a; border-right: 3px solid var(--active); padding: 12px 15px; border-radius: 15px 0 15px 15px; margin-bottom: 15px; text-align: left; align-self: flex-end; max-width: 85%; margin-left: auto; }
+        /* 📬 PROFESSIONAL GMAIL-STYLE MAILBOX UI */
+        .mail-modal { align-items: center; }
+        .mail-body { width: 100%; max-width: 450px; height: 85vh; background: #0a0a0a; border-radius: 20px; padding: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #333; box-shadow: 0 10px 50px rgba(0,0,0,0.9); }
+        .mail-header { background: #111; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #222; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; }
+        .mail-header i.back-btn { font-size: 20px; color: #fff; cursor: pointer; transition: 0.2s; }
+        .mail-header i.back-btn:active { transform: translateX(-3px); }
+        .mail-header-info { margin-left: 15px; display: flex; align-items: center; gap: 12px; }
+        .mail-avatar { width: 40px; height: 40px; background: var(--active); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; color: #000; }
+        .mail-header-text { text-align: left; }
+        .mail-header-text h3 { margin: 0; font-size: 16px; color: #fff; letter-spacing: 0.5px; }
+        .mail-header-text p { margin: 0; font-size: 11px; color: #00ff00; font-weight: bold; }
+        .mail-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #050505; gap: 10px; }
+        .mail-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative; word-wrap: break-word; }
+        .mail-admin { align-self: flex-start; background: #1a1a1a; color: #eee; border-bottom-left-radius: 4px; border: 1px solid #333; }
+        .mail-user { align-self: flex-end; background: var(--active); color: #000; border-bottom-right-radius: 4px; font-weight: 600; box-shadow: 0 2px 8px var(--active); }
+        .mail-input-area { padding: 15px; background: #111; border-top: 1px solid #222; display: flex; align-items: center; gap: 12px; }
+        .mail-input-area input { flex: 1; background: #050505; border: 1px solid #333; color: #fff; padding: 14px 18px; border-radius: 25px; margin: 0; font-size: 14px; outline: none; transition: 0.3s; }
+        .mail-input-area input:focus { border-color: var(--active); }
+        .mail-send-btn { background: var(--active); color: #000; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: none; cursor: pointer; font-size: 18px; transition: 0.2s; box-shadow: 0 0 10px var(--active); }
+        .mail-send-btn:active { transform: scale(0.85); }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #050505; padding: 12px 0; border-top: 1px solid #222; z-index: 1000; }
         .nav-btn { color: #555; font-size: 11px; text-align: center; cursor: pointer; flex: 1; font-weight: bold; transition: 0.3s; }
@@ -94,6 +106,9 @@
             
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
 
+            const [aiInput, setAiInput] = useState("");
+            const [aiChat, setAiChat] = useState([{bot: "Hello! I am the Malik Proxy AI Assistant. I can guide you on how to use the app, add funds, or solve order issues. How can I help you today?"}]);
+
             const [vipAlert, setVipAlert] = useState(null);
             const showAlert = (msg) => setVipAlert(msg);
             
@@ -102,6 +117,7 @@
             
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:'', f_link:'', v_link:'', oldPass:'', newPass:''});
             const prevOrdersRef = useRef([]);
+            const mailEndRef = useRef(null);
 
             useEffect(() => {
                 if ("Notification" in window && Notification.permission !== "granted") {
@@ -174,14 +190,14 @@
                     const ref_code = localStorage.getItem('ref_by') || '';
                     axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ref: ref_code, ...form })
                     .then(() => {
-                        const ud = { email: form.email.toLowerCase(), username: form.username.toLowerCase() };
+                        const ud = { email: form.email.toLowerCase().trim(), username: form.username.toLowerCase().trim() };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     }).catch((e) => showAlert(e.response.data.error || "Please give valid details!"));
                 } else {
                     if(!form.username || !form.pass) return showAlert("Please give valid details!");
                     axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: form.username, pass: form.pass })
                     .then((r) => {
-                        const ud = { email: r.data.email, username: form.username.toLowerCase() };
+                        const ud = { email: r.data.email, username: form.username.toLowerCase().trim() };
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     }).catch((e) => showAlert(e.response.data.error || "Please give valid details!"));
                 }
@@ -218,6 +234,59 @@
 
             const cats = ["All", "Instagram", "YouTube", "Telegram", "Facebook", "TikTok"];
 
+            // 🧠 SMART HINGLISH/ENGLISH AI CHAT LOGIC
+            const handleAiChat = () => {
+                if(!aiInput) return;
+                let text = aiInput.toLowerCase();
+                let isHindi = text.includes("kya") || text.includes("kese") || text.includes("hai") || text.includes("bhai") || text.includes("karu") || text.includes("kyu") || text.includes("nahi") || text.includes("wapas");
+                
+                let reply = isHindi ? 
+                    "Main sirf Malik Proxy SMM app ke baare mein baat kar sakta hoon bhai. App, funds, orders, ya services se related kuch bhi pooch lo!" : 
+                    "I am specifically designed to assist with Malik Proxy SMM app functions. Please ask me about adding funds, placing orders, or using the app.";
+                
+                if(text.includes("pending") || text.includes("slow") || text.includes("time") || text.includes("ruka")) {
+                    reply = isHindi ? 
+                        "Agar tera order pending ya processing mein hai, toh thoda wait kar le bhai. Normally 5-10 minute lagte hain. Agar bohot time ho gaya hai, toh Orders tab se 'Request Cancel' daba de ya Admin ko mail kar de." : 
+                        "Orders typically start within 5-10 minutes. However, server loads can sometimes cause delays. If it's taking too long, please use the 'Request Cancel' button in the Orders tab or mail the Admin.";
+                } else if(text.includes("add") || text.includes("fund") || text.includes("money") || text.includes("pay") || text.includes("paisa")) {
+                    reply = isHindi ? 
+                        "Fund add karne ke liye 'Home' pe ja, '+ ADD FUNDS HERE' daba. Phir QR scan karke pay kar aur 12-digit UTR daal ke submit kar de. 5 minute mein balance update ho jayega!" : 
+                        "To add funds:\n1. Go to Home > '+ ADD FUNDS HERE'.\n2. Scan the QR code or copy UPI ID.\n3. Make payment.\n4. Enter Amount and 12-digit UTR in the app.\n5. Click Submit. Admin will approve it within 5-10 mins.";
+                } else if(text.includes("cancel") || text.includes("refund") || text.includes("wapas")) {
+                    reply = isHindi ? 
+                        "Order cancel karna hai? Orders tab mein jaake apne order ke neeche 'Request Cancel' daba de. Tera paisa wallet mein wapas aa jayega jab admin request approve karega." : 
+                        "To cancel an order, go to the 'Orders' tab and click 'Request Cancel' below your pending order. The admin will review it and refund the amount to your wallet.";
+                } else if(text.includes("api") || text.includes("key")) {
+                    reply = isHindi ? 
+                        "API key chahiye ya reset karni hai? Settings tab mein 'Reseller API Access' ka option hai, wahan se URL aur Key dono mil jayegi. Change karni ho toh Reset daba dena." : 
+                        "You can find your API URL and generate/reset your API Key in the 'Settings' tab under the 'Reseller API Access' section.";
+                } else if(text.includes("contact") || text.includes("admin") || text.includes("help") || text.includes("baat")) {
+                    reply = isHindi ? 
+                        "Admin se baat karni hai toh Home screen par '📬 SUPPORT MAILBOX' daba kar message bhej de. Admin direct app mein hi reply kar dega!" : 
+                        "For account, payment, or order problems, please click '📬 SUPPORT MAILBOX' on the Home screen to send a direct message to the Admin. They will reply to you shortly.";
+                } else if(text.includes("discount") || text.includes("cheap") || text.includes("offer") || text.includes("sasta")) {
+                    reply = isHindi ? 
+                        "Discount chahiye? Admin randomly offers nikalta rehta hai. App notifications aur Mailbox check karta reh, ya admin se mail pe baat kar le!" : 
+                        "Admin provides random discounts and special holiday offers! Keep an eye on your Mailbox and app dashboard for active discount notifications.";
+                } else if(text.includes("developer") || text.includes("owner") || text.includes("code") || text.includes("banaya")) {
+                    reply = isHindi ? 
+                        "Main toh bas ek AI bot hoon bhai! Mujhe in baaton ka idea nahi. App ke related kuch puchna hai toh batao." : 
+                        "I am an AI assistant. I cannot share developer information or administrative details. I can only guide you on how to use Malik Proxy SMM.";
+                }
+                
+                setAiChat([...aiChat, {user: aiInput}, {bot: reply}]);
+                setAiInput("");
+                setTimeout(() => {
+                    const chatBox = document.getElementById("ai-chat-box");
+                    if(chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+                }, 100);
+            };
+
+            const scrollToBottom = () => {
+                mailEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            };
+            useEffect(() => { if(modal === "mailbox") scrollToBottom(); }, [mails, modal]);
+
             const renderNotification = () => {
                 if(!vipAlert) return null;
                 return (
@@ -234,10 +303,10 @@
             if (!panel) return (
                 <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
                     {renderNotification()}
-                    <h1 className="text-glow" style={{fontSize:'38px', marginBottom:'20px', textAlign:'center'}}>MALIK PROXY<br/>SMM PRO</h1>
+                    <h1 className="text-glow" style={{fontSize:'38px', marginBottom:'20px', textAlign:'center', fontWeight:'900'}}>MALIK PROXY<br/>SMM PRO</h1>
                     <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px'}}>These two panels have different services and rates. Try both and choose what fits you best!</p>
-                    <button className="btn-neon" style={{width:'300px', background:'#00f3ff', margin:'12px'}} onClick={()=>setPanel(1)}>Login/Signup - Panel 1</button>
-                    <button className="btn-neon" style={{width:'300px', background:'#ff1493', margin:'12px'}} onClick={()=>setPanel(2)}>Login/Signup - Panel 2</button>
+                    <button className="btn-neon" style={{width:'300px', background:'#00f3ff', margin:'12px', boxShadow:'0 0 10px #00f3ff'}} onClick={()=>setPanel(1)}>Login/Signup - Panel 1</button>
+                    <button className="btn-neon" style={{width:'300px', background:'#ff1493', margin:'12px', boxShadow:'0 0 10px #ff1493'}} onClick={()=>setPanel(2)}>Login/Signup - Panel 2</button>
                 </div>
             );
 
@@ -261,7 +330,7 @@
                     <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
                         {renderNotification()}
                         <div className="modal-body" style={{background:'rgba(5,5,5,0.95)'}}>
-                            <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'5px'}}>MALIK PROXY SMM</h2>
+                            <h2 className="text-glow" style={{fontSize:'28px', marginBottom:'5px', fontWeight:'900'}}>MALIK PROXY SMM</h2>
                             <h3 style={{color:'#bbb', marginBottom:'20px'}}>{isSignup ? "CREATE ACCOUNT" : "LOGIN"}</h3>
                             
                             {isSignup && <p style={{fontSize:'12px', color:'#00f3ff', marginBottom:'15px'}}>How to signup: Enter a unique username, your email, and a password.</p>}
@@ -301,8 +370,9 @@
                         </div>
                     )}
 
-                    <div style={{textAlign:'center', padding:'20px 0', borderBottom:'1px solid #222', background:'#050505'}}>
-                        <h1 className="text-glow" style={{margin:0, fontSize:'24px', letterSpacing:'1px'}}>MALIK PROXY P{panel}</h1>
+                    <div style={{textAlign:'center', padding:'20px 0', borderBottom:'1px solid #222', background:'#050505', display:'flex', justifyContent:'space-around', alignItems:'center'}}>
+                        <h1 className="text-glow" style={{margin:0, fontSize:'24px', letterSpacing:'1px', fontWeight:'900'}}>MALIK PROXY P{panel}</h1>
+                        <button style={{background:'transparent', border:'none', color:'var(--active)', fontSize:'20px', cursor:'pointer'}} onClick={()=>setModal("ai")}><i className="fa fa-robot"></i></button>
                     </div>
                     
                     {tab === "Home" && (
@@ -371,8 +441,8 @@
                                             <span>Qty: <b>{o.qty}</b></span>
                                             <span style={{color: o.status.toLowerCase().includes('cancel') ? '#ff003c' : (o.status.toLowerCase()==='completed' ? '#00ff00' : 'var(--active)'), fontWeight:'bold', textTransform:'uppercase'}}>{o.status}</span>
                                         </div>
-                                        {/* 🛑 CANCEL OPTION FOR PENDING/PROCESSING ORDERS */}
-                                        {['pending', 'processing', 'in progress'].includes(o.status.toLowerCase()) && (
+                                        {/* 🛑 CANCEL OPTION FOR PENDING/PROCESSING ORDERS (ONLY IF CANCEL IS AVAILABLE) */}
+                                        {['pending', 'processing', 'in progress'].includes(o.status.toLowerCase()) && o.name.toLowerCase().includes('cancel') && (
                                             <button style={{marginTop:'15px', width:'100%', background:'transparent', color:'#ff003c', border:'1px solid #ff003c', padding:'8px 10px', borderRadius:'8px', fontSize:'12px', cursor:'pointer', fontWeight:'bold', transition:'0.3s'}} onClick={(e) => {
                                                 e.target.style.background = '#ff003c'; e.target.style.color = '#fff';
                                                 axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:`Urgent: Please cancel my Order ID ${o.id} - ${o.name}`})
@@ -478,16 +548,41 @@
                         </div>
                     )}
 
-                    {/* 📬 GMAIL STYLE MAILBOX MODAL */}
+                    {/* 🤖 HINGLISH AI CHAT MODAL */}
+                    {modal === "ai" && (
+                        <div className="modal">
+                            <div className="modal-body" style={{background:'#0a0a0a'}}>
+                                <h3 className="text-glow"><i className="fa fa-robot"></i> MALIK AI</h3>
+                                <div className="ai-chat" id="ai-chat-box">
+                                    {aiChat.map((c,i) => (
+                                        <div key={i} style={{marginBottom:'10px', color: c.user ? '#fff' : 'var(--active)', textAlign: c.user ? 'right' : 'left'}}>
+                                            <b>{c.user ? "You: " : "AI: "}</b>{c.user || c.bot}
+                                        </div>
+                                    ))}
+                                </div>
+                                <input placeholder="Ask about app features..." value={aiInput} onChange={e=>setAiInput(e.target.value)} />
+                                <button className="btn-neon" onClick={handleAiChat}>SEND TO AI</button>
+                                <p onClick={()=>setModal(null)} style={{marginTop:'20px', cursor:'pointer', color:'#777'}}>Close</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 📬 PROFESSIONAL GMAIL STYLE MAILBOX MODAL */}
                     {modal === "mailbox" && (
                         <div className="modal mail-modal">
                             <div className="mail-body">
-                                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1px solid #222', paddingBottom:'15px', marginBottom:'15px'}}>
-                                    <h3 style={{margin:0, color:'var(--active)', fontSize:'20px'}}><i className="fa fa-envelope" style={{marginRight:'8px'}}></i> Support Inbox</h3>
-                                    <i className="fa fa-times" style={{fontSize:'22px', cursor:'pointer', color:'#888', transition:'0.3s'}} onClick={()=>setModal(null)}></i>
+                                <div className="mail-header">
+                                    <i className="fa fa-arrow-left back-btn" onClick={()=>setModal(null)}></i>
+                                    <div className="mail-header-info">
+                                        <div className="mail-avatar"><i className="fa fa-headset"></i></div>
+                                        <div className="mail-header-text">
+                                            <h3>Support Inbox</h3>
+                                            <p>Admin Online</p>
+                                        </div>
+                                    </div>
                                 </div>
                                 
-                                <div style={{flex:1, overflowY:'auto', display:'flex', flexDirection:'column', paddingRight:'5px'}}>
+                                <div className="mail-content">
                                     {mails.length === 0 ? 
                                         <div style={{textAlign:'center', color:'#666', marginTop:'50px'}}>
                                             <i className="fa fa-inbox fa-3x" style={{marginBottom:'15px', opacity:0.5}}></i>
@@ -495,30 +590,27 @@
                                         </div> 
                                     : 
                                         mails.map((m,i)=>(
-                                            <div key={i} className={m.from === 'admin' ? 'mail-bubble-admin' : 'mail-bubble-user'}>
-                                                <div style={{fontSize:'11px', color: m.from === 'admin' ? '#00ff00' : 'var(--active)', fontWeight:'900', marginBottom:'6px', letterSpacing:'1px'}}>
-                                                    {m.from === 'admin' ? '👑 ADMIN' : '👤 YOU'}
+                                            <div key={i} className={`mail-bubble ${m.from === 'admin' ? 'mail-admin' : 'mail-user'}`}>
+                                                <div style={{fontSize:'10px', opacity:0.7, marginBottom:'4px'}}>
+                                                    {m.from === 'admin' ? 'Support Team' : 'You'}
                                                 </div>
-                                                <div style={{fontSize:'14px', color:'#eee', lineHeight:'1.5'}}>{m.msg}</div>
+                                                {m.msg}
                                             </div>
                                         ))
                                     }
+                                    <div ref={mailEndRef} />
                                 </div>
                                 
-                                <div style={{display:'flex', gap:'10px', marginTop:'15px', paddingTop:'15px', borderTop:'1px solid #222'}}>
-                                    <input style={{flex:1, margin:0, borderRadius:'25px', padding:'15px 20px', background:'#111', border:'1px solid #333'}} placeholder="Type your message..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
-                                    <button className="btn-neon" style={{width:'52px', height:'52px', borderRadius:'50%', padding:'0', display:'flex', justifyContent:'center', alignItems:'center'}} onClick={()=>{
+                                <div className="mail-input-area">
+                                    <input placeholder="Type your message..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
+                                    <button className="mail-send-btn" onClick={()=>{
                                         if(!mailInput) return showAlert("Please write a message!");
                                         axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:mailInput})
                                         .then(()=>{
                                             setMails([...mails, {from: 'user', msg: mailInput}]);
                                             setMailInput(""); 
-                                            setTimeout(() => {
-                                                const mailContainer = document.querySelector('.mail-body > div:nth-child(2)');
-                                                if(mailContainer) mailContainer.scrollTop = mailContainer.scrollHeight;
-                                            }, 100);
                                         })
-                                    }}><i className="fa fa-paper-plane" style={{fontSize:'18px'}}></i></button>
+                                    }}><i className="fa fa-paper-plane"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -611,7 +703,7 @@
                                 </div>
                                 <button className="btn-neon" onClick={()=>{
                                     if(!form.link || form.link.length < 4) { showAlert("Please enter a valid link! ⚠️"); return; }
-                                    const c = (form.qty/1000)*(modal.rate * (1 - discount/100));
+                                    const c = (form.qty/1000)*(modal.rate * (1 - discount/100)); // Base charge recorded
                                     axios.post('https://malik-proxy-smm.onrender.com/api/place-order', {panel, email:user.email, username:user.username, service:modal.service, service_name:modal.name, link:form.link, qty:form.qty, charge:c})
                                     .then(r => {
                                         showAlert("Order Placed Successfully! 🚀"); 
@@ -627,8 +719,8 @@
                         <div className={`nav-btn ${tab==="Home"?"nav-active":""}`} onClick={()=>setTab("Home")}><i className="fa fa-home"></i>Home</div>
                         <div className={`nav-btn ${tab==="Services"?"nav-active":""}`} onClick={()=>setTab("Services")}><i className="fa fa-bolt"></i>Services</div>
                         <div className={`nav-btn ${tab==="Orders"?"nav-active":""}`} onClick={()=>setTab("Orders")}><i className="fa fa-box"></i>Orders</div>
-                        <div className={`nav-btn ${tab==="Profile"?"nav-active":""}`} onClick={()=>setTab("Profile")}><i className="fa fa-user-circle"></i>Profile</div>
                         <div className={`nav-btn ${tab==="Settings"?"nav-active":""}`} onClick={()=>setTab("Settings")}><i className="fa fa-cog"></i>Settings</div>
+                        <div className={`nav-btn ${tab==="Profile"?"nav-active":""}`} onClick={()=>setTab("Profile")}><i className="fa fa-user-circle"></i>Profile</div>
                     </div>
                 </div>
             );
