@@ -308,6 +308,7 @@
                 let finalRate = rate * (1 - discount/100);
                 if(currency === "USD") finalRate = finalRate / 83;
                 
+                // Drop extra zeros for small decimals (e.g. 0.130 -> 0.13)
                 if (finalRate < 1 && finalRate > 0) {
                     return parseFloat(finalRate.toFixed(4)).toString();
                 }
@@ -373,7 +374,7 @@
                     <h1 className="text-glow" style={{fontSize:'35px', marginBottom:'15px', textAlign:'center', fontWeight:'900', letterSpacing:'1px'}}>MALIK PROXY<br/>SMM PRO</h1>
                     
                     <p style={{color:'#888', marginBottom:'25px', fontWeight:'bold', textAlign:'center', padding:'0 20px', fontSize:'13px', lineHeight:'1.5'}}>
-                        Dono panels ke alag-alag rates aur services hain. Check karke dekho jo pasand aaye wo use karo. Saare panels ki quality 100% High hai!
+                        Each panel offers unique rates and services. Explore and choose the one that best fits your needs. All panels guarantee 100% High Quality!
                     </p>
                     
                     {appPanels.map(p => (
@@ -707,7 +708,7 @@
                                         return (
                                         <div key={i} className="mail-item" onClick={()=>setActiveMail(m)}>
                                             <div className={`mail-avatar ${m.from==='admin' ? 'avatar-admin' : 'avatar-user'}`}>
-                                                {m.from==='admin' ? <i className="fa fa-crown" style={{color:'#000'}}></i> : 'M'}
+                                                {m.from==='admin' ? <i className="fa fa-crown"></i> : 'M'}
                                             </div>
                                             <div className="mail-content">
                                                 <div className="mail-sender">
@@ -746,7 +747,7 @@
                             <div className="md-body">
                                 <div className="md-sender-info">
                                     <div className={`mail-avatar ${activeMail.from==='admin' ? 'avatar-admin' : 'avatar-user'}`} style={{width:'50px', height:'50px', fontSize:'22px'}}>
-                                        {activeMail.from==='admin' ? <i className="fa fa-crown" style={{color:'#000'}}></i> : 'M'}
+                                        {activeMail.from==='admin' ? <i className="fa fa-crown"></i> : 'M'}
                                     </div>
                                     <div>
                                         <div className="text-glow" style={{fontWeight:'900', fontSize:'18px', letterSpacing:'1px'}}>{activeMail.from==='admin' ? '👑 ADMIN VIP' : 'You'}</div>
