@@ -10,7 +10,6 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 🎨 P1 = CYAN, P2 = PINK (Clean, Sharp, Premium UI like Photo 2) */
         :root { --p1: #00f3ff; --p2: #ff1493; }
         body, html { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
@@ -19,11 +18,9 @@
         .theme-p1 { --active: var(--p1); --bg: #050505; }
         .theme-p2 { --active: var(--p2); --bg: #0a0005; }
         
-        /* 🌟 Clean Text & Elements */
         .text-glow { color: var(--active); text-shadow: 0 0 5px var(--active); }
         .card-vip { background: #0a0a0a; padding: 25px; border-radius: 16px; margin: 15px; border: 1px solid #1a1a1a; border-top: 4px solid var(--active); position:relative; overflow:hidden; }
         
-        /* 🌟 Clean Sharp Button */
         .btn-neon { background: var(--active); color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); font-size: 14px; text-transform: uppercase; transition: 0.2s; letter-spacing: 1px; }
         .theme-p2 .btn-neon { box-shadow: 0 0 10px rgba(255, 20, 147, 0.4); }
         .btn-neon:active { transform: scale(0.96); box-shadow: none; }
@@ -33,13 +30,11 @@
         .cat-btn { padding: 8px 20px; border-radius: 20px; background: #111; border: 1px solid #222; color: #888; white-space: nowrap; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s; }
         .cat-active { border-color: var(--active); color: var(--active); background: rgba(255,255,255,0.05); }
         
-        /* 🌟 Clean Service Card Matching Photo 2 Exact */
         .service-card { background: #080808; margin: 15px; padding: 18px; border-radius: 16px; border-left: 4px solid var(--active); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; border-right: 1px solid #111; border-top: 1px solid #111; }
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
         .modal-body { background: #080808; width: 90%; max-width: 420px; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.9); max-height: 85vh; overflow-y: auto; }
         
-        /* 📩 PROFESSIONAL GMAIL UI */
         .gmail-modal { width: 100%; height: 100%; background: #121212; display: flex; flex-direction: column; border: none; position: absolute; top: 0; left: 0; }
         .gmail-header { background: #202124; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333; }
         .gmail-header h3 { margin: 0; font-size: 18px; color: #fff; font-weight: 500; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -222,7 +217,6 @@
             };
 
             const handleDeleteMail = (index) => {
-                // Local UI hide to keep it fast and reduce load for the user visually
                 const newMails = [...mails];
                 newMails.splice(index, 1);
                 setMails(newMails);
@@ -393,7 +387,6 @@
                                             <span>Qty: <b style={{color:'#fff'}}>{o.qty}</b></span>
                                             <span style={{color: o.status.toLowerCase().includes('cancel') ? '#ff003c' : (o.status.toLowerCase()==='completed' ? '#00ff00' : 'var(--active)'), fontWeight:'bold', textTransform:'uppercase'}}>{o.status}</span>
                                         </div>
-                                        {/* 🛑 CLEAN CANCEL LOGIC: ONLY FOR CANCEL AVAILABLE SERVICES */}
                                         {['pending', 'processing', 'in progress'].includes(o.status.toLowerCase()) && o.name.toLowerCase().includes('cancel') && (
                                             <button style={{marginTop:'15px', width:'100%', background:'transparent', color:'#ff003c', border:'1px solid #ff003c', padding:'8px 10px', borderRadius:'6px', fontSize:'12px', cursor:'pointer', fontWeight:'bold', transition:'0.3s'}} onClick={(e) => {
                                                 e.target.style.background = '#ff003c'; e.target.style.color = '#fff';
