@@ -31,7 +31,6 @@
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
         .modal-body { background: #080808; width: 90%; max-width: 420px; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.9); max-height: 85vh; overflow-y: auto; }
         
-        /* 📩 GMAIL PRO MAILBOX STYLES - Dynamic Themes */
         .gmail-modal { width: 100%; height: 100%; display: flex; flex-direction: column; border: none; position: absolute; top: 0; left: 0; }
         .mail-theme-1 { background: #121212; }
         .mail-theme-2 { background: #00111a; }
@@ -74,7 +73,6 @@
         input, select { width: 100%; padding: 15px; margin-bottom: 15px; background: #0a0a0a; border: 1px solid #222; color: #fff; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; }
         input:focus, select:focus { border-color: var(--active); background: #111; box-shadow: 0 0 5px var(--active); }
         
-        /* 🌟 Glowing Social Links */
         .social-container { display:flex; justify-content:center; gap:35px; margin-top:20px; }
         .social-link { font-size: 40px; transition: 0.3s; color: #555; }
         .glow-tg { color: #00f3ff; text-shadow: 0 0 15px #00f3ff; }
@@ -102,7 +100,7 @@
         const { useState, useEffect, useMemo, useRef } = React;
         
         const AppUI = () => {
-            const [appPanels, setAppPanels] = useState([]); // Dynamic Panels
+            const [appPanels, setAppPanels] = useState([]);
             const [panel, setPanel] = useState(localStorage.getItem('aryan_panel') || null);
             const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
             
@@ -121,7 +119,7 @@
             
             const [mails, setMails] = useState([]);
             const [mailInput, setMailInput] = useState("");
-            const [activeMail, setActiveMail] = useState(null); // Detailed Mail View
+            const [activeMail, setActiveMail] = useState(null);
             
             const [appConfig, setAppConfig] = useState({
                 socials: {tg: "https://t.me/zr3v_x", yt: "https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb", ig: "", wp: ""},
@@ -131,7 +129,7 @@
             const [currency, setCurrency] = useState(localStorage.getItem('currency') || "INR");
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
             const [couponInput, setCouponInput] = useState("");
-            const [followStep, setFollowStep] = useState(false); // For Reward Claim
+            const [followStep, setFollowStep] = useState(false);
             
             const [apiKeyStatus, setApiKeyStatus] = useState(localStorage.getItem('api_status') || "none");
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
@@ -145,7 +143,6 @@
             const [form, setForm] = useState({email:'', username:'', pass:'', amt:'', utr:'', link:'', qty:'', f_link:'', v_link:'', oldPass:'', newPass:''});
             const prevOrdersRef = useRef([]);
 
-            // Fetch dynamic panels on mount
             useEffect(() => {
                 axios.get('https://malik-proxy-smm.onrender.com/api/init-app').then(r => {
                     setAppPanels(r.data.panels);
@@ -215,7 +212,7 @@
                         setOrders(newOrders);
 
                         if (r.data.unread_mails && r.data.unread_mails.length > 0) {
-                            r.data.unread_mails.forEach(m => showAlert(m)); // Clean Notification
+                            r.data.unread_mails.forEach(m => showAlert(m)); 
                         }
                         
                         const rej = r.data.txns.find(t => t.status === "Rejected" && !localStorage.getItem(`warn_${t.utr}`));
@@ -233,7 +230,7 @@
             useEffect(() => {
                 if(panel) {
                     axios.post('https://malik-proxy-smm.onrender.com/api/get-services', { panel }).then(r => {
-                        setServices(r.data.map(s => ({...s, rate: s.rate*2})).sort((a,b)=>a.rate-b.rate));
+                        setServices(r.data.map(s => ({...s, rate: parseFloat(s.rate)*2})).sort((a,b)=>a.rate-b.rate));
                     });
                 }
             }, [panel]);
@@ -280,7 +277,12 @@
             const getRate = (rate) => {
                 let finalRate = rate * (1 - discount/100);
                 if(currency === "USD") finalRate = finalRate / 83;
-                return finalRate.toFixed(3);
+                
+                // Drop extra zeros for small decimals (e.g. 0.130 -> 0.13)
+                if (finalRate < 1 && finalRate > 0) {
+                    return parseFloat(finalRate.toFixed(3)).toString();
+                }
+                return finalRate.toFixed(2);
             };
 
             const copyToClipboard = (text) => {
@@ -307,6 +309,7 @@
                 return text.split(urlRegex).map((part, i) => {
                     if (urlRegex.test(part)) {
                         if(part.match(/\.(jpeg|jpg|gif|png)$/i)) return <img key={i} src={part} style={{maxWidth:'100%', borderRadius:'8px', marginTop:'10px'}} />;
+                        if(part.match(/\.(mp4|webm|ogg)$/i)) return <video key={i} src={part} controls style={{maxWidth:'100%', borderRadius:'8px', marginTop:'10px'}} />;
                         return <a key={i} href={part} target="_blank" className="md-link">{part}</a>;
                     }
                     return part;
@@ -579,7 +582,7 @@
 
                             <div className="card-vip">
                                 <h4 style={{margin:'0 0 5px 0', color:'#aaa', fontSize:'14px'}}>Reseller API Access</h4>
-                                <p style={{fontSize:'11px', color:'#666', marginBottom:'15px'}}>Get an API key to connect your panel with us.</p>
+                                <p style={{fontSize:'11px', color:'#666', marginBottom:'15px'}}>Connect your panel with our API.</p>
                                 
                                 {apiKeyStatus === "none" && (
                                     <button className="btn-neon" style={{padding:'10px', fontSize:'12px'}} onClick={()=>{
@@ -655,7 +658,7 @@
                                         return (
                                         <div key={i} className="mail-item" onClick={()=>setActiveMail(m)}>
                                             <div className={`mail-avatar ${m.from==='admin' ? 'avatar-admin' : 'avatar-user'}`}>
-                                                {m.from==='admin' ? <i className="fa fa-gem" style={{color:'#000'}}></i> : 'M'}
+                                                {m.from==='admin' ? <i className="fa fa-crown" style={{color:'#000'}}></i> : 'M'}
                                             </div>
                                             <div className="mail-content">
                                                 <div className="mail-sender">
@@ -694,7 +697,7 @@
                             <div className="md-body">
                                 <div className="md-sender-info">
                                     <div className={`mail-avatar ${activeMail.from==='admin' ? 'avatar-admin' : 'avatar-user'}`} style={{width:'50px', height:'50px', fontSize:'22px'}}>
-                                        {activeMail.from==='admin' ? <i className="fa fa-gem" style={{color:'#000'}}></i> : 'M'}
+                                        {activeMail.from==='admin' ? <i className="fa fa-crown" style={{color:'#000'}}></i> : 'M'}
                                     </div>
                                     <div>
                                         <div className="text-glow" style={{fontWeight:'900', fontSize:'18px', letterSpacing:'1px'}}>{activeMail.from==='admin' ? 'ADMIN' : 'You'}</div>
@@ -844,4 +847,3 @@
     </script>
 </body>
 </html>
-
