@@ -40,16 +40,18 @@
         .gmail-header { background: rgba(0,0,0,0.8); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--active); backdrop-filter: blur(10px); }
         .gmail-header h3 { margin: 0; font-size: 18px; color: #fff; font-weight: bold; letter-spacing: 1px; }
         .mail-list { flex: 1; overflow-y: auto; padding-bottom: 80px; }
-        .mail-item { display: flex; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: flex-start; cursor: pointer; transition: 0.3s; }
+        .mail-item { display: flex; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: flex-start; cursor: pointer; transition: 0.3s; position: relative; }
         .mail-item:hover { background: rgba(255,255,255,0.02); }
         
         .mail-avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; margin-right: 15px; color: #000; flex-shrink: 0; box-shadow: 0 0 10px var(--active); }
         .avatar-admin { background: var(--active); }
         .avatar-user { background: #555; color: #fff; box-shadow: none; }
         
-        .mail-content { flex: 1; text-align: left; padding-right: 10px; }
+        .mail-content { flex: 1; text-align: left; padding-right: 30px; }
         .mail-sender { font-weight: 900; font-size: 15px; color: var(--active); margin-bottom: 4px; text-shadow: 0 0 5px var(--active); }
         .mail-snippet { font-size: 13px; color: #bbb; line-height: 1.4; word-wrap: break-word; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+        .mail-delete-icon { position: absolute; right: 15px; top: 20px; color: #555; font-size: 14px; padding: 5px; }
+        .mail-delete-icon:hover { color: #ff003c; }
         
         .gmail-compose-box { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); border-top: 1px solid var(--active); display: flex; padding: 10px 15px; align-items: center; box-sizing: border-box; backdrop-filter: blur(10px); }
         .gmail-input { flex: 1; background: #111; border: 1px solid #333; border-radius: 20px; padding: 12px 15px; color: #fff; margin-right: 10px; margin-bottom: 0; outline: none; }
@@ -60,8 +62,8 @@
         .md-header { padding: 15px 20px; background: #000; border-bottom: 1px solid var(--active); display: flex; align-items: center; gap: 15px; }
         .md-body { padding: 20px; flex: 1; overflow-y: auto; text-align: left; }
         .md-sender-info { display: flex; align-items: center; margin-bottom: 25px; }
-        .md-text { font-size: 15px; line-height: 1.6; color: #eee; white-space: pre-wrap; }
-        .md-link { color: var(--active); text-decoration: underline; font-weight: bold; }
+        .md-text { font-size: 15px; line-height: 1.6; color: #eee; white-space: pre-wrap; word-break: break-word; }
+        .md-link { color: var(--active); text-decoration: underline; font-weight: bold; word-break: break-all; }
         .md-actions { display: flex; gap: 10px; margin-top: 30px; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #050505; padding: 12px 0; border-top: 1px solid #1a1a1a; z-index: 1000; }
@@ -131,6 +133,7 @@
             const [couponInput, setCouponInput] = useState("");
             const [followStep, setFollowStep] = useState(false); // For Reward Claim
             
+            const [apiKeyStatus, setApiKeyStatus] = useState(localStorage.getItem('api_status') || "none");
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
 
             const [vipAlert, setVipAlert] = useState(null);
@@ -169,12 +172,7 @@
             useEffect(() => {
                 const params = new URLSearchParams(window.location.search);
                 if(params.get('ref')) localStorage.setItem('ref_by', params.get('ref'));
-                if(user && !localStorage.getItem('user_api_key')){
-                    const initKey = 'API_' + btoa(user.email).substring(0,15).toUpperCase() + Math.random().toString(36).substr(2, 5).toUpperCase();
-                    localStorage.setItem('user_api_key', initKey);
-                    setApiKey(initKey);
-                }
-            }, [user]);
+            }, []);
 
             useEffect(() => {
                 if(user && panel) {
@@ -187,6 +185,20 @@
                             setAppConfig(prev => ({...prev, ...r.data.config}));
                         }
                         setDiscount(r.data.discount || 0);
+
+                        if(r.data.user_info && r.data.user_info.api_key) {
+                            setApiKey(r.data.user_info.api_key);
+                            setApiKeyStatus("approved");
+                            localStorage.setItem('user_api_key', r.data.user_info.api_key);
+                            localStorage.setItem('api_status', "approved");
+                        } else if(r.data.user_info && r.data.user_info.api_req_pending) {
+                            setApiKeyStatus("pending");
+                            localStorage.setItem('api_status', "pending");
+                        } else {
+                            setApiKey("");
+                            setApiKeyStatus("none");
+                            localStorage.setItem('api_status', "none");
+                        }
                         
                         const newOrders = r.data.orders.slice().reverse();
                         if(prevOrdersRef.current.length > 0) {
@@ -203,7 +215,7 @@
                         setOrders(newOrders);
 
                         if (r.data.unread_mails && r.data.unread_mails.length > 0) {
-                            r.data.unread_mails.forEach(m => showAlert("📬 NEW VIP MAIL FROM ADMIN:\n\n" + m));
+                            r.data.unread_mails.forEach(m => showAlert(m)); // Clean Notification
                         }
                         
                         const rej = r.data.txns.find(t => t.status === "Rejected" && !localStorage.getItem(`warn_${t.utr}`));
@@ -233,7 +245,7 @@
                     const ref_code = localStorage.getItem('ref_by') || '';
                     axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ref: ref_code, username: form.username.trim(), email: form.email.trim(), pass: form.pass.trim() })
                     .then(() => {
-                        const ud = { email: form.email.trim().toLowerCase(), username: form.username.trim() }; // Keep username original case for display
+                        const ud = { email: form.email.trim().toLowerCase(), username: form.username.trim() }; 
                         setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
                     }).catch((e) => showAlert(e.response.data.error || "Please give valid details!"));
                 } else {
@@ -276,9 +288,29 @@
                 showAlert("Copied to clipboard!");
             };
 
+            const handleDeleteMail = (index, e) => {
+                e.stopPropagation();
+                const newMails = [...mails];
+                newMails.splice(index, 1);
+                setMails(newMails);
+            };
+
+            const clearAllMails = () => {
+                if(window.confirm("Are you sure you want to clear all your mails?")) {
+                    setMails([]);
+                    showAlert("All mails cleared locally.");
+                }
+            };
+
             const formatMailText = (text) => {
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
-                return text.split(urlRegex).map((part, i) => urlRegex.test(part) ? <a key={i} href={part} target="_blank" className="md-link">{part}</a> : part);
+                return text.split(urlRegex).map((part, i) => {
+                    if (urlRegex.test(part)) {
+                        if(part.match(/\.(jpeg|jpg|gif|png)$/i)) return <img key={i} src={part} style={{maxWidth:'100%', borderRadius:'8px', marginTop:'10px'}} />;
+                        return <a key={i} href={part} target="_blank" className="md-link">{part}</a>;
+                    }
+                    return part;
+                });
             };
 
             const filtered = useMemo(() => {
@@ -295,10 +327,9 @@
                 if(!vipAlert) return null;
                 return (
                     <div className="modal" style={{zIndex: 999999}}>
-                        <div className="modal-body" style={{border: '1px solid var(--active)'}}>
-                            <h2 className="text-glow" style={{margin:'0 0 15px 0', fontSize:'18px'}}>SYSTEM NOTIFICATION</h2>
-                            <p style={{fontSize:'14px', margin:'10px 0 25px 0', whiteSpace: 'pre-wrap', color:'#eee'}}>{vipAlert}</p>
-                            <button className="btn-neon" onClick={()=>setVipAlert(null)}>OK, GOT IT</button>
+                        <div className="modal-body" style={{border: '1px solid var(--active)', padding:'25px 20px'}}>
+                            <p style={{fontSize:'15px', margin:'0 0 20px 0', whiteSpace: 'pre-wrap', color:'#fff', lineHeight:'1.5'}}>{vipAlert}</p>
+                            <button className="btn-neon" onClick={()=>setVipAlert(null)} style={{width:'auto', padding:'10px 30px'}}>OK</button>
                         </div>
                     </div>
                 );
@@ -548,18 +579,42 @@
 
                             <div className="card-vip">
                                 <h4 style={{margin:'0 0 5px 0', color:'#aaa', fontSize:'14px'}}>Reseller API Access</h4>
-                                <p style={{fontSize:'11px', color:'#666', marginBottom:'15px'}}>Connect your panel with our API.</p>
-                                <p style={{fontSize:'11px', color:'var(--active)', wordBreak:'break-all', background:'#111', padding:'10px', borderRadius:'6px', border:'1px solid #1a1a1a'}}>URL: https://malik-proxy-smm.onrender.com/api/v2</p>
-                                <input readOnly value={apiKey} style={{background:'#111', color:'#ccc', fontSize:'12px', fontFamily:'monospace', border:'1px solid #1a1a1a'}} />
-                                <div style={{display:'flex', gap:'10px', marginTop:'5px'}}>
-                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1}} onClick={()=>copyToClipboard(apiKey)}>COPY KEY</button>
-                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1, background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none'}} onClick={()=>{
-                                        const newKey = 'API_' + Math.random().toString(36).substr(2, 10).toUpperCase() + btoa(user.email).substring(0,5).toUpperCase();
-                                        localStorage.setItem('user_api_key', newKey);
-                                        setApiKey(newKey);
-                                        showAlert("New API Key Generated! Old key is now invalid.");
-                                    }}>RESET KEY</button>
-                                </div>
+                                <p style={{fontSize:'11px', color:'#666', marginBottom:'15px'}}>Get an API key to connect your panel with us.</p>
+                                
+                                {apiKeyStatus === "none" && (
+                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px'}} onClick={()=>{
+                                        axios.post('https://malik-proxy-smm.onrender.com/api/req-api', {panel, email:user.email}).then(()=>{
+                                            setApiKeyStatus("pending");
+                                            localStorage.setItem('api_status', "pending");
+                                            showAlert("API Request Sent to Admin! Please wait for approval.");
+                                        });
+                                    }}>REQUEST API KEY</button>
+                                )}
+                                
+                                {apiKeyStatus === "pending" && (
+                                    <p style={{fontSize:'12px', color:'#ff003c', fontWeight:'bold', textAlign:'center', padding:'10px', background:'rgba(255,0,60,0.1)', borderRadius:'8px', border:'1px solid #ff003c'}}>Your API request is pending admin approval.</p>
+                                )}
+                                
+                                {apiKeyStatus === "approved" && (
+                                    <>
+                                        <p style={{fontSize:'11px', color:'var(--active)', wordBreak:'break-all', background:'#111', padding:'10px', borderRadius:'6px', border:'1px solid #1a1a1a'}}>URL: https://malik-proxy-smm.onrender.com/api/v2</p>
+                                        <input readOnly value={apiKey} style={{background:'#111', color:'#ccc', fontSize:'12px', fontFamily:'monospace', border:'1px solid #1a1a1a'}} />
+                                        <div style={{display:'flex', gap:'10px', marginTop:'5px'}}>
+                                            <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1}} onClick={()=>copyToClipboard(apiKey)}>COPY KEY</button>
+                                            <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1, background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none'}} onClick={()=>{
+                                                if(window.confirm("Are you sure you want to reset your key? You will need admin approval again.")){
+                                                    axios.post('https://malik-proxy-smm.onrender.com/api/reset-api', {panel, email:user.email}).then(()=>{
+                                                        setApiKeyStatus("pending");
+                                                        setApiKey("");
+                                                        localStorage.setItem('api_status', "pending");
+                                                        localStorage.removeItem('user_api_key');
+                                                        showAlert("Key Reset! New request sent to Admin.");
+                                                    });
+                                                }
+                                            }}>RESET KEY</button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             <div className="card-vip">
@@ -587,6 +642,7 @@
                                         <i className="fa fa-arrow-left" style={{fontSize:'18px', color:'#fff', cursor:'pointer'}} onClick={()=>setModal(null)}></i>
                                         <h3>Support Inbox</h3>
                                     </div>
+                                    <div style={{fontSize:'12px', color:'#ff003c', cursor:'pointer', fontWeight:'bold', border:'1px solid #ff003c', padding:'5px 10px', borderRadius:'5px'}} onClick={clearAllMails}>Clear All</div>
                                 </div>
                                 <div className="mail-list">
                                     {mails.length === 0 ? (
@@ -599,14 +655,15 @@
                                         return (
                                         <div key={i} className="mail-item" onClick={()=>setActiveMail(m)}>
                                             <div className={`mail-avatar ${m.from==='admin' ? 'avatar-admin' : 'avatar-user'}`}>
-                                                {m.from==='admin' ? <i className="fa fa-crown"></i> : 'M'}
+                                                {m.from==='admin' ? <i className="fa fa-gem" style={{color:'#000'}}></i> : 'M'}
                                             </div>
                                             <div className="mail-content">
                                                 <div className="mail-sender">
-                                                    <span>{m.from==='admin' ? '👑 ADMIN VIP' : 'Me'}</span>
+                                                    <span>{m.from==='admin' ? 'ADMIN' : 'Me'}</span>
                                                 </div>
-                                                <div className="mail-snippet">{m.msg}</div>
+                                                <div className="mail-snippet">{m.msg.includes('http') ? 'Contains Media/Link...' : m.msg}</div>
                                             </div>
+                                            <i className="fa fa-trash mail-delete-icon" onClick={(e)=>handleDeleteMail(actualIndex, e)} title="Delete locally"></i>
                                         </div>
                                     )})}
                                 </div>
@@ -618,7 +675,6 @@
                                         .then(()=>{
                                             setMails([...mails, {from: 'user', msg: mailInput}]);
                                             setMailInput("");
-                                            showAlert("Message Sent to Admin!");
                                         })
                                     }}>
                                         <i className="fa fa-paper-plane"></i>
@@ -638,10 +694,10 @@
                             <div className="md-body">
                                 <div className="md-sender-info">
                                     <div className={`mail-avatar ${activeMail.from==='admin' ? 'avatar-admin' : 'avatar-user'}`} style={{width:'50px', height:'50px', fontSize:'22px'}}>
-                                        {activeMail.from==='admin' ? <i className="fa fa-crown"></i> : 'M'}
+                                        {activeMail.from==='admin' ? <i className="fa fa-gem" style={{color:'#000'}}></i> : 'M'}
                                     </div>
                                     <div>
-                                        <div className="text-glow" style={{fontWeight:'900', fontSize:'18px'}}>{activeMail.from==='admin' ? '👑 ADMIN VIP' : 'You'}</div>
+                                        <div className="text-glow" style={{fontWeight:'900', fontSize:'18px', letterSpacing:'1px'}}>{activeMail.from==='admin' ? 'ADMIN' : 'You'}</div>
                                         <div style={{fontSize:'11px', color:'#888'}}>to {activeMail.from==='admin' ? 'Me' : 'Support Admin'}</div>
                                     </div>
                                 </div>
@@ -788,3 +844,4 @@
     </script>
 </body>
 </html>
+
