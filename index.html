@@ -96,6 +96,15 @@
         .coupon-box button { width: auto; padding: 0 20px; }
         
         .profile-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--active); box-shadow: 0 0 10px var(--active); }
+
+        .conf-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 99999; }
+        .conf-box { background: #111; padding: 25px; border-radius: 15px; border: 1px solid var(--active); text-align: center; width: 85%; max-width: 320px; }
+        .conf-btns { display: flex; gap: 10px; margin-top: 20px; }
+        
+        /* New Mailbox Tabs */
+        .mail-tabs { display: flex; background: #000; border-bottom: 1px solid #222; }
+        .mail-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: #666; font-size: 13px; font-weight: bold; transition: 0.3s; }
+        .mail-tab-active { color: var(--active); border-bottom: 2px solid var(--active); }
     </style>
 </head>
 <body id="bdy" class="login-bg">
@@ -104,7 +113,7 @@
         const { useState, useEffect, useMemo, useRef } = React;
         
         const AppUI = () => {
-            const [appPanels, setAppPanels] = useState([]); // Dynamic Panels
+            const [appPanels, setAppPanels] = useState([]);
             const [panel, setPanel] = useState(localStorage.getItem('aryan_panel') || null);
             const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
             
@@ -115,9 +124,6 @@
             const [search, setSearch] = useState("");
             const [modal, setModal] = useState(null);
             
-            // SMART LOGIN/SIGNUP FLOW
-            const [isSignup, setIsSignup] = useState(localStorage.getItem('has_logged_in_before') !== 'true');
-            
             const [orders, setOrders] = useState([]);
             const [txns, setTxns] = useState([]);
             const [warnUtr, setWarnUtr] = useState(null); 
@@ -126,23 +132,26 @@
             
             const [mails, setMails] = useState([]);
             const [mailInput, setMailInput] = useState("");
-            const [activeMail, setActiveMail] = useState(null); // Detailed Mail View
+            const [activeMail, setActiveMail] = useState(null);
+            const [mailActiveTab, setMailActiveTab] = useState("all"); // all, chat
             
             const [appConfig, setAppConfig] = useState({
                 socials: {tg: "https://t.me/zr3v_x", yt: "https://youtube.com/@z3rv_x?si=ayQnR40t-521AFTb", ig: "", wp: ""},
-                mail_theme: "1"
+                mail_theme: "1",
+                app_name: "MALIK PROXY SMM",
+                log_system: "1"
             });
             const [discount, setDiscount] = useState(0);
             const [currency, setCurrency] = useState(localStorage.getItem('currency') || "INR");
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
             const [couponInput, setCouponInput] = useState("");
-            const [followStep, setFollowStep] = useState(false); // For Reward Claim
+            const [followStep, setFollowStep] = useState(false); 
             
             const [apiKeyStatus, setApiKeyStatus] = useState(localStorage.getItem('api_status') || "none");
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
 
             const [vipAlert, setVipAlert] = useState(null);
-            const showAlert = (msg) => setVipAlert(msg);
+            const [confDialog, setConfDialog] = useState(null); 
             
             const [googleEmail, setGoogleEmail] = useState("");
             const [googleUsername, setGoogleUsername] = useState("");
@@ -151,11 +160,18 @@
             const [profileForm, setProfileForm] = useState({ avatar: '', username: '', email: '' });
             const prevOrdersRef = useRef([]);
 
-            // Fetch dynamic panels on mount
+            // SMART LOGIN/SIGNUP FLOW dependent on log_system
+            const [isSignup, setIsSignup] = useState(localStorage.getItem('has_logged_in_before') !== 'true');
+
+            const showAlert = (msg) => setVipAlert(msg);
+
             useEffect(() => {
                 axios.get('https://malik-proxy-smm.onrender.com/api/init-app').then(r => {
                     setAppPanels(r.data.panels);
-                    if(r.data.panels.length === 1 && !panel) {
+                    if(r.data.config) {
+                        setAppConfig(prev => ({...prev, ...r.data.config}));
+                    }
+                    if(r.data.panels.length === 1 && !panel && (!user || r.data.config.log_system === "1")) {
                         setPanel(r.data.panels[0].id);
                         localStorage.setItem('aryan_panel', r.data.panels[0].id);
                     }
@@ -179,20 +195,19 @@
                 const params = new URLSearchParams(window.location.search);
                 if(params.get('ref')) localStorage.setItem('ref_by', params.get('ref'));
                 
-                // Initialize profile form if user exists
                 if(user) {
                     setProfileForm({ avatar: user.avatar || '', username: user.username || '', email: user.email || '' });
                 }
             }, [user]);
 
             useEffect(() => {
-                if(user && panel) {
-                    const sync = () => axios.post('https://malik-proxy-smm.onrender.com/api/sync', { email: user.email, panel }).then(r => {
+                if(user && (panel || appConfig.log_system === "2")) {
+                    const syncPanel = panel || (appPanels.length > 0 ? appPanels[0].id : "1");
+                    const sync = () => axios.post('https://malik-proxy-smm.onrender.com/api/sync', { email: user.email, panel: syncPanel }).then(r => {
                         setBalance(r.data.balance); 
                         setTxns(r.data.txns); 
                         setUserInfo(r.data.user_info || {});
                         
-                        // Sync profile data dynamically if updated from backend
                         if(r.data.user_info) {
                             const updatedUser = { ...user, avatar: r.data.user_info.avatar, username: r.data.user_info.username || user.username };
                             if(JSON.stringify(user) !== JSON.stringify(updatedUser)) {
@@ -236,7 +251,7 @@
                         setOrders(newOrders);
 
                         if (r.data.unread_mails && r.data.unread_mails.length > 0) {
-                            r.data.unread_mails.forEach(m => showAlert("📬 NEW VIP MAIL FROM ADMIN:\n\n" + m));
+                            r.data.unread_mails.forEach(m => showAlert("📬 NEW MAIL FROM ADMIN:\n\n" + m));
                         }
                         
                         const rej = r.data.txns.find(t => t.status === "Rejected" && !localStorage.getItem(`warn_${t.utr}`));
@@ -249,7 +264,7 @@
                     });
                     sync(); const i = setInterval(sync, 4000); return () => clearInterval(i); 
                 }
-            }, [user, panel]);
+            }, [user, panel, appConfig.log_system, appPanels]);
 
             useEffect(() => {
                 if(panel) {
@@ -263,44 +278,48 @@
             }, [panel]);
 
             const auth = () => {
+                const reqPanel = appConfig.log_system === "2" ? "1" : panel;
+                if(!reqPanel && appConfig.log_system === "1") return showAlert("Please select a panel first!");
+
                 if(isSignup) {
                     if(!form.username || !form.email || !form.pass) return showAlert("Please give valid details!");
                     if(!form.email.includes('@')) return showAlert("Please give valid details!");
                     const ref_code = localStorage.getItem('ref_by') || '';
-                    axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel, ref: ref_code, username: form.username.trim(), email: form.email.trim(), pass: form.pass.trim() })
+                    axios.post('https://malik-proxy-smm.onrender.com/api/signup', { panel: reqPanel, ref: ref_code, username: form.username.trim(), email: form.email.trim(), pass: form.pass.trim(), log_system: appConfig.log_system })
                     .then(() => {
                         const ud = { email: form.email.trim().toLowerCase(), username: form.username.trim(), avatar: '' }; 
-                        setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
+                        setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); 
+                        if(appConfig.log_system === "1") localStorage.setItem('aryan_panel', reqPanel);
                         localStorage.setItem('has_logged_in_before', 'true');
                     }).catch((e) => showAlert(e.response.data.error || "Please give valid details!"));
                 } else {
                     if(!form.username || !form.pass) return showAlert("Please give valid details!");
-                    axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel, username: form.username.trim(), pass: form.pass.trim() })
+                    axios.post('https://malik-proxy-smm.onrender.com/api/login', { panel: reqPanel, username: form.username.trim(), pass: form.pass.trim(), log_system: appConfig.log_system })
                     .then((r) => {
                         const ud = { email: r.data.email, username: r.data.username || form.username.trim(), avatar: r.data.avatar || '' };
-                        setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
+                        setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); 
+                        if(appConfig.log_system === "1") localStorage.setItem('aryan_panel', reqPanel);
                         localStorage.setItem('has_logged_in_before', 'true');
                     }).catch((e) => showAlert(e.response.data.error || "Invalid Username or Password!"));
                 }
             };
 
             const customGoogleAuth = () => {
+                const reqPanel = appConfig.log_system === "2" ? "1" : panel;
                 if(!googleEmail.includes("@") || !googleUsername) return showAlert("Please enter both Email and Username!");
-                axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: panel, email: googleEmail.trim(), username: googleUsername.trim() })
+                axios.post('https://malik-proxy-smm.onrender.com/api/google-auth', { panel: reqPanel, email: googleEmail.trim(), username: googleUsername.trim(), log_system: appConfig.log_system })
                 .then((r)=>{
                     const ud = { email: r.data.email, username: r.data.username, avatar: r.data.avatar || '' };
-                    setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); localStorage.setItem('aryan_panel', panel);
+                    setUser(ud); localStorage.setItem('user', JSON.stringify(ud)); 
+                    if(appConfig.log_system === "1") localStorage.setItem('aryan_panel', reqPanel);
                     localStorage.setItem('has_logged_in_before', 'true');
                     setShowGoogleModal(false);
                 }).catch((e)=>showAlert(e.response.data.error || "Login Failed"));
             };
 
             const handleLogout = () => {
-                setUser(null); setTab("Home");
-                if(appPanels.length > 1) {
-                    setPanel(null);
-                    localStorage.removeItem('aryan_panel');
-                }
+                setUser(null); setTab("Home"); setPanel(null);
+                localStorage.removeItem('aryan_panel');
                 setIsSignup(false); 
             };
 
@@ -321,14 +340,29 @@
 
             const handleDeleteMail = (index, e) => {
                 if(e) e.stopPropagation();
-                // Optimistic UI update
-                const newMails = [...mails];
-                newMails.splice(index, 1);
-                setMails(newMails);
-                
-                // Permanent Database delete
-                axios.post('https://malik-proxy-smm.onrender.com/api/delete-mail', { panel, email: user.email, index: index })
-                .catch(err => console.log(err));
+                setConfDialog({
+                    msg: "Are you sure you want to delete this message permanently?",
+                    onConfirm: () => {
+                        const newMails = [...mails];
+                        newMails.splice(index, 1);
+                        setMails(newMails);
+                        axios.post('https://malik-proxy-smm.onrender.com/api/delete-mail', { panel, email: user.email, index: index }).catch(err => console.log(err));
+                        setConfDialog(null);
+                        setActiveMail(null);
+                    }
+                });
+            };
+
+            const clearAllMails = () => {
+                setConfDialog({
+                    msg: "Are you sure you want to clear all your mails? This action cannot be undone.",
+                    onConfirm: () => {
+                        setMails([]);
+                        showAlert("All mails cleared.");
+                        axios.post('https://malik-proxy-smm.onrender.com/api/clear-all-mails', { panel, email: user.email }).catch(err => console.log(err));
+                        setConfDialog(null);
+                    }
+                });
             };
 
             const formatMailText = (text) => {
@@ -365,22 +399,76 @@
                 );
             };
 
-            if (!panel && appPanels.length > 0) return (
+            const renderConfirmDialog = () => {
+                if(!confDialog) return null;
+                return (
+                    <div className="conf-modal">
+                        <div className="conf-box">
+                            <p style={{fontSize:'14px', marginBottom:'20px'}}>{confDialog.msg}</p>
+                            <div className="conf-btns">
+                                <button className="btn-neon" style={{flex:1, background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none'}} onClick={()=>setConfDialog(null)}>CANCEL</button>
+                                <button className="btn-neon" style={{flex:1}} onClick={confDialog.onConfirm}>YES, I'M SURE</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            // LOG SYSTEM 2 ROUTING
+            if (!user && appConfig.log_system === "2") {
+                return (
+                    <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
+                        {renderNotification()}
+                        <div className="modal-body" style={{background:'#080808'}}>
+                            <h2 className="text-glow" style={{fontSize:'24px', marginBottom:'5px', letterSpacing:'1px'}}>{appConfig.app_name}</h2>
+                            <h3 style={{color:'#888', marginBottom:'20px', fontSize:'14px', textTransform:'uppercase'}}>{isSignup ? "CREATE ACCOUNT" : "LOGIN"}</h3>
+                            
+                            {isSignup && <p style={{fontSize:'12px', color:'var(--active)', marginBottom:'15px'}}>How to signup: Enter a unique username, your email, and a password.</p>}
+                            <p style={{color:'#ff003c', fontSize:'12px', fontWeight:'bold', marginBottom:'15px'}}>Please remember your password securely!</p>
+                            
+                            <input placeholder="Username" onChange={e=>setForm({...form, username:e.target.value})} />
+                            {isSignup && <input placeholder="Email Address" onChange={e=>setForm({...form, email:e.target.value})} />}
+                            <input type="password" placeholder="Password" onChange={e=>setForm({...form, pass:e.target.value})} />
+                            
+                            <button className="btn-neon" onClick={auth} style={{marginTop:'10px'}}>{isSignup ? "SIGNUP NOW" : "LOGIN TO APP"}</button>
+                            {!isSignup && <p style={{marginTop:'15px', color:'var(--active)', cursor:'pointer', fontWeight:'bold', fontSize:'12px'}} onClick={()=>setShowGoogleModal(true)}>Forgot Password? Secure Login</p>}
+                            <p style={{marginTop:'20px', color:'#666', cursor:'pointer', fontWeight:'bold', fontSize:'13px'}} onClick={()=>setIsSignup(!isSignup)}>{isSignup ? "Already Registered? Login Here" : "New User? Signup Here"}</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (user && !panel && appConfig.log_system === "2") {
+                return (
+                    <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+                        {renderNotification()}
+                        <h1 className="text-glow" style={{fontSize:'35px', marginBottom:'15px', textAlign:'center', fontWeight:'900', letterSpacing:'1px'}}>{appConfig.app_name}</h1>
+                        <p style={{color:'#888', marginBottom:'30px', fontWeight:'bold', textAlign:'center', padding:'0 20px', fontSize:'13px', lineHeight:'1.5'}}>
+                            Each panel offers unique rates and services. Explore and choose the one that best fits your needs. All panels guarantee 100% High Quality!
+                        </p>
+                        {appPanels.map(p => (
+                            <button key={p.id} className="btn-neon" style={{width:'85%', maxWidth:'350px', background: p.color, margin:'10px', color:'#000', boxShadow:`0 0 15px ${p.color}`}} onClick={()=>{setPanel(p.id); localStorage.setItem('aryan_panel', p.id);}}>Enter - {p.name}</button>
+                        ))}
+                    </div>
+                );
+            }
+
+
+            // LOG SYSTEM 1 ROUTING
+            if (!panel && appConfig.log_system === "1" && appPanels.length > 0) return (
                 <div style={{height:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
                     {renderNotification()}
-                    <h1 className="text-glow" style={{fontSize:'35px', marginBottom:'15px', textAlign:'center', fontWeight:'900', letterSpacing:'1px'}}>MALIK PROXY<br/>SMM PRO</h1>
-                    
+                    <h1 className="text-glow" style={{fontSize:'35px', marginBottom:'15px', textAlign:'center', fontWeight:'900', letterSpacing:'1px'}}>{appConfig.app_name}</h1>
                     <p style={{color:'#888', marginBottom:'25px', fontWeight:'bold', textAlign:'center', padding:'0 20px', fontSize:'13px', lineHeight:'1.5'}}>
                         Each panel offers unique rates and services. Explore and choose the one that best fits your needs. All panels guarantee 100% High Quality!
                     </p>
-                    
                     {appPanels.map(p => (
-                        <button key={p.id} className="btn-neon" style={{width:'85%', maxWidth:'350px', background: p.color, margin:'10px', color:'#000', boxShadow:`0 0 15px ${p.color}`}} onClick={()=>{setPanel(p.id); localStorage.setItem('aryan_panel', p.id);}}>Enter - {p.name}</button>
+                        <button key={p.id} className="btn-neon" style={{width:'85%', maxWidth:'350px', background: p.color, margin:'10px', color:'#000', boxShadow:`0 0 15px ${p.color}`}} onClick={()=>{setPanel(p.id); localStorage.setItem('aryan_panel', p.id);}}>Login/Signup - {p.name}</button>
                     ))}
                 </div>
             );
 
-            if (!user && panel) {
+            if (!user && panel && appConfig.log_system === "1") {
                 if(showGoogleModal) return (
                     <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
                         {renderNotification()}
@@ -400,7 +488,7 @@
                     <div style={{height:'100vh', display:'flex', justifyContent:'center', alignItems:'center'}}>
                         {renderNotification()}
                         <div className="modal-body" style={{background:'#080808'}}>
-                            <h2 className="text-glow" style={{fontSize:'24px', marginBottom:'5px', letterSpacing:'1px'}}>MALIK PROXY SMM</h2>
+                            <h2 className="text-glow" style={{fontSize:'24px', marginBottom:'5px', letterSpacing:'1px'}}>{appConfig.app_name}</h2>
                             <h3 style={{color:'#888', marginBottom:'20px', fontSize:'14px', textTransform:'uppercase'}}>{isSignup ? "CREATE ACCOUNT" : "LOGIN"}</h3>
                             
                             {isSignup && <p style={{fontSize:'12px', color:'var(--active)', marginBottom:'15px'}}>How to signup: Enter a unique username, your email, and a password.</p>}
@@ -428,6 +516,7 @@
             return (
                 <div style={{paddingBottom:'80px'}}>
                     {renderNotification()}
+                    {renderConfirmDialog()}
                     {warnUtr && (
                         <div className="warning-overlay">
                             <div className="warning-box">
@@ -444,7 +533,8 @@
                     )}
 
                     <div style={{textAlign:'center', padding:'20px 0', borderBottom:'1px solid #111', background:'#050505'}}>
-                        <h1 className="text-glow" style={{margin:0, fontSize:'22px', letterSpacing:'1px'}}>MALIK PROXY {actPanelData.name.toUpperCase()}</h1>
+                        <h1 className="text-glow" style={{margin:0, fontSize:'22px', letterSpacing:'1px'}}>{appConfig.app_name} {actPanelData.name.toUpperCase()}</h1>
+                        {appConfig.log_system === "2" && <p style={{margin:'5px 0 0 0', fontSize:'11px', color:'#666', cursor:'pointer'}} onClick={()=>setPanel(null)}>Switch Panel 🔄</p>}
                     </div>
                     
                     {tab === "Home" && (
@@ -652,15 +742,19 @@
                                         <div style={{display:'flex', gap:'10px', marginTop:'5px'}}>
                                             <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1}} onClick={()=>copyToClipboard(apiKey)}>COPY KEY</button>
                                             <button className="btn-neon" style={{padding:'10px', fontSize:'12px', flex:1, background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none'}} onClick={()=>{
-                                                if(window.confirm("Are you sure you want to reset your key? You will need admin approval again.")){
-                                                    axios.post('https://malik-proxy-smm.onrender.com/api/reset-api', {panel, email:user.email}).then(()=>{
-                                                        setApiKeyStatus("pending");
-                                                        setApiKey("");
-                                                        localStorage.setItem('api_status', "pending");
-                                                        localStorage.removeItem('user_api_key');
-                                                        showAlert("Key Reset! New request sent to Admin.");
-                                                    });
-                                                }
+                                                setConfDialog({
+                                                    msg: "Are you sure you want to reset your API key? You will need admin approval again.",
+                                                    onConfirm: () => {
+                                                        axios.post('https://malik-proxy-smm.onrender.com/api/reset-api', {panel, email:user.email}).then(()=>{
+                                                            setApiKeyStatus("pending");
+                                                            setApiKey("");
+                                                            localStorage.setItem('api_status', "pending");
+                                                            localStorage.removeItem('user_api_key');
+                                                            showAlert("Key Reset! New request sent to Admin.");
+                                                            setConfDialog(null);
+                                                        });
+                                                    }
+                                                });
                                             }}>RESET KEY</button>
                                         </div>
                                     </>
@@ -692,17 +786,24 @@
                                         <i className="fa fa-arrow-left" style={{fontSize:'18px', color:'#fff', cursor:'pointer'}} onClick={()=>setModal(null)}></i>
                                         <h3>Support Inbox</h3>
                                     </div>
+                                    <div style={{fontSize:'12px', color:'#ff003c', cursor:'pointer', fontWeight:'bold', border:'1px solid #ff003c', padding:'5px 10px', borderRadius:'5px'}} onClick={clearAllMails}>Clear All</div>
                                 </div>
+                                
+                                <div className="mail-tabs">
+                                    <div className={`mail-tab ${mailActiveTab === 'all' ? 'mail-tab-active' : ''}`} onClick={()=>setMailActiveTab('all')}>ALL MESSAGES</div>
+                                    <div className={`mail-tab ${mailActiveTab === 'chat' ? 'mail-tab-active' : ''}`} onClick={()=>setMailActiveTab('chat')}>CHAT WITH ADMIN</div>
+                                </div>
+
                                 <div className="mail-list">
-                                    {mails.length === 0 ? (
+                                    {mails.length === 0 || (mailActiveTab === 'chat' && !mails.some(m => m.from === 'admin')) ? (
                                         <div style={{textAlign:'center', marginTop:'100px', color:'#5f6368'}}>
                                             <i className="fa fa-envelope-open fa-4x" style={{opacity:0.3, marginBottom:'15px'}}></i>
                                             <p style={{fontSize:'15px', fontWeight:'500', margin:0, color:'#888'}}>Nothing to see here.</p>
                                         </div>
-                                    ) : mails.slice().reverse().map((m, i) => {
-                                        const actualIndex = mails.length - 1 - i;
+                                    ) : mails.slice().reverse().filter(m => mailActiveTab === 'all' || m.from === 'admin').map((m, i) => {
+                                        const actualIndex = mails.length - 1 - mails.slice().reverse().findIndex(x => x === m);
                                         return (
-                                        <div key={i} className="mail-item" onClick={()=>setActiveMail({...m, originalIndex: actualIndex})}>
+                                        <div key={actualIndex} className="mail-item" onClick={()=>setActiveMail({...m, originalIndex: actualIndex})}>
                                             <div className={`mail-avatar ${m.from==='admin' ? 'avatar-admin' : 'avatar-user'}`}>
                                                 {m.from==='admin' ? <i className="fa fa-crown" style={{color:'#000'}}></i> : 'M'}
                                             </div>
@@ -713,7 +814,7 @@
                                                 <div className="mail-snippet">{m.msg.includes('http') ? 'Contains Media/Link...' : m.msg}</div>
                                             </div>
                                             {m.from !== 'admin' && (
-                                                <i className="fa fa-trash mail-delete-icon" onClick={(e)=>handleDeleteMail(actualIndex, e)} title="Delete"></i>
+                                                <i className="fa fa-trash mail-delete-icon" onClick={(e)=>handleDeleteMail(actualIndex, e)} title="Delete locally"></i>
                                             )}
                                         </div>
                                     )})}
@@ -726,6 +827,7 @@
                                         .then(()=>{
                                             setMails([...mails, {from: 'user', msg: mailInput}]);
                                             setMailInput("");
+                                            setMailActiveTab('all');
                                         })
                                     }}>
                                         <i className="fa fa-paper-plane"></i>
