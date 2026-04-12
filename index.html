@@ -113,7 +113,7 @@
         const { useState, useEffect, useMemo, useRef } = React;
         
         const AppUI = () => {
-            const [appPanels, setAppPanels] = useState([]);
+            const [appPanels, setAppPanels] = useState([]); // Dynamic Panels
             const [panel, setPanel] = useState(localStorage.getItem('aryan_panel') || null);
             const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
             
@@ -124,6 +124,9 @@
             const [search, setSearch] = useState("");
             const [modal, setModal] = useState(null);
             
+            // SMART LOGIN/SIGNUP FLOW
+            const [isSignup, setIsSignup] = useState(localStorage.getItem('has_logged_in_before') !== 'true');
+            
             const [orders, setOrders] = useState([]);
             const [txns, setTxns] = useState([]);
             const [warnUtr, setWarnUtr] = useState(null); 
@@ -132,7 +135,7 @@
             
             const [mails, setMails] = useState([]);
             const [mailInput, setMailInput] = useState("");
-            const [activeMail, setActiveMail] = useState(null);
+            const [activeMail, setActiveMail] = useState(null); // Detailed Mail View
             const [mailActiveTab, setMailActiveTab] = useState("all"); // all, chat
             
             const [appConfig, setAppConfig] = useState({
@@ -145,7 +148,7 @@
             const [currency, setCurrency] = useState(localStorage.getItem('currency') || "INR");
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
             const [couponInput, setCouponInput] = useState("");
-            const [followStep, setFollowStep] = useState(false); 
+            const [followStep, setFollowStep] = useState(false); // For Reward Claim
             
             const [apiKeyStatus, setApiKeyStatus] = useState(localStorage.getItem('api_status') || "none");
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
@@ -160,11 +163,9 @@
             const [profileForm, setProfileForm] = useState({ avatar: '', username: '', email: '' });
             const prevOrdersRef = useRef([]);
 
-            // SMART LOGIN/SIGNUP FLOW dependent on log_system
-            const [isSignup, setIsSignup] = useState(localStorage.getItem('has_logged_in_before') !== 'true');
-
             const showAlert = (msg) => setVipAlert(msg);
 
+            // Fetch dynamic panels on mount
             useEffect(() => {
                 axios.get('https://malik-proxy-smm.onrender.com/api/init-app').then(r => {
                     setAppPanels(r.data.panels);
@@ -195,6 +196,7 @@
                 const params = new URLSearchParams(window.location.search);
                 if(params.get('ref')) localStorage.setItem('ref_by', params.get('ref'));
                 
+                // Initialize profile form if user exists
                 if(user) {
                     setProfileForm({ avatar: user.avatar || '', username: user.username || '', email: user.email || '' });
                 }
@@ -208,6 +210,7 @@
                         setTxns(r.data.txns); 
                         setUserInfo(r.data.user_info || {});
                         
+                        // Sync profile data dynamically if updated from backend
                         if(r.data.user_info) {
                             const updatedUser = { ...user, avatar: r.data.user_info.avatar, username: r.data.user_info.username || user.username };
                             if(JSON.stringify(user) !== JSON.stringify(updatedUser)) {
@@ -819,20 +822,24 @@
                                         </div>
                                     )})}
                                 </div>
-                                <div className="gmail-compose-box">
-                                    <input className="gmail-input" placeholder="Type message to Admin..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
-                                    <button className="gmail-send" onClick={()=>{
-                                        if(!mailInput) return showAlert("Please write a message!");
-                                        axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:mailInput})
-                                        .then(()=>{
-                                            setMails([...mails, {from: 'user', msg: mailInput}]);
-                                            setMailInput("");
-                                            setMailActiveTab('all');
-                                        })
-                                    }}>
-                                        <i className="fa fa-paper-plane"></i>
-                                    </button>
-                                </div>
+                                
+                                {/* Only show send box in Chat with Admin tab */}
+                                {mailActiveTab === 'chat' && (
+                                    <div className="gmail-compose-box">
+                                        <input className="gmail-input" placeholder="Type message to Admin..." value={mailInput} onChange={e=>setMailInput(e.target.value)} />
+                                        <button className="gmail-send" onClick={()=>{
+                                            if(!mailInput) return showAlert("Please write a message!");
+                                            axios.post('https://malik-proxy-smm.onrender.com/api/send-mail', {panel, email:user.email, message:mailInput})
+                                            .then(()=>{
+                                                setMails([...mails, {from: 'user', msg: mailInput}]);
+                                                setMailInput("");
+                                                setMailActiveTab('all');
+                                            })
+                                        }}>
+                                            <i className="fa fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -860,10 +867,12 @@
                                 <div className="md-actions">
                                     <button className="btn-neon" style={{padding:'10px', fontSize:'12px', background:'#111', border:'1px solid var(--active)', color:'var(--active)', boxShadow:'none', flex:1}} onClick={()=>copyToClipboard(activeMail.msg)}><i className="fa fa-copy"></i> COPY TEXT</button>
                                     
-                                    <button className="btn-neon" style={{padding:'10px', fontSize:'12px', background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none', flex:1}} onClick={()=>{
-                                        handleDeleteMail(activeMail.originalIndex);
-                                        setActiveMail(null);
-                                    }}><i className="fa fa-trash"></i> DELETE</button>
+                                    {activeMail.from !== 'admin' && (
+                                        <button className="btn-neon" style={{padding:'10px', fontSize:'12px', background:'transparent', border:'1px solid #ff003c', color:'#ff003c', boxShadow:'none', flex:1}} onClick={()=>{
+                                            handleDeleteMail(activeMail.originalIndex);
+                                            setActiveMail(null);
+                                        }}><i className="fa fa-trash"></i> DELETE</button>
+                                    )}
                                 </div>
                             </div>
                         </div>
