@@ -163,6 +163,9 @@
             const [profileForm, setProfileForm] = useState({ avatar: '', username: '', email: '' });
             const prevOrdersRef = useRef([]);
 
+            // SMART LOGIN/SIGNUP FLOW dependent on log_system
+            const [isSignup, setIsSignup] = useState(localStorage.getItem('has_logged_in_before') !== 'true');
+
             const showAlert = (msg) => setVipAlert(msg);
 
             useEffect(() => {
