@@ -113,7 +113,7 @@
         const { useState, useEffect, useMemo, useRef } = React;
         
         const AppUI = () => {
-            const [appPanels, setAppPanels] = useState([]); // Dynamic Panels
+            const [appPanels, setAppPanels] = useState([]);
             const [panel, setPanel] = useState(localStorage.getItem('aryan_panel') || null);
             const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
             
@@ -135,7 +135,7 @@
             
             const [mails, setMails] = useState([]);
             const [mailInput, setMailInput] = useState("");
-            const [activeMail, setActiveMail] = useState(null); // Detailed Mail View
+            const [activeMail, setActiveMail] = useState(null);
             const [mailActiveTab, setMailActiveTab] = useState("all"); // all, chat
             
             const [appConfig, setAppConfig] = useState({
@@ -148,7 +148,7 @@
             const [currency, setCurrency] = useState(localStorage.getItem('currency') || "INR");
             const [language, setLanguage] = useState(localStorage.getItem('language') || "English");
             const [couponInput, setCouponInput] = useState("");
-            const [followStep, setFollowStep] = useState(false); // For Reward Claim
+            const [followStep, setFollowStep] = useState(false); 
             
             const [apiKeyStatus, setApiKeyStatus] = useState(localStorage.getItem('api_status') || "none");
             const [apiKey, setApiKey] = useState(localStorage.getItem('user_api_key') || "");
@@ -165,7 +165,6 @@
 
             const showAlert = (msg) => setVipAlert(msg);
 
-            // Fetch dynamic panels on mount
             useEffect(() => {
                 axios.get('https://malik-proxy-smm.onrender.com/api/init-app').then(r => {
                     setAppPanels(r.data.panels);
@@ -196,7 +195,6 @@
                 const params = new URLSearchParams(window.location.search);
                 if(params.get('ref')) localStorage.setItem('ref_by', params.get('ref'));
                 
-                // Initialize profile form if user exists
                 if(user) {
                     setProfileForm({ avatar: user.avatar || '', username: user.username || '', email: user.email || '' });
                 }
@@ -210,7 +208,6 @@
                         setTxns(r.data.txns); 
                         setUserInfo(r.data.user_info || {});
                         
-                        // Sync profile data dynamically if updated from backend
                         if(r.data.user_info) {
                             const updatedUser = { ...user, avatar: r.data.user_info.avatar, username: r.data.user_info.username || user.username };
                             if(JSON.stringify(user) !== JSON.stringify(updatedUser)) {
