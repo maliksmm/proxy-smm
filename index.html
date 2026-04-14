@@ -163,9 +163,6 @@
             const [profileForm, setProfileForm] = useState({ avatar: '', username: '', email: '' });
             const prevOrdersRef = useRef([]);
 
-            // SMART LOGIN/SIGNUP FLOW dependent on log_system
-            const [isSignup, setIsSignup] = useState(localStorage.getItem('has_logged_in_before') !== 'true');
-
             const showAlert = (msg) => setVipAlert(msg);
 
             useEffect(() => {
@@ -793,17 +790,17 @@
                                 </div>
                                 
                                 <div className="mail-tabs">
-                                    <div className={`mail-tab ${mailActiveTab === 'all' ? 'mail-tab-active' : ''}`} onClick={()=>setMailActiveTab('all')}>ALL MESSAGES</div>
+                                    <div className={`mail-tab ${mailActiveTab === 'all' ? 'mail-tab-active' : ''}`} onClick={()=>setMailActiveTab('all')}>BROADCASTS</div>
                                     <div className={`mail-tab ${mailActiveTab === 'chat' ? 'mail-tab-active' : ''}`} onClick={()=>setMailActiveTab('chat')}>CHAT WITH ADMIN</div>
                                 </div>
 
                                 <div className="mail-list">
-                                    {mails.length === 0 || (mailActiveTab === 'chat' && !mails.some(m => m.from === 'admin')) ? (
+                                    {mails.filter(m => mailActiveTab === 'all' ? (!m.type || m.type === 'broadcast') : (m.from === 'user' || m.type === 'chat')).length === 0 ? (
                                         <div style={{textAlign:'center', marginTop:'100px', color:'#5f6368'}}>
                                             <i className="fa fa-envelope-open fa-4x" style={{opacity:0.3, marginBottom:'15px'}}></i>
                                             <p style={{fontSize:'15px', fontWeight:'500', margin:0, color:'#888'}}>Nothing to see here.</p>
                                         </div>
-                                    ) : mails.slice().reverse().filter(m => mailActiveTab === 'all' || m.from === 'admin').map((m, i) => {
+                                    ) : mails.slice().reverse().filter(m => mailActiveTab === 'all' ? (!m.type || m.type === 'broadcast') : (m.from === 'user' || m.type === 'chat')).map((m, i) => {
                                         const actualIndex = mails.length - 1 - mails.slice().reverse().findIndex(x => x === m);
                                         return (
                                         <div key={actualIndex} className="mail-item" onClick={()=>setActiveMail({...m, originalIndex: actualIndex})}>
@@ -833,7 +830,7 @@
                                             .then(()=>{
                                                 setMails([...mails, {from: 'user', msg: mailInput}]);
                                                 setMailInput("");
-                                                setMailActiveTab('all');
+                                                setMailActiveTab('chat');
                                             })
                                         }}>
                                             <i className="fa fa-paper-plane"></i>
